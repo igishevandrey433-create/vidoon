@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Vidoon — Личный кабинет</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f9fc;--card:#ffffff;--text:#1a1a2e;--text-light:#6b7280;
+  --border:#e5e7eb;--primary:#7c6fff;--primary-dark:#6356e5;
+  --secondary:#ff6b9d;--accent:#fbbf24;--success:#10b981;--error:#ef4444;
+  --shadow:0 4px 20px rgba(124,111,255,.08);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex}
+
+/* SIDEBAR */
+.sidebar{width:260px;background:var(--card);border-right:1px solid var(--border);min-height:100vh;padding:1.5rem 0;position:fixed;left:0;top:0;bottom:0;overflow-y:auto;z-index:10}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:20px;color:var(--text);text-decoration:none;padding:0 1.5rem;margin-bottom:2rem}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
+.nav-section{padding:0 .8rem;margin-bottom:1.5rem}
+.nav-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);font-weight:700;padding:0 .8rem;margin-bottom:.5rem}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;color:var(--text);text-decoration:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;border:none;background:transparent;width:100%;text-align:left;font-family:inherit}
+.nav-item:hover{background:rgba(124,111,255,.06);color:var(--primary)}
+.nav-item.active{background:linear-gradient(135deg,rgba(124,111,255,.12),rgba(255,107,157,.08));color:var(--primary);font-weight:700}
+.nav-item .icon{font-size:18px;width:22px;text-align:center}
+.nav-item .badge{margin-left:auto;background:var(--secondary);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
+.user-card{margin:1rem .8rem;padding:14px;background:linear-gradient(135deg,rgba(124,111,255,.05),rgba(255,107,157,.03));border-radius:12px;border:1px solid rgba(124,111,255,.1)}
+.user-name{font-size:13px;font-weight:700;margin-bottom:2px}
+.user-plan{font-size:11px;color:var(--text-light)}
+.logout-btn{display:block;width:100%;margin-top:8px;padding:8px;background:transparent;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-light);cursor:pointer;font-family:inherit;transition:all .15s}
+.logout-btn:hover{border-color:var(--error);color:var(--error)}
+
+/* MAIN */
+.main{margin-left:260px;flex:1;padding:2rem 2.5rem;max-width:calc(100vw - 260px)}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.page-header{margin-bottom:2rem}
+.page-header h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:.3rem}
+.page-header p{color:var(--text-light);font-size:15px}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;margin-bottom:1.2rem;box-shadow:var(--shadow)}
+.card h3{font-size:17px;font-weight:700;margin-bottom:.4rem}
+.card-desc{color:var(--text-light);font-size:13.5px;margin-bottom:1.2rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+@media(max-width:1024px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.main{margin-left:0;padding:1.5rem}.sidebar{transform:translateX(-100%);transition:transform .2s}.sidebar.open{transform:none}}
+
+/* STAT BLOCKS */
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.3rem;text-align:left}
+.stat-label{font-size:12px;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.stat-num{font-size:28px;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-sub{font-size:12px;color:var(--text-light);margin-top:4px}
+
+/* PROGRESS BAR */
+.progress{background:var(--bg);border-radius:99px;height:8px;overflow:hidden;margin:6px 0}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:99px;transition:width .4s}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 22px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;font-family:inherit}
+.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,111,255,.3)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-lg{padding:14px 30px;font-size:15px}
+.btn-ghost{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--bg);border-color:var(--primary);color:var(--primary);box-shadow:none;transform:none}
+.btn-block{width:100%}
+.btn.loading{position:relative;color:transparent}
+.btn.loading::after{content:'';position:absolute;width:18px;height:18px;border:2.5px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;left:50%;top:50%;margin:-9px 0 0 -9px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* FIELDS */
+.field{margin-bottom:1.2rem}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;color:var(--text)}
+.field input,.field textarea,.field select{width:100%;padding:12px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);font-family:inherit;transition:all .15s;line-height:1.5}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--primary);background:var(--card);box-shadow:0 0 0 3px rgba(124,111,255,.1)}
+.field textarea{min-height:88px;resize:vertical;font-family:inherit}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:640px){.field-row{grid-template-columns:1fr}}
+
+/* STATUS */
+.status-card{background:linear-gradient(135deg,rgba(124,111,255,.06),rgba(255,107,157,.04));border:1px solid rgba(124,111,255,.15);border-radius:16px;padding:1.8rem;margin-bottom:1.5rem}
+.status-list{display:flex;flex-direction:column;gap:14px;margin-top:1rem}
+.status-item{display:flex;align-items:center;gap:12px;font-size:14px}
+.status-icon{width:26px;height:26px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1.5px solid var(--border)}
+.status-icon.done{background:var(--success);color:#fff;border-color:var(--success)}
+.status-icon.work{background:var(--primary);color:#fff;border-color:var(--primary);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+.status-text{flex:1}
+.status-text b{display:block;font-weight:600}
+.status-text small{color:var(--text-light);font-size:12px}
+
+/* TARIFF CARDS */
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.plan{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:1.8rem;display:flex;flex-direction:column;position:relative;transition:all .2s}
+.plan:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(124,111,255,.12)}
+.plan.current{border-color:var(--success);background:linear-gradient(180deg,rgba(16,185,129,.04),transparent)}
+.plan.featured{border-color:var(--primary)}
+.plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;font-size:10px;font-weight:700;letter-spacing:.05em;padding:4px 12px;border-radius:99px;text-transform:uppercase}
+.plan-badge.current{background:var(--success)}
+.plan-name{font-size:18px;font-weight:800;margin-bottom:.2rem}
+.plan-desc{color:var(--text-light);font-size:12px;margin-bottom:1rem}
+.plan-price{font-size:34px;font-weight:800;letter-spacing:-.02em;margin-bottom:.2rem}
+.plan-price-period{color:var(--text-light);font-size:13px;margin-bottom:1.2rem}
+.plan-features{list-style:none;flex:1;margin-bottom:1.5rem;font-size:13px}
+.plan-features li{padding:6px 0;display:flex;align-items:flex-start;gap:7px}
+.plan-features li::before{content:'✓';color:var(--success);font-weight:700;flex-shrink:0}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.2);z-index:1000;animation:slideUp .25s;max-width:380px}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.toast.err{background:var(--error)}
+.toast.ok{background:var(--success)}
+
+/* LOADER */
+.page-loader{display:flex;align-items:center;justify-content:center;min-height:100vh;width:100vw;background:var(--bg);position:fixed;inset:0;z-index:200}
+.spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+
+/* EMPTY */
+.empty{text-align:center;padding:3rem 1rem;color:var(--text-light)}
+.empty-icon{font-size:48px;margin-bottom:1rem;opacity:.5}
+.empty h3{font-size:18px;color:var(--text);margin-bottom:.5rem;font-weight:700}
+.empty p{font-size:14px;max-width:380px;margin:0 auto 1.5rem}
+
+/* MOBILE TOGGLE */
+.menu-toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:50;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:18px;cursor:pointer;box-shadow:var(--shadow)}
+@media(max-width:1024px){.menu-toggle{display:block}}
+
+.alert{padding:13px 16px;border-radius:10px;font-size:13px;margin-bottom:1rem;display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.alert.info{background:rgba(124,111,255,.08);color:var(--primary);border:1px solid rgba(124,111,255,.2)}
+.alert.warn{background:rgba(251,191,36,.1);color:#92400e;border:1px solid rgba(251,191,36,.3)}
+.alert.ok{background:rgba(16,185,129,.08);color:var(--success);border:1px solid rgba(16,185,129,.2)}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="page-loader" id="loader"><div class="spinner"></div></div>
+
+<!-- MOBILE TOGGLE -->
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="logo">
+    <div class="logo-icon">🎬</div>
+    Vidoon
+  </a>
+
+  <div class="nav-section">
+    <div class="nav-title">Главное</div>
+    <button class="nav-item active" data-page="dashboard">
+      <span class="icon">🏠</span>Главная
+    </button>
+    <button class="nav-item" data-page="brand">
+      <span class="icon">🏢</span>Мой бренд
+    </button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-title">Контент</div>
+    <button class="nav-item" data-page="research">
+      <span class="icon">📊</span>Исследование рынка
+    </button>
+    <button class="nav-item" data-page="strategy">
+      <span class="icon">📅</span>Контент-стратегия
+    </button>
+    <button class="nav-item" data-page="concepts">
+      <span class="icon">🎬</span>Готовые концепты
+    </button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-title">Аккаунт</div>
+    <button class="nav-item" data-page="pricing">
+      <span class="icon">💳</span>Тариф и оплата
+    </button>
+    <button class="nav-item" data-page="support">
+      <span class="icon">💬</span>Поддержка
+    </button>
+  </div>
+
+  <div class="user-card">
+    <div class="user-name" id="user-name">Загрузка...</div>
+    <div class="user-plan" id="user-plan">—</div>
+    <button class="logout-btn" onclick="logout()">Выйти из аккаунта</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <h1>Добро пожаловать в Vidoon 👋</h1>
+    <p>Здесь вы видите статус вашего контент-проекта и быстрые действия</p>
+  </div>
+
+  <div class="grid-4" style="margin-bottom:1.5rem">
+    <div class="stat"><div class="stat-label">Концепты в этом месяце</div><div class="stat-num" id="stat-scenarios">0</div><div class="stat-sub" id="stat-scenarios-limit">из 3 на Демо</div></div>
+    <div class="stat"><div class="stat-label">Контент-стратегии</div><div class="stat-num" id="stat-plans">0</div><div class="stat-sub">в этом месяце</div></div>
+    <div class="stat"><div class="stat-label">Готово к публикации</div><div class="stat-num" id="stat-done">0</div><div class="stat-sub">завершённых концептов</div></div>
+    <div class="stat"><div class="stat-label">Тариф</div><div class="stat-num" id="stat-plan" style="font-size:22px">Демо</div><div class="stat-sub" id="stat-plan-sub">бесплатно</div></div>
+  </div>
+
+  <div class="status-card">
+    <h3>📊 Статус вашего проекта</h3>
+    <div class="status-list" id="project-status">
+      <div class="status-item">
+        <div class="status-icon" id="status-icon-brand">1</div>
+        <div class="status-text"><b>Анкета бренда</b><small>Заполните информацию о вашей компании</small></div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon" id="status-icon-research">2</div>
+        <div class="status-text"><b>Исследование рынка</b><small>Команда изучит вашу нишу и конкурентов</small></div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon" id="status-icon-strategy">3</div>
+        <div class="status-text"><b>Контент-стратегия</b><small>30 идей для роликов на месяц</small></div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon" id="status-icon-concepts">4</div>
+        <div class="status-text"><b>Концепты для производства</b><small>Готовые техзадания для каждого ролика</small></div>
+      </div>
+    </div>
+    <button class="btn btn-lg" style="margin-top:1.5rem" onclick="navTo('brand')" id="next-step-btn">Начать с анкеты бренда →</button>
+  </div>
+
+  <div class="card">
+    <h3>💡 Быстрые действия</h3>
+    <div class="grid-3" style="margin-top:1rem">
+      <button class="btn btn-ghost" onclick="navTo('brand')"><span>🏢</span> Заполнить бренд</button>
+      <button class="btn btn-ghost" onclick="navTo('research')"><span>📊</span> Заказать исследование</button>
+      <button class="btn btn-ghost" onclick="navTo('pricing')"><span>💎</span> Сменить тариф</button>
+    </div>
+  </div>
+</div>
+
+<!-- BRAND -->
+<div class="page" id="page-brand">
+  <div class="page-header">
+    <h1>🏢 Мой бренд</h1>
+    <p>Расскажите о своём бизнесе — команда будет учитывать это во всех материалах</p>
+  </div>
+
+  <div class="card">
+    <form onsubmit="return saveBrand(event)">
+      <div class="field-row">
+        <div class="field">
+          <label>Название компании *</label>
+          <input type="text" id="b-name" required placeholder="Например: Е-Гифт">
+        </div>
+        <div class="field">
+          <label>Слоган</label>
+          <input type="text" id="b-slogan" placeholder="Например: Электронные сертификаты">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Ниша / Сфера деятельности *</label>
+        <input type="text" id="b-niche" required placeholder="Например: Финтех для HoReCa">
+      </div>
+
+      <div class="field">
+        <label>Описание бизнеса *</label>
+        <textarea id="b-desc" required placeholder="Чем занимаетесь, что продаёте, в чём ваша уникальность"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Целевая аудитория *</label>
+        <textarea id="b-audience" required placeholder="Кто ваши клиенты: возраст, профессии, интересы"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Уникальное предложение (USP)</label>
+        <textarea id="b-usp" placeholder="Чем отличаетесь от конкурентов"></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Стиль контента</label>
+          <select id="b-humor">
+            <option value="funny">😂 С юмором, лёгкий</option>
+            <option value="balanced" selected>⚖️ Сбалансированный</option>
+            <option value="serious">💼 Серьёзный, экспертный</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Язык подачи</label>
+          <select id="b-lang">
+            <option value="simple" selected>👥 Простой, для всех</option>
+            <option value="expert">🎓 Экспертный, профессиональный</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Визуальный стиль</label>
+          <select id="b-visual">
+            <option value="cartoon" selected>🎨 Мультяшный (Pixar)</option>
+            <option value="realistic">📸 Реалистичный</option>
+            <option value="minimal">⚪ Минималистичный</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Использовать тренды?</label>
+          <select id="b-trends">
+            <option value="yes" selected>🔥 Да, миксовать с мемами</option>
+            <option value="moderate">⚖️ Умеренно</option>
+            <option value="no">🚫 Нет, только классика</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-lg" id="save-brand-btn">💾 Сохранить</button>
+    </form>
+  </div>
+</div>
+
+<!-- RESEARCH -->
+<div class="page" id="page-research">
+  <div class="page-header">
+    <h1>📊 Исследование рынка</h1>
+    <p>Команда изучает конкурентов, тренды и форматы которые работают в вашей нише</p>
+  </div>
+
+  <div class="card" id="research-empty">
+    <div class="empty">
+      <div class="empty-icon">📊</div>
+      <h3>Исследование ещё не проводилось</h3>
+      <p>Заполните анкету бренда, и команда подготовит детальный анализ вашей ниши: конкуренты, тренды, актуальные форматы.</p>
+      <button class="btn btn-lg" onclick="requestResearch()" id="request-research-btn">🚀 Заказать исследование</button>
+    </div>
+  </div>
+
+  <div class="card" id="research-data" style="display:none">
+    <h3>Результаты исследования</h3>
+    <div id="research-content"></div>
+  </div>
+</div>
+
+<!-- STRATEGY -->
+<div class="page" id="page-strategy">
+  <div class="page-header">
+    <h1>📅 Контент-стратегия</h1>
+    <p>30 разных идей роликов на месяц с распределением по форматам</p>
+  </div>
+
+  <div class="card" id="strategy-empty">
+    <div class="empty">
+      <div class="empty-icon">📅</div>
+      <h3>Стратегия ещё не готова</h3>
+      <p>Сначала закажите исследование рынка — потом команда подготовит контент-стратегию на основе результатов.</p>
+      <button class="btn btn-lg" onclick="requestStrategy()" id="request-strategy-btn">📅 Заказать стратегию</button>
+    </div>
+  </div>
+
+  <div id="strategy-data" style="display:none"></div>
+</div>
+
+<!-- CONCEPTS -->
+<div class="page" id="page-concepts">
+  <div class="page-header">
+    <h1>🎬 Готовые концепты</h1>
+    <p>Концепты роликов с раскадровкой, репликами и техзаданиями для производства</p>
+  </div>
+
+  <div class="card">
+    <div class="empty">
+      <div class="empty-icon">🎬</div>
+      <h3>Концепты появятся здесь</h3>
+      <p>После согласования контент-стратегии команда подготовит детальные концепты для каждого ролика.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="page" id="page-pricing">
+  <div class="page-header">
+    <h1>💳 Тариф и оплата</h1>
+    <p>Выберите подходящий тариф для вашего бизнеса</p>
+  </div>
+
+  <div class="alert info" id="current-plan-alert">
+    💎 Ваш текущий тариф: <b style="margin-left:6px" id="current-plan-name">Демо</b>
+    <span id="current-plan-expires"></span>
+  </div>
+
+  <div class="plan-grid">
+    <div class="plan" data-plan="free">
+      <div class="plan-name">Демо</div>
+      <div class="plan-desc">Попробовать бесплатно</div>
+      <div class="plan-price">0 ₽</div>
+      <div class="plan-price-period">навсегда</div>
+      <ul class="plan-features">
+        <li>3 концепта в месяц</li>
+        <li>7 идей контент-плана</li>
+        <li>1 исследование рынка</li>
+      </ul>
+      <button class="btn btn-ghost" disabled>Текущий тариф</button>
+    </div>
+
+    <div class="plan featured" data-plan="start">
+      <div class="plan-badge">Популярный</div>
+      <div class="plan-name">Старт</div>
+      <div class="plan-desc">Для малого бизнеса</div>
+      <div class="plan-price">5 000 ₽</div>
+      <div class="plan-price-period">в месяц</div>
+      <ul class="plan-features">
+        <li><b>30 концептов</b> в месяц</li>
+        <li>Полная стратегия 30 идей</li>
+        <li>5 исследований</li>
+        <li>Визуальные образы</li>
+        <li>Приоритет команды</li>
+      </ul>
+      <button class="btn btn-block" onclick="upgradePlan('start')">Выбрать Старт</button>
+    </div>
+
+    <div class="plan" data-plan="business">
+      <div class="plan-name">Бизнес</div>
+      <div class="plan-desc">Для растущих компаний</div>
+      <div class="plan-price">12 000 ₽</div>
+      <div class="plan-price-period">в месяц</div>
+      <ul class="plan-features">
+        <li>100 концептов в месяц</li>
+        <li>До 3 компаний</li>
+        <li>15 исследований</li>
+        <li>Telegram-уведомления</li>
+        <li>Личный консультант</li>
+      </ul>
+      <button class="btn btn-ghost btn-block" onclick="upgradePlan('business')">Выбрать Бизнес</button>
+    </div>
+
+    <div class="plan" data-plan="agency">
+      <div class="plan-name">Агентство</div>
+      <div class="plan-desc">Для SMM-агентств</div>
+      <div class="plan-price">25 000 ₽</div>
+      <div class="plan-price-period">в месяц</div>
+      <ul class="plan-features">
+        <li>300 концептов в месяц</li>
+        <li>До 10 компаний</li>
+        <li>Безлимит исследований</li>
+        <li>API-доступ</li>
+        <li>Белый лейбл</li>
+      </ul>
+      <button class="btn btn-ghost btn-block" onclick="upgradePlan('agency')">Выбрать Агентство</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.5rem">
+    <h3>💸 История платежей</h3>
+    <div id="payments-list" style="margin-top:1rem">
+      <div class="empty" style="padding:1rem">
+        <p>У вас пока не было оплат</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPORT -->
+<div class="page" id="page-support">
+  <div class="page-header">
+    <h1>💬 Поддержка</h1>
+    <p>Свяжитесь с командой — обычно отвечаем в течение часа в рабочее время</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>📧 Email</h3>
+      <p class="card-desc">Для подробных вопросов и предложений</p>
+      <a href="mailto:hello@vidoon.ru" class="btn btn-ghost">hello@vidoon.ru</a>
+    </div>
+
+    <div class="card">
+      <h3>💬 Telegram</h3>
+      <p class="card-desc">Для быстрых вопросов и уточнений</p>
+      <a href="#" class="btn btn-ghost">@vidoon_support</a>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.5rem">
+    <h3>❓ Частые вопросы</h3>
+    <div style="margin-top:1rem">
+      <div style="padding:1rem 0;border-bottom:1px solid var(--border)">
+        <b>Как быстро я получу первый контент-план?</b>
+        <p style="color:var(--text-light);font-size:14px;margin-top:6px">После заполнения анкеты — в течение 5-10 минут.</p>
+      </div>
+      <div style="padding:1rem 0;border-bottom:1px solid var(--border)">
+        <b>Можно ли отменить подписку?</b>
+        <p style="color:var(--text-light);font-size:14px;margin-top:6px">Да, в любой момент. Доступ сохранится до конца оплаченного периода.</p>
+      </div>
+      <div style="padding:1rem 0">
+        <b>Кто помогает делать сами видео?</b>
+        <p style="color:var(--text-light);font-size:14px;margin-top:6px">Vidoon готовит концепты и техзадания. Для производства видео вы можете нанять монтажёра или использовать инструменты по своему выбору.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- SUPABASE & APP LOGIC -->
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const SUPABASE_URL = 'https://hbucxewagevmzkvdghko.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CoP7LIQ1O5GN8YoCQJMKIg__MOnGoWe';
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+window.sb = sb;
+
+// === AUTH GUARD ===
+const { data: { session } } = await sb.auth.getSession();
+if (!session) {
+  window.location.href = 'login.html';
+  throw new Error('not authenticated');
+}
+
+window.userId = session.user.id;
+window.userEmail = session.user.email;
+
+// Load profile + company in parallel
+const [profileRes, companyRes] = await Promise.all([
+  sb.from('profiles').select('*').eq('id', session.user.id).single(),
+  sb.from('companies').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(1).maybeSingle()
+]);
+
+window.profile = profileRes.data || {};
+window.company = companyRes.data || {};
+
+renderUser();
+renderDashboard();
+fillBrandForm();
+
+// Hide loader
+document.getElementById('loader').style.display = 'none';
+
+function renderUser(){
+  const name = window.profile.name || window.userEmail?.split('@')[0] || 'Пользователь';
+  document.getElementById('user-name').textContent = name;
+  const planMap = { free:'🆓 Демо', start:'💎 Старт', business:'🚀 Бизнес', agency:'💼 Агентство' };
+  const plan = window.profile.plan || 'free';
+  document.getElementById('user-plan').textContent = planMap[plan] || planMap.free;
+  document.getElementById('stat-plan').textContent = planMap[plan]?.split(' ')[1] || 'Демо';
+  document.getElementById('current-plan-name').textContent = planMap[plan]?.split(' ')[1] || 'Демо';
+  
+  if(window.profile.plan_expires_at){
+    const exp = new Date(window.profile.plan_expires_at);
+    if(exp > new Date()){
+      document.getElementById('current-plan-expires').textContent = ' (до ' + exp.toLocaleDateString('ru-RU') + ')';
+    }
+  }
+}
+
+function renderDashboard(){
+  const limits = { free:{scen:3,name:'Демо'}, start:{scen:30,name:'Старт'}, business:{scen:100,name:'Бизнес'}, agency:{scen:300,name:'Агентство'} };
+  const plan = window.profile.plan || 'free';
+  const lim = limits[plan];
+  
+  document.getElementById('stat-scenarios').textContent = window.profile.usage_scenarios || 0;
+  document.getElementById('stat-scenarios-limit').textContent = `из ${lim.scen} на тарифе ${lim.name}`;
+  document.getElementById('stat-plans').textContent = window.profile.usage_plans || 0;
+  document.getElementById('stat-done').textContent = window.profile.scenarios_count || 0;
+  
+  // Status icons
+  const hasBrand = !!(window.company && window.company.name);
+  setStatusIcon('brand', hasBrand);
+  
+  // Update CTA button
+  const cta = document.getElementById('next-step-btn');
+  if(!hasBrand){
+    cta.textContent = 'Начать с анкеты бренда →';
+    cta.onclick = () => navTo('brand');
+  } else {
+    cta.textContent = 'Заказать исследование рынка →';
+    cta.onclick = () => navTo('research');
+  }
+}
+
+function setStatusIcon(key, done){
+  const icon = document.getElementById('status-icon-' + key);
+  if(!icon) return;
+  if(done){
+    icon.classList.add('done');
+    icon.textContent = '✓';
+  }
+}
+
+function fillBrandForm(){
+  if(!window.company) return;
+  const c = window.company;
+  const m = {b_name:c.name, b_slogan:c.slogan, b_niche:c.niche, b_desc:c.description, b_audience:c.audience, b_usp:c.usp, b_humor:c.humor, b_lang:c.audience_lang, b_visual:c.visual_style, b_trends:c.trends};
+  for(const k in m){
+    const el = document.getElementById(k.replace('_','-'));
+    if(el && m[k]) el.value = m[k];
+  }
+}
+
+// === NAVIGATION ===
+window.navTo = function(pageId){
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
+  document.querySelector('.sidebar').classList.remove('open');
+};
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => navTo(btn.dataset.page));
+});
+
+// === LOGOUT ===
+window.logout = async function(){
+  if(!confirm('Выйти из аккаунта?')) return;
+  await sb.auth.signOut();
+  window.location.href = 'login.html';
+};
+
+// === SAVE BRAND ===
+window.saveBrand = async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('save-brand-btn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  
+  const data = {
+    user_id: window.userId,
+    name: document.getElementById('b-name').value.trim(),
+    slogan: document.getElementById('b-slogan').value.trim(),
+    niche: document.getElementById('b-niche').value.trim(),
+    description: document.getElementById('b-desc').value.trim(),
+    audience: document.getElementById('b-audience').value.trim(),
+    usp: document.getElementById('b-usp').value.trim(),
+    humor: document.getElementById('b-humor').value,
+    audience_lang: document.getElementById('b-lang').value,
+    visual_style: document.getElementById('b-visual').value,
+    trends: document.getElementById('b-trends').value,
+    updated_at: new Date().toISOString()
+  };
+  
+  try {
+    let result;
+    if(window.company && window.company.id){
+      result = await sb.from('companies').update(data).eq('id', window.company.id).select().single();
+    } else {
+      result = await sb.from('companies').insert(data).select().single();
+    }
+    if(result.error) throw result.error;
+    
+    window.company = result.data;
+    toast('✅ Бренд сохранён!', 'ok');
+    renderDashboard();
+  } catch(err){
+    console.error(err);
+    toast('Ошибка: ' + err.message, 'err');
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+  return false;
+};
+
+// === REQUEST RESEARCH ===
+window.requestResearch = async function(){
+  if(!window.company || !window.company.name){
+    toast('Сначала заполните анкету бренда', 'err');
+    setTimeout(() => navTo('brand'), 800);
+    return;
+  }
+  
+  const btn = document.getElementById('request-research-btn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  
+  toast('🔍 Команда приступила к исследованию... Это займёт 5-10 минут.', 'ok');
+  
+  // TODO: вызов Edge Function generate-analysis (сделаем следующим шагом)
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    toast('⚠️ Функционал запускается — следующее обновление', 'err');
+  }, 2500);
+};
+
+window.requestStrategy = async function(){
+  toast('⚠️ Доступно после исследования рынка', 'err');
+};
+
+// === UPGRADE PLAN ===
+window.upgradePlan = function(plan){
+  const prices = { start:5000, business:12000, agency:25000 };
+  if(!confirm(`Перейти на тариф ${plan.toUpperCase()} за ${prices[plan]}₽ в месяц?\n\nОплата через ЮKassa подключим следующим шагом.`)) return;
+  toast('💳 Подключение к ЮKassa в разработке — будет готово завтра', 'ok');
+};
+
+// === TOAST ===
+function toast(msg, type){
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type || '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4500);
+}
+window.toast = toast;
+</script>
+
+</body>
+</html>

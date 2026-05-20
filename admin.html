@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>👑 Vidoon Admin</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f1a;--card:#1a1a2e;--card-2:#252539;--text:#e5e7eb;--text-light:#9ca3af;--border:#2d2d42;--primary:#7c6fff;--secondary:#ff6b9d;--accent:#fbbf24;--success:#10b981;--error:#ef4444;--warn:#f59e0b}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+.header{background:linear-gradient(135deg,#fbbf24,#f59e0b);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid rgba(0,0,0,.2);position:sticky;top:0;z-index:10}
+.header h1{font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px}
+.header-actions{display:flex;gap:10px;align-items:center}
+.btn-header{background:rgba(0,0,0,.2);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn-header:hover{background:rgba(0,0,0,.35)}
+.container{max-width:1400px;margin:0 auto;padding:2rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--secondary))}
+.stat-label{font-size:11px;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.stat-num{font-size:32px;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-sub{font-size:12px;color:var(--text-light);margin-top:4px}
+.stat-card.money::before{background:linear-gradient(90deg,#10b981,#34d399)}
+.stat-card.money .stat-num{background:linear-gradient(135deg,#10b981,#34d399);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.tabs{display:flex;gap:6px;margin-bottom:1.5rem;border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{padding:12px 20px;background:transparent;border:none;color:var(--text-light);font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;font-family:inherit;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.2rem;overflow:hidden}
+.card h3{font-size:15px;font-weight:700;margin-bottom:.4rem;color:var(--text)}
+.card-desc{color:var(--text-light);font-size:13px;margin-bottom:1rem}
+.table-wrap{overflow-x:auto;margin:0 -1.5rem;padding:0 1.5rem}
+table{width:100%;border-collapse:collapse;min-width:600px}
+table th{text-align:left;padding:12px 10px;font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);white-space:nowrap}
+table td{padding:14px 10px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+table tr:last-child td{border-bottom:none}
+table tr:hover td{background:rgba(124,111,255,.04)}
+.badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.badge.free{background:rgba(156,163,175,.2);color:#9ca3af}
+.badge.start{background:rgba(124,111,255,.2);color:#a78bfa}
+.badge.business{background:rgba(255,107,157,.2);color:#fb7185}
+.badge.agency{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1a1a2e}
+.badge.status-done{background:rgba(16,185,129,.2);color:#34d399}
+.badge.status-processing{background:rgba(124,111,255,.2);color:#a78bfa}
+.badge.status-failed{background:rgba(239,68,68,.2);color:#fca5a5}
+.badge.admin{background:rgba(251,191,36,.2);color:#fbbf24}
+.btn-sm{padding:6px 12px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
+.btn-sm:hover{transform:translateY(-1px)}
+.btn-sm.ghost{background:transparent;border:1px solid var(--border);color:var(--text-light)}
+.toolbar{display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.search-input{flex:1;min-width:200px;padding:10px 14px;background:var(--card-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit}
+.search-input:focus{outline:none;border-color:var(--primary)}
+.filter-select{padding:10px 14px;background:var(--card-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;cursor:pointer}
+.loading{text-align:center;padding:3rem;color:var(--text-light);font-size:14px}
+.spinner-mini{display:inline-block;width:20px;height:20px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:2rem;color:var(--text-light);font-size:13px}
+.cost-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.cost-row:last-child{border-bottom:none}
+.cost-row b{color:var(--success)}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--bg);padding:14px 20px;border-radius:12px;font-size:13px;box-shadow:0 12px 30px rgba(0,0,0,.4);z-index:1000;animation:slideUp .25s;max-width:380px;font-weight:600}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.toast.err{background:var(--error);color:#fff}
+.toast.ok{background:var(--success);color:#fff}
+@media(max-width:768px){.container{padding:1rem}.header{padding:1rem;flex-direction:column;align-items:flex-start;gap:10px}}
+.user-cell{display:flex;align-items:center;gap:10px}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.user-email{font-weight:600;color:var(--text);font-size:13px}
+.user-name{font-size:11px;color:var(--text-light)}
+.text-mono{font-family:monospace;font-size:12px;color:var(--text-light)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>👑 Vidoon Admin Panel</h1>
+  <div class="header-actions">
+    <span style="color:#fff;font-size:12px;font-weight:600" id="admin-email">—</span>
+    <a href="app.html" class="btn-header">← В кабинет</a>
+    <button class="btn-header" onclick="logout()">Выход</button>
+  </div>
+</div>
+
+<div class="container">
+
+<div id="auth-check" class="loading">
+  <span class="spinner-mini"></span>Проверка прав доступа...
+</div>
+
+<div id="admin-content" style="display:none">
+
+<div class="stats-grid">
+  <div class="stat-card money"><div class="stat-label">💰 Доход (общий)</div><div class="stat-num" id="s-revenue">—</div><div class="stat-sub">всё время</div></div>
+  <div class="stat-card money"><div class="stat-label">💵 Доход (месяц)</div><div class="stat-num" id="s-revenue-month">—</div><div class="stat-sub" id="s-revenue-month-sub">за 30 дней</div></div>
+  <div class="stat-card"><div class="stat-label">👥 Клиентов</div><div class="stat-num" id="s-users">—</div><div class="stat-sub" id="s-users-sub">зарегистрировано</div></div>
+  <div class="stat-card"><div class="stat-label">⚡ Активных подписок</div><div class="stat-num" id="s-active">—</div><div class="stat-sub">платных тарифов</div></div>
+  <div class="stat-card"><div class="stat-label">🎬 Концептов</div><div class="stat-num" id="s-scenarios">—</div><div class="stat-sub">за всё время</div></div>
+  <div class="stat-card"><div class="stat-label">📹 Видео</div><div class="stat-num" id="s-videos">—</div><div class="stat-sub" id="s-videos-sub">сгенерировано</div></div>
+  <div class="stat-card money"><div class="stat-label">📈 Маржа на видео</div><div class="stat-num" id="s-margin">—</div><div class="stat-sub" id="s-margin-sub">себест. / выручка</div></div>
+  <div class="stat-card"><div class="stat-label">🆕 Регистраций (нед.)</div><div class="stat-num" id="s-new">—</div><div class="stat-sub">за 7 дней</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="users">👥 Клиенты</button>
+  <button class="tab" data-tab="payments">💳 Платежи</button>
+  <button class="tab" data-tab="videos">📹 Видео</button>
+  <button class="tab" data-tab="costs">💸 Затраты</button>
+  <button class="tab" data-tab="content">📊 Контент</button>
+</div>
+
+<div class="tab-content active" id="tab-users">
+  <div class="card">
+    <h3>👥 Все клиенты</h3>
+    <p class="card-desc">Список всех зарегистрированных пользователей</p>
+    <div class="toolbar">
+      <input type="text" class="search-input" id="users-search" placeholder="🔍 Поиск по email или имени">
+      <select class="filter-select" id="users-plan-filter">
+        <option value="">Все тарифы</option>
+        <option value="free">Демо</option>
+        <option value="start">Старт</option>
+        <option value="business">Бизнес</option>
+        <option value="agency">Агентство</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Email / Имя</th><th>Тариф</th><th>Концепты</th><th>Видео</th><th>Зарегистрирован</th><th>Действия</th></tr></thead>
+        <tbody id="users-tbody"><tr><td colspan="6" class="empty">Загрузка...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-payments">
+  <div class="card">
+    <h3>💳 История платежей</h3>
+    <p class="card-desc">Все оплаты тарифов и видео</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Дата</th><th>Клиент</th><th>Описание</th><th>Сумма</th><th>Статус</th></tr></thead>
+        <tbody id="payments-tbody"><tr><td colspan="5" class="empty">Загрузка...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-videos">
+  <div class="card">
+    <h3>📹 Все сгенерированные видео</h3>
+    <p class="card-desc">История генерации — статусы, себестоимость, ошибки</p>
+    <div class="toolbar">
+      <select class="filter-select" id="videos-status-filter">
+        <option value="">Все статусы</option>
+        <option value="done">Готовые</option>
+        <option value="processing">В процессе</option>
+        <option value="failed">Ошибки</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Дата</th><th>Клиент</th><th>Параметры</th><th>Себест.</th><th>Статус</th><th>Действия</th></tr></thead>
+        <tbody id="videos-tbody"><tr><td colspan="6" class="empty">Загрузка...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-costs">
+  <div class="card">
+    <h3>💸 Затраты на сервисы</h3>
+    <p class="card-desc">Расходы на Claude API и WaveSpeedAI</p>
+    <div class="cost-row"><span>🤖 Claude API (Haiku 4.5)</span><b id="cost-claude">—</b></div>
+    <div class="cost-row"><span>🎬 WaveSpeedAI (видео)</span><b id="cost-wavespeed">—</b></div>
+    <div class="cost-row" style="border-top:2px solid var(--border);padding-top:1rem;margin-top:.5rem"><span style="font-weight:700">💰 Общие затраты</span><b style="font-size:18px" id="cost-total">—</b></div>
+    <div class="cost-row"><span style="color:var(--success);font-weight:700">📈 Выручка</span><b style="font-size:18px;color:var(--success)" id="rev-total">—</b></div>
+    <div class="cost-row" style="background:rgba(16,185,129,.08);padding:1rem;border-radius:8px;margin-top:.5rem"><span style="font-weight:700">🎯 Чистая прибыль</span><b style="font-size:20px;color:var(--success)" id="profit-total">—</b></div>
+  </div>
+  
+  <div class="card">
+    <h3>📊 Использование Claude API</h3>
+    <p class="card-desc">Последние операции с токенами</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Дата</th><th>Клиент</th><th>Операция</th><th>Tokens In</th><th>Tokens Out</th><th>~Cost USD</th></tr></thead>
+        <tbody id="usage-tbody"><tr><td colspan="6" class="empty">Загрузка...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" id="tab-content">
+  <div class="card">
+    <h3>📊 Контент по типам</h3>
+    <p class="card-desc">Статистика по типам сгенерированного контента</p>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">🏢 Брендов</div><div class="stat-num" id="c-companies">—</div></div>
+      <div class="stat-card"><div class="stat-label">📊 Исследований</div><div class="stat-num" id="c-analyses">—</div></div>
+      <div class="stat-card"><div class="stat-label">📅 Стратегий</div><div class="stat-num" id="c-plans">—</div></div>
+      <div class="stat-card"><div class="stat-label">🎬 Концептов</div><div class="stat-num" id="c-productions">—</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const SUPABASE_URL = 'https://hbucxewagevmzkvdghko.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CoP7LIQ1O5GN8YoCQJMKIg__MOnGoWe';
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const { data: { session } } = await sb.auth.getSession();
+if (!session) { window.location.href = 'login.html'; throw new Error('not auth'); }
+
+const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+if (!profile?.is_admin) {
+  alert('❌ У вас нет прав доступа к админ-панели');
+  window.location.href = 'app.html';
+  throw new Error('not admin');
+}
+
+document.getElementById('admin-email').textContent = session.user.email;
+document.getElementById('auth-check').style.display = 'none';
+document.getElementById('admin-content').style.display = 'block';
+
+async function loadAll(){
+  await Promise.all([loadStats(), loadUsers(), loadPayments(), loadVideos(), loadCosts(), loadContent()]);
+}
+
+async function loadStats(){
+  try {
+    const { data: payments } = await sb.from('payments').select('*').eq('status', 'succeeded');
+    const totalRev = (payments||[]).reduce((s,p)=>s+(p.amount_rub||0),0);
+    document.getElementById('s-revenue').textContent = formatMoney(totalRev);
+    
+    const monthAgo = new Date(Date.now() - 30*24*60*60*1000).toISOString();
+    const monthP = (payments||[]).filter(p=>p.created_at>monthAgo);
+    document.getElementById('s-revenue-month').textContent = formatMoney(monthP.reduce((s,p)=>s+(p.amount_rub||0),0));
+    document.getElementById('s-revenue-month-sub').textContent = monthP.length + ' оплат';
+    
+    const { count: uc } = await sb.from('profiles').select('*',{count:'exact',head:true});
+    document.getElementById('s-users').textContent = uc || 0;
+    
+    const weekAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString();
+    const { count: nw } = await sb.from('profiles').select('*',{count:'exact',head:true}).gt('created_at',weekAgo);
+    document.getElementById('s-new').textContent = nw || 0;
+    
+    const { count: ac } = await sb.from('profiles').select('*',{count:'exact',head:true}).neq('plan','free');
+    document.getElementById('s-active').textContent = ac || 0;
+    document.getElementById('s-users-sub').textContent = `${ac||0} платных`;
+    
+    const { count: sc } = await sb.from('productions').select('*',{count:'exact',head:true});
+    document.getElementById('s-scenarios').textContent = sc || 0;
+    
+    const { data: videos } = await sb.from('video_generations').select('status, cost_usd');
+    const tv = videos?.length || 0;
+    const dv = (videos||[]).filter(v=>v.status==='done').length;
+    document.getElementById('s-videos').textContent = tv;
+    document.getElementById('s-videos-sub').textContent = `${dv} готовых`;
+    
+    const totalCostUsd = (videos||[]).reduce((s,v)=>s+(parseFloat(v.cost_usd)||0),0);
+    const totalCostRub = totalCostUsd * 95;
+    const margin = totalRev > 0 ? Math.round((1 - totalCostRub/totalRev) * 100) : 0;
+    document.getElementById('s-margin').textContent = margin + '%';
+    document.getElementById('s-margin-sub').textContent = `${formatMoney(totalCostRub)} / ${formatMoney(totalRev)}`;
+  } catch(err){ console.error('Stats:',err); }
+}
+
+async function loadUsers(){
+  try {
+    const { data: users } = await sb.from('profiles').select('*').order('created_at',{ascending:false});
+    window.allUsers = users || [];
+    renderUsers(window.allUsers);
+    document.getElementById('users-search').addEventListener('input',e=>filterUsers(e.target.value,document.getElementById('users-plan-filter').value));
+    document.getElementById('users-plan-filter').addEventListener('change',e=>filterUsers(document.getElementById('users-search').value,e.target.value));
+  } catch(err){
+    console.error('Users:',err);
+    document.getElementById('users-tbody').innerHTML='<tr><td colspan="6" class="empty">Ошибка загрузки</td></tr>';
+  }
+}
+
+function filterUsers(search, planFilter){
+  let f = window.allUsers || [];
+  if(search){ const s=search.toLowerCase(); f=f.filter(u=>u.email?.toLowerCase().includes(s)||u.name?.toLowerCase().includes(s)); }
+  if(planFilter) f = f.filter(u=>u.plan===planFilter);
+  renderUsers(f);
+}
+
+function renderUsers(users){
+  const tbody = document.getElementById('users-tbody');
+  if(!users.length){ tbody.innerHTML='<tr><td colspan="6" class="empty">Нет клиентов по фильтру</td></tr>'; return; }
+  const planMap = {free:'Демо',start:'Старт',business:'Бизнес',agency:'Агентство'};
+  tbody.innerHTML = users.map(u=>{
+    const init = (u.email||'?')[0].toUpperCase();
+    const date = u.created_at ? new Date(u.created_at).toLocaleDateString('ru-RU') : '—';
+    return `
+      <tr>
+        <td>
+          <div class="user-cell">
+            <div class="user-avatar">${init}</div>
+            <div>
+              <div class="user-email">${esc(u.email||'—')}${u.is_admin?' <span class="badge admin">ADMIN</span>':''}</div>
+              <div class="user-name">${esc(u.name||'Без имени')}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge ${u.plan||'free'}">${planMap[u.plan]||'Демо'}</span></td>
+        <td><b>${u.usage_scenarios||0}</b></td>
+        <td><b>${u.usage_videos||0}</b></td>
+        <td class="text-mono">${date}</td>
+        <td><button class="btn-sm" onclick="changePlan('${u.id}','${esc(u.email)}','${u.plan||'free'}')">План</button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function loadPayments(){
+  try {
+    const { data: p } = await sb.from('payments').select('*, profiles(email)').order('created_at',{ascending:false}).limit(100);
+    const tbody = document.getElementById('payments-tbody');
+    if(!p?.length){ tbody.innerHTML='<tr><td colspan="5" class="empty">Платежей ещё не было</td></tr>'; return; }
+    tbody.innerHTML = p.map(x=>`
+      <tr>
+        <td class="text-mono">${new Date(x.created_at).toLocaleString('ru-RU')}</td>
+        <td><div class="user-email">${esc(x.profiles?.email||'—')}</div></td>
+        <td>${esc(x.description||x.plan||'Оплата')}</td>
+        <td><b>${formatMoney(x.amount_rub)}</b></td>
+        <td><span class="badge status-${x.status==='succeeded'?'done':'failed'}">${x.status||'—'}</span></td>
+      </tr>
+    `).join('');
+  } catch(err){ console.error('Payments:',err); document.getElementById('payments-tbody').innerHTML='<tr><td colspan="5" class="empty">Ошибка</td></tr>'; }
+}
+
+async function loadVideos(){
+  try {
+    const { data: videos } = await sb.from('video_generations').select('*, profiles(email)').order('created_at',{ascending:false}).limit(100);
+    window.allVideos = videos || [];
+    renderVideos(window.allVideos);
+    document.getElementById('videos-status-filter').addEventListener('change',e=>{
+      if(!e.target.value) renderVideos(window.allVideos);
+      else renderVideos(window.allVideos.filter(v=>v.status===e.target.value));
+    });
+  } catch(err){ console.error('Videos:',err); document.getElementById('videos-tbody').innerHTML='<tr><td colspan="6" class="empty">Ошибка</td></tr>'; }
+}
+
+function renderVideos(videos){
+  const tbody = document.getElementById('videos-tbody');
+  if(!videos.length){ tbody.innerHTML='<tr><td colspan="6" class="empty">Видео ещё не генерировались</td></tr>'; return; }
+  tbody.innerHTML = videos.map(v=>`
+    <tr>
+      <td class="text-mono">${new Date(v.created_at).toLocaleString('ru-RU')}</td>
+      <td><div class="user-email">${esc(v.profiles?.email||'—')}</div></td>
+      <td>${v.resolution} · ${v.duration_seconds}с · сцена ${v.scene_num||'—'}</td>
+      <td><b>$${parseFloat(v.cost_usd||0).toFixed(2)}</b></td>
+      <td><span class="badge status-${v.status}">${v.status}</span></td>
+      <td>${v.video_url?`<a href="${v.video_url}" target="_blank" class="btn-sm ghost">▶ Открыть</a>`:'—'}</td>
+    </tr>
+  `).join('');
+}
+
+async function loadCosts(){
+  try {
+    const { data: usage } = await sb.from('usage_logs').select('*, profiles(email)').order('created_at',{ascending:false}).limit(50);
+    const tIn = (usage||[]).reduce((s,u)=>s+(u.tokens_in||0),0);
+    const tOut = (usage||[]).reduce((s,u)=>s+(u.tokens_out||0),0);
+    const claudeUsd = (tIn*1.0 + tOut*5.0)/1_000_000;
+    const claudeRub = claudeUsd*95;
+    document.getElementById('cost-claude').textContent = formatMoney(claudeRub)+` ($${claudeUsd.toFixed(2)})`;
+    
+    const { data: videos } = await sb.from('video_generations').select('cost_usd');
+    const wsUsd = (videos||[]).reduce((s,v)=>s+(parseFloat(v.cost_usd)||0),0);
+    const wsRub = wsUsd*95;
+    document.getElementById('cost-wavespeed').textContent = formatMoney(wsRub)+` ($${wsUsd.toFixed(2)})`;
+    
+    const totalCost = claudeRub + wsRub;
+    document.getElementById('cost-total').textContent = formatMoney(totalCost);
+    
+    const { data: payments } = await sb.from('payments').select('amount_rub').eq('status','succeeded');
+    const totalRev = (payments||[]).reduce((s,p)=>s+(p.amount_rub||0),0);
+    document.getElementById('rev-total').textContent = formatMoney(totalRev);
+    document.getElementById('profit-total').textContent = formatMoney(totalRev - totalCost);
+    
+    const tbody = document.getElementById('usage-tbody');
+    if(!usage?.length){ tbody.innerHTML='<tr><td colspan="6" class="empty">Использования не было</td></tr>'; return; }
+    tbody.innerHTML = usage.map(u=>{
+      const cost = ((u.tokens_in||0)*1.0 + (u.tokens_out||0)*5.0)/1_000_000;
+      return `
+        <tr>
+          <td class="text-mono">${new Date(u.created_at).toLocaleString('ru-RU')}</td>
+          <td><div class="user-email">${esc(u.profiles?.email||'—')}</div></td>
+          <td>${esc(u.operation||'—')}</td>
+          <td class="text-mono">${(u.tokens_in||0).toLocaleString()}</td>
+          <td class="text-mono">${(u.tokens_out||0).toLocaleString()}</td>
+          <td><b>$${cost.toFixed(4)}</b></td>
+        </tr>
+      `;
+    }).join('');
+  } catch(err){ console.error('Costs:',err); }
+}
+
+async function loadContent(){
+  try {
+    const [c1,c2,c3,c4] = await Promise.all([
+      sb.from('companies').select('*',{count:'exact',head:true}),
+      sb.from('analyses').select('*',{count:'exact',head:true}),
+      sb.from('plans').select('*',{count:'exact',head:true}),
+      sb.from('productions').select('*',{count:'exact',head:true})
+    ]);
+    document.getElementById('c-companies').textContent = c1.count || 0;
+    document.getElementById('c-analyses').textContent = c2.count || 0;
+    document.getElementById('c-plans').textContent = c3.count || 0;
+    document.getElementById('c-productions').textContent = c4.count || 0;
+  } catch(err){ console.error('Content:',err); }
+}
+
+window.changePlan = async function(userId, email, currentPlan){
+  const planMap = {free:'Демо',start:'Старт',business:'Бизнес',agency:'Агентство'};
+  const newPlan = prompt(`Изменить план для ${email}\nТекущий: ${currentPlan}\n\nВведите: free / start / business / agency`,currentPlan);
+  if(!newPlan || newPlan===currentPlan) return;
+  if(!planMap[newPlan]){ alert('Неверный тариф'); return; }
+  try {
+    const data = { plan: newPlan, updated_at: new Date().toISOString() };
+    if(newPlan!=='free') data.plan_expires_at = new Date(Date.now()+30*24*60*60*1000).toISOString();
+    else data.plan_expires_at = null;
+    const { error } = await sb.from('profiles').update(data).eq('id',userId);
+    if(error) throw error;
+    toast(`✅ План изменён на ${planMap[newPlan]}`,'ok');
+    await loadUsers(); await loadStats();
+  } catch(err){ toast('❌ '+err.message,'err'); }
+};
+
+window.logout = async function(){
+  if(!confirm('Выйти?')) return;
+  await sb.auth.signOut();
+  window.location.href='login.html';
+};
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+function formatMoney(a){ if(!a&&a!==0) return '—'; return Math.round(a).toLocaleString('ru-RU')+' ₽'; }
+function esc(s){ if(s===undefined||s===null) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+function toast(m,t){ document.querySelectorAll('.toast').forEach(x=>x.remove()); const e=document.createElement('div'); e.className='toast '+(t||''); e.textContent=m; document.body.appendChild(e); setTimeout(()=>e.remove(),4500); }
+window.toast = toast;
+
+loadAll();
+setInterval(loadStats, 60000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Вход в Vidoon</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f9fc;
+  --card:#ffffff;
+  --text:#1a1a2e;
+  --text-light:#6b7280;
+  --border:#e5e7eb;
+  --primary:#7c6fff;
+  --primary-dark:#6356e5;
+  --secondary:#ff6b9d;
+  --success:#10b981;
+  --error:#ef4444;
+  --shadow:0 4px 30px rgba(124,111,255,.1);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem 1rem;
+  -webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(circle at 20% 30%, rgba(124,111,255,.06), transparent 50%),
+                   radial-gradient(circle at 80% 70%, rgba(255,107,157,.06), transparent 50%);
+}
+.auth-wrap{
+  width:100%;max-width:440px;
+}
+.auth-logo{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-weight:800;font-size:24px;letter-spacing:-.02em;
+  margin-bottom:2rem;text-decoration:none;color:var(--text);
+}
+.auth-logo-icon{
+  width:42px;height:42px;border-radius:11px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:#fff;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:2.5rem;
+  box-shadow:var(--shadow);
+}
+.tabs{
+  display:flex;background:var(--bg);
+  border-radius:10px;padding:4px;
+  margin-bottom:2rem;
+}
+.tab{
+  flex:1;padding:10px;
+  background:transparent;border:none;
+  font-size:14px;font-weight:600;color:var(--text-light);
+  cursor:pointer;border-radius:8px;
+  transition:all .2s;font-family:inherit;
+}
+.tab.active{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h1{font-size:24px;font-weight:800;margin-bottom:.4rem;letter-spacing:-.01em}
+.subtitle{color:var(--text-light);font-size:14px;margin-bottom:1.5rem}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.field input{
+  width:100%;padding:12px 14px;
+  background:var(--bg);border:1.5px solid var(--border);
+  border-radius:10px;font-size:14px;color:var(--text);
+  font-family:inherit;transition:all .2s;
+}
+.field input:focus{outline:none;border-color:var(--primary);background:var(--card);box-shadow:0 0 0 3px rgba(124,111,255,.1)}
+.field-row{display:flex;gap:10px;align-items:center;font-size:13px;margin-bottom:1.5rem;color:var(--text-light)}
+.field-row label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.field-row a{color:var(--primary);text-decoration:none;margin-left:auto}
+.field-row a:hover{text-decoration:underline}
+.btn{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  color:#fff;border:none;border-radius:10px;
+  font-size:15px;font-weight:700;cursor:pointer;
+  transition:all .2s;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 20px rgba(124,111,255,.3)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.loading::after{content:'';width:16px;height:16px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider{display:flex;align-items:center;gap:10px;margin:1.5rem 0;color:var(--text-light);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.consent{
+  font-size:12px;color:var(--text-light);
+  display:flex;align-items:flex-start;gap:8px;margin-top:1rem;
+  cursor:pointer;line-height:1.5;
+}
+.consent input{margin-top:2px;flex-shrink:0;cursor:pointer}
+.consent a{color:var(--primary);text-decoration:none}
+.consent a:hover{text-decoration:underline}
+.alert{
+  padding:12px 14px;border-radius:10px;
+  font-size:13px;margin-bottom:1rem;
+  display:none;align-items:flex-start;gap:8px;
+}
+.alert.error{background:rgba(239,68,68,.08);color:var(--error);border:1px solid rgba(239,68,68,.2)}
+.alert.success{background:rgba(16,185,129,.08);color:var(--success);border:1px solid rgba(16,185,129,.2)}
+.alert.show{display:flex}
+.footer-link{
+  text-align:center;margin-top:2rem;font-size:13px;color:var(--text-light);
+}
+.footer-link a{color:var(--primary);text-decoration:none;font-weight:600}
+.footer-link a:hover{text-decoration:underline}
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;
+  color:var(--text-light);text-decoration:none;font-size:13px;
+  margin-bottom:1rem;
+}
+.back-link:hover{color:var(--primary)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="auth-wrap">
+  <a href="index.html" class="back-link">← Назад к Vidoon</a>
+  
+  <a href="index.html" class="auth-logo">
+    <div class="auth-logo-icon">🎬</div>
+    Vidoon
+  </a>
+
+  <div class="card">
+    
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" id="tab-login" onclick="switchTab('login')">Войти</button>
+      <button class="tab" id="tab-signup" onclick="switchTab('signup')">Регистрация</button>
+    </div>
+
+    <!-- ALERT -->
+    <div class="alert" id="alert"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <h1>С возвращением 👋</h1>
+      <div class="subtitle">Войдите чтобы продолжить работу</div>
+      
+      <form onsubmit="return handleLogin(event)">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="vasya@example.com" required autocomplete="email">
+        </div>
+        
+        <div class="field">
+          <label>Пароль</label>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        
+        <div class="field-row">
+          <label><input type="checkbox" id="remember"> Запомнить меня</label>
+          <a href="#" onclick="resetPassword(event)">Забыли пароль?</a>
+        </div>
+        
+        <button type="submit" class="btn" id="login-btn">Войти →</button>
+      </form>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signup-form" class="hidden">
+      <h1>Создать аккаунт ✨</h1>
+      <div class="subtitle">Начните бесплатно — 3 концепта в подарок</div>
+      
+      <form onsubmit="return handleSignup(event)">
+        <div class="field">
+          <label>Ваше имя</label>
+          <input type="text" id="signup-name" placeholder="Иван Петров" required autocomplete="name">
+        </div>
+        
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="signup-email" placeholder="vasya@example.com" required autocomplete="email">
+        </div>
+        
+        <div class="field">
+          <label>Пароль</label>
+          <input type="password" id="signup-password" placeholder="Минимум 6 символов" minlength="6" required autocomplete="new-password">
+        </div>
+        
+        <label class="consent">
+          <input type="checkbox" id="signup-consent" required>
+          <span>Я согласен с <a href="terms.html" target="_blank">условиями использования</a>, <a href="privacy.html" target="_blank">политикой конфиденциальности</a> и <a href="offer.html" target="_blank">публичной офертой</a>.</span>
+        </label>
+        
+        <button type="submit" class="btn" id="signup-btn" style="margin-top:1.5rem">Создать аккаунт 🚀</button>
+      </form>
+    </div>
+
+    <div class="footer-link" id="footer-login">
+      Ещё нет аккаунта? <a href="#" onclick="switchTab('signup');return false">Зарегистрируйтесь</a>
+    </div>
+    
+    <div class="footer-link hidden" id="footer-signup">
+      Уже есть аккаунт? <a href="#" onclick="switchTab('login');return false">Войти</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Supabase JS SDK -->
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+// === CONFIG ===
+const SUPABASE_URL = 'https://hbucxewagevmzkvdghko.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CoP7LIQ1O5GN8YoCQJMKIg__MOnGoWe';
+
+window.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Check if already logged in
+const { data: { session } } = await window.supabase.auth.getSession();
+if (session) {
+  window.location.href = 'app.html';
+}
+
+// Auto-open signup if URL contains ?mode=signup
+const params = new URLSearchParams(window.location.search);
+if (params.get('mode') === 'signup') {
+  window.switchTab('signup');
+}
+</script>
+
+<script>
+function switchTab(tab){
+  const isLogin = tab === 'login';
+  document.getElementById('tab-login').classList.toggle('active', isLogin);
+  document.getElementById('tab-signup').classList.toggle('active', !isLogin);
+  document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+  document.getElementById('signup-form').classList.toggle('hidden', isLogin);
+  document.getElementById('footer-login').classList.toggle('hidden', !isLogin);
+  document.getElementById('footer-signup').classList.toggle('hidden', isLogin);
+  hideAlert();
+}
+
+function showAlert(message, type){
+  const a = document.getElementById('alert');
+  a.textContent = message;
+  a.className = 'alert show ' + type;
+}
+
+function hideAlert(){
+  document.getElementById('alert').className = 'alert';
+}
+
+async function handleLogin(e){
+  e.preventDefault();
+  hideAlert();
+  
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = 'Входим... ';
+  
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  
+  try {
+    const { data, error } = await window.supabase.auth.signInWithPassword({
+      email, password
+    });
+    
+    if (error) throw error;
+    
+    showAlert('✅ Успешный вход! Перенаправляем...', 'success');
+    setTimeout(() => {
+      window.location.href = 'app.html';
+    }, 800);
+    
+  } catch(err) {
+    let msg = err.message;
+    if (msg.includes('Invalid login credentials')) msg = '❌ Неверный email или пароль';
+    if (msg.includes('Email not confirmed')) msg = '⚠️ Подтвердите email — мы отправили вам письмо';
+    showAlert(msg, 'error');
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = 'Войти →';
+  }
+  return false;
+}
+
+async function handleSignup(e){
+  e.preventDefault();
+  hideAlert();
+  
+  const btn = document.getElementById('signup-btn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = 'Создаём аккаунт... ';
+  
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const consent = document.getElementById('signup-consent').checked;
+  
+  if (!consent) {
+    showAlert('Необходимо согласие с условиями', 'error');
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = 'Создать аккаунт 🚀';
+    return false;
+  }
+  
+  try {
+    const { data, error } = await window.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name }
+      }
+    });
+    
+    if (error) throw error;
+    
+    // Try to update profile name
+    if (data.user) {
+      await window.supabase
+        .from('profiles')
+        .update({ name })
+        .eq('id', data.user.id);
+    }
+    
+    if (data.session) {
+      // Already logged in
+      showAlert('🎉 Добро пожаловать в Vidoon!', 'success');
+      setTimeout(() => {
+        window.location.href = 'app.html';
+      }, 1000);
+    } else {
+      // Email confirmation needed
+      showAlert('📧 Проверьте email — мы отправили письмо для подтверждения', 'success');
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      btn.textContent = 'Создать аккаунт 🚀';
+    }
+    
+  } catch(err) {
+    let msg = err.message;
+    if (msg.includes('already registered')) msg = '⚠️ Этот email уже зарегистрирован. Войдите.';
+    if (msg.includes('Password should be')) msg = '⚠️ Пароль должен быть минимум 6 символов';
+    showAlert(msg, 'error');
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = 'Создать аккаунт 🚀';
+  }
+  return false;
+}
+
+async function resetPassword(e){
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  
+  if (!email) {
+    showAlert('Введите email сначала', 'error');
+    return;
+  }
+  
+  try {
+    const { error } = await window.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/login.html'
+    });
+    if (error) throw error;
+    showAlert('📧 Письмо для сброса пароля отправлено на ' + email, 'success');
+  } catch(err) {
+    showAlert(err.message, 'error');
+  }
+}
+
+window.switchTab = switchTab;
+window.handleLogin = handleLogin;
+window.handleSignup = handleSignup;
+window.resetPassword = resetPassword;
+</script>
+
+</body>
+</html>

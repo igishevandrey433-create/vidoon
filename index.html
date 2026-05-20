@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Vidoon — контент-агентство нового поколения. 30 готовых концептов видео для соцсетей вашего бизнеса. От 5000₽ в месяц.">
+<title>Vidoon — Контент-агентство для вашего бизнеса</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f9fc;
+  --card:#ffffff;
+  --text:#1a1a2e;
+  --text-light:#6b7280;
+  --border:#e5e7eb;
+  --primary:#7c6fff;
+  --primary-dark:#6356e5;
+  --secondary:#ff6b9d;
+  --accent:#fbbf24;
+  --success:#10b981;
+  --shadow:0 4px 20px rgba(124,111,255,.08);
+  --shadow-hover:0 8px 30px rgba(124,111,255,.15);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+
+/* HEADER */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(248,249,252,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 0}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:22px;color:var(--text);text-decoration:none;letter-spacing:-.02em}
+.logo-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#fff;
+}
+.nav-links{display:flex;gap:2rem;align-items:center}
+.nav-links a{color:var(--text-light);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--primary)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px 22px;
+  background:var(--primary);color:#fff;
+  border:none;border-radius:10px;
+  font-size:14px;font-weight:600;cursor:pointer;
+  transition:all .2s;text-decoration:none;font-family:inherit;
+}
+.btn:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,111,255,.3)}
+.btn-lg{padding:14px 32px;font-size:16px;font-weight:700}
+.btn-ghost{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--card);border-color:var(--primary);color:var(--primary)}
+.btn-gradient{background:linear-gradient(135deg,var(--primary),var(--secondary))}
+
+/* HERO */
+.hero{padding:5rem 0 4rem;text-align:center}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(124,111,255,.08);
+  color:var(--primary);
+  padding:6px 14px;border-radius:99px;
+  font-size:13px;font-weight:600;
+  margin-bottom:1.5rem;
+}
+.hero h1{
+  font-size:clamp(32px,5vw,56px);
+  font-weight:800;
+  letter-spacing:-.03em;
+  line-height:1.1;
+  margin-bottom:1.2rem;
+  background:linear-gradient(135deg,var(--text) 30%,var(--primary));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero p{
+  font-size:clamp(16px,2vw,20px);
+  color:var(--text-light);
+  max-width:680px;
+  margin:0 auto 2.5rem;
+  line-height:1.6;
+}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* TRUST BADGES */
+.trust{margin-top:3rem;display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;color:var(--text-light);font-size:13px}
+.trust-item{display:flex;align-items:center;gap:6px}
+.trust-item span{color:var(--success);font-weight:700}
+
+/* FEATURES */
+.section{padding:5rem 0}
+.section-title{text-align:center;margin-bottom:3rem}
+.section-title h2{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-.02em;margin-bottom:.7rem}
+.section-title p{color:var(--text-light);font-size:17px;max-width:600px;margin:0 auto}
+
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+.feature{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:2rem;
+  transition:all .3s;
+}
+.feature:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:var(--primary)}
+.feature-icon{
+  width:52px;height:52px;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:1.2rem;color:#fff;
+}
+.feature h3{font-size:18px;font-weight:700;margin-bottom:.5rem}
+.feature p{color:var(--text-light);font-size:14px;line-height:1.6}
+
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:2rem}
+.step{
+  background:var(--card);
+  border-radius:16px;
+  padding:1.8rem;
+  position:relative;
+  border:1px solid var(--border);
+}
+.step-num{
+  position:absolute;top:-15px;left:1.8rem;
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:15px;
+}
+.step h3{margin-top:.7rem;font-size:16px;font-weight:700;margin-bottom:.5rem}
+.step p{color:var(--text-light);font-size:13.5px;line-height:1.6}
+
+/* PRICING */
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:2rem}
+.plan{
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:20px;
+  padding:2rem;
+  display:flex;flex-direction:column;
+  position:relative;
+  transition:all .3s;
+}
+.plan:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.plan.featured{
+  border-color:var(--primary);
+  background:linear-gradient(135deg,rgba(124,111,255,.04),rgba(255,107,157,.02));
+}
+.plan-badge{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;
+  padding:5px 14px;border-radius:99px;text-transform:uppercase;
+}
+.plan h3{font-size:20px;font-weight:800;margin-bottom:.3rem}
+.plan-desc{color:var(--text-light);font-size:13px;margin-bottom:1.2rem}
+.plan-price{margin-bottom:1.5rem}
+.plan-price .num{font-size:42px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.plan-price .currency{font-size:24px;color:var(--text-light)}
+.plan-price .period{color:var(--text-light);font-size:14px}
+.plan-features{list-style:none;flex:1;margin-bottom:1.5rem}
+.plan-features li{padding:8px 0;font-size:13.5px;color:var(--text);display:flex;align-items:flex-start;gap:8px}
+.plan-features li::before{content:'✓';color:var(--success);font-weight:700;flex-shrink:0}
+
+/* CTA */
+.cta-section{
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  border-radius:24px;
+  padding:4rem 2rem;
+  text-align:center;
+  color:#fff;
+  margin:4rem 0;
+}
+.cta-section h2{font-size:clamp(28px,4vw,40px);font-weight:800;margin-bottom:1rem;color:#fff}
+.cta-section p{font-size:17px;opacity:.9;max-width:540px;margin:0 auto 2rem}
+.cta-section .btn{background:#fff;color:var(--primary)}
+.cta-section .btn:hover{background:var(--bg)}
+
+/* FAQ */
+.faq{max-width:780px;margin:0 auto}
+.faq-item{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-bottom:8px;
+  overflow:hidden;
+}
+.faq-q{
+  padding:1.2rem 1.5rem;
+  cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  font-weight:600;font-size:15px;
+  user-select:none;
+}
+.faq-q::after{content:'+';font-size:24px;color:var(--primary);font-weight:300;transition:transform .2s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{padding:0 1.5rem;max-height:0;overflow:hidden;color:var(--text-light);font-size:14px;line-height:1.7;transition:all .3s}
+.faq-item.open .faq-a{padding:0 1.5rem 1.2rem;max-height:300px}
+
+/* FOOTER */
+footer{
+  background:var(--text);color:#fff;padding:3rem 0 1.5rem;margin-top:4rem;
+}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:2rem;margin-bottom:2rem}
+.footer-grid h4{font-size:14px;font-weight:700;margin-bottom:.8rem;color:#fff}
+.footer-grid p,.footer-grid a{color:rgba(255,255,255,.6);font-size:13px;line-height:1.8;text-decoration:none;display:block}
+.footer-grid a:hover{color:#fff}
+.footer-bottom{
+  padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.1);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;color:rgba(255,255,255,.5);flex-wrap:wrap;gap:1rem;
+}
+
+/* RESPONSIVE */
+@media (max-width:768px){
+  .nav-links{display:none}
+  .hero{padding:3rem 0 2rem}
+  .footer-grid{grid-template-columns:1fr;gap:1.5rem}
+  .section{padding:3rem 0}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="logo">
+        <div class="logo-icon">🎬</div>
+        Vidoon
+      </a>
+      <div class="nav-links">
+        <a href="#features">Возможности</a>
+        <a href="#how">Как это работает</a>
+        <a href="#pricing">Тарифы</a>
+        <a href="#faq">Вопросы</a>
+      </div>
+      <div style="display:flex;gap:8px">
+        <a href="login.html" class="btn btn-ghost">Войти</a>
+        <a href="login.html?mode=signup" class="btn">Начать бесплатно</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      ⚡ Контент-агентство нового поколения
+    </div>
+    <h1>30 готовых концептов видео<br>для вашего бизнеса в месяц</h1>
+    <p>Vidoon — это команда специалистов, которая делает контент-стратегию и техзадания для производства роликов в TikTok, Reels, ВКонтакте. От 5000₽ в месяц.</p>
+    <div class="hero-actions">
+      <a href="login.html?mode=signup" class="btn btn-lg btn-gradient">🚀 Попробовать бесплатно</a>
+      <a href="#how" class="btn btn-lg btn-ghost">Как это работает →</a>
+    </div>
+    <div class="trust">
+      <div class="trust-item"><span>✓</span> Без обязательств</div>
+      <div class="trust-item"><span>✓</span> Первые 3 концепта бесплатно</div>
+      <div class="trust-item"><span>✓</span> Готовность 5 минут</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-title">
+      <h2>Что вы получите</h2>
+      <p>Готовый набор материалов для производства видео — без поиска маркетологов и креативщиков</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Исследование рынка</h3>
+        <p>Анализ конкурентов в вашей нише, актуальные тренды и форматы, которые работают именно у вас.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📅</div>
+        <h3>Контент-стратегия</h3>
+        <p>30 разных идей роликов на месяц с распределением по форматам: образование, кейсы, юмор, истории.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎬</div>
+        <h3>Концепты видео</h3>
+        <p>Для каждого ролика — раскадровка по сценам, реплики на русском, технические задания для производства.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎭</div>
+        <h3>Визуальные образы</h3>
+        <p>Описания персонажей и локаций для вашего бренда. Можно использовать в любом инструменте производства.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📱</div>
+        <h3>Подписи для соцсетей</h3>
+        <p>Готовые тексты с хэштегами для TikTok, Reels, VK и других платформ — копируете и публикуете.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💼</div>
+        <h3>Бренд-консистентность</h3>
+        <p>Все материалы выполнены в едином стиле вашего бренда — голос, тон, визуальные элементы.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how" style="background:linear-gradient(180deg,transparent,rgba(124,111,255,.03))">
+  <div class="container">
+    <div class="section-title">
+      <h2>Как это работает</h2>
+      <p>От регистрации до первого видео — всего 4 шага</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Регистрация</h3>
+        <p>Создаёте аккаунт за 30 секунд. Никаких звонков и встреч — всё онлайн.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Анкета о бизнесе</h3>
+        <p>Заполняете информацию о вашей компании: ниша, аудитория, стиль. 5 минут.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Готовый план</h3>
+        <p>Через 5 минут получаете контент-стратегию на 30 дней с разными идеями.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Производство</h3>
+        <p>Используете готовые техзадания в любом инструменте создания видео.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-title">
+      <h2>Тарифы</h2>
+      <p>Выберите тариф, который подходит вашему бизнесу. Можно начать бесплатно.</p>
+    </div>
+    <div class="pricing">
+      <div class="plan">
+        <h3>Демо</h3>
+        <div class="plan-desc">Попробовать бесплатно</div>
+        <div class="plan-price">
+          <span class="num">0</span><span class="currency">₽</span>
+          <div class="period">навсегда</div>
+        </div>
+        <ul class="plan-features">
+          <li>3 концепта видео</li>
+          <li>7 идей контент-плана</li>
+          <li>Базовое исследование рынка</li>
+          <li>Поддержка по email</li>
+        </ul>
+        <a href="login.html?mode=signup" class="btn btn-ghost" style="width:100%">Начать бесплатно</a>
+      </div>
+
+      <div class="plan featured">
+        <div class="plan-badge">Популярный</div>
+        <h3>Старт</h3>
+        <div class="plan-desc">Для малого бизнеса</div>
+        <div class="plan-price">
+          <span class="num">5000</span><span class="currency">₽</span>
+          <div class="period">в месяц</div>
+        </div>
+        <ul class="plan-features">
+          <li><b>30 концептов</b> в месяц</li>
+          <li>Полная контент-стратегия</li>
+          <li>Глубокое исследование рынка</li>
+          <li>Визуальные образы и локации</li>
+          <li>Готовые подписи и хэштеги</li>
+          <li>Приоритетная поддержка</li>
+        </ul>
+        <a href="login.html?mode=signup&plan=start" class="btn btn-gradient" style="width:100%">Выбрать Старт</a>
+      </div>
+
+      <div class="plan">
+        <h3>Бизнес</h3>
+        <div class="plan-desc">Для растущих компаний</div>
+        <div class="plan-price">
+          <span class="num">12000</span><span class="currency">₽</span>
+          <div class="period">в месяц</div>
+        </div>
+        <ul class="plan-features">
+          <li>100 концептов в месяц</li>
+          <li>До 3 компаний / брендов</li>
+          <li>Приоритетная очередь</li>
+          <li>Telegram-уведомления</li>
+          <li>Личный консультант</li>
+        </ul>
+        <a href="login.html?mode=signup&plan=business" class="btn btn-ghost" style="width:100%">Выбрать Бизнес</a>
+      </div>
+
+      <div class="plan">
+        <h3>Агентство</h3>
+        <div class="plan-desc">Для SMM-агентств</div>
+        <div class="plan-price">
+          <span class="num">25000</span><span class="currency">₽</span>
+          <div class="period">в месяц</div>
+        </div>
+        <ul class="plan-features">
+          <li>300 концептов в месяц</li>
+          <li>До 10 компаний / брендов</li>
+          <li>Безлимит исследований</li>
+          <li>API-доступ для интеграций</li>
+          <li>Белый лейбл</li>
+        </ul>
+        <a href="login.html?mode=signup&plan=agency" class="btn btn-ghost" style="width:100%">Выбрать Агентство</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="container">
+  <div class="cta-section">
+    <h2>Готовы начать?</h2>
+    <p>Создайте свой первый контент-план за 5 минут. Без обязательств и оплаты.</p>
+    <a href="login.html?mode=signup" class="btn btn-lg">🚀 Попробовать бесплатно</a>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-title">
+      <h2>Часто задаваемые вопросы</h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          Как быстро я получу первый контент-план?
+        </div>
+        <div class="faq-a">После заполнения анкеты о бизнесе вы получаете готовую стратегию в течение 5 минут. Концепты роликов готовятся параллельно — обычно весь пакет готов в течение часа после регистрации.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          Нужен ли мне видеомонтаж?
+        </div>
+        <div class="faq-a">Мы предоставляем готовые техзадания для производства видео. Вы можете использовать любой удобный инструмент: Runway, Luma, CapCut, или передать материалы своему монтажёру. Сами видео мы не производим — это сохраняет вашу свободу выбора и снижает стоимость подписки.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          Можно ли отменить подписку?
+        </div>
+        <div class="faq-a">Да, в любой момент. После отмены вы сохраните доступ до конца оплаченного периода. Возврат денег возможен в течение 14 дней с момента оплаты согласно закону «О защите прав потребителей».</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          Подходит ли Vidoon для моей ниши?
+        </div>
+        <div class="faq-a">Vidoon работает с любыми B2C и B2B бизнесами: рестораны, SPA, фитнес-клубы, магазины, услуги, IT-продукты, e-commerce и многое другое. При регистрации мы изучим именно вашу нишу и подберём подходящие форматы.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          Какой результат я получу?
+        </div>
+        <div class="faq-a">За месяц вы получите 30 различных концептов роликов с детальной проработкой: идея, целевая аудитория, сценарий по сценам, реплики, визуальные образы, подписи и хэштеги. Это полностью готовый материал, который ваш монтажёр или вы сами сможете превратить в готовые видео.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          Как происходит оплата?
+        </div>
+        <div class="faq-a">Оплата через ЮKassa — принимаем банковские карты, СБП, ЮMoney. Подписка списывается автоматически каждый месяц. После оплаты вы получаете чек на email согласно 54-ФЗ.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="color:#fff;margin-bottom:1rem">
+          <div class="logo-icon">🎬</div>
+          Vidoon
+        </div>
+        <p style="color:rgba(255,255,255,.6)">Контент-агентство нового поколения. Помогаем малому и среднему бизнесу делать сильный видеоконтент для соцсетей.</p>
+      </div>
+      <div>
+        <h4>Продукт</h4>
+        <a href="#features">Возможности</a>
+        <a href="#pricing">Тарифы</a>
+        <a href="#faq">Вопросы</a>
+        <a href="login.html">Личный кабинет</a>
+      </div>
+      <div>
+        <h4>Документы</h4>
+        <a href="privacy.html">Конфиденциальность</a>
+        <a href="offer.html">Публичная оферта</a>
+        <a href="terms.html">Соглашение</a>
+        <a href="mailto:hello@vidoon.ru">Связаться</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Vidoon. ИП Игишев А.</div>
+      <div>vidoon.ru</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

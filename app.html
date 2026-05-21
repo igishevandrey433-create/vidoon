@@ -94,7 +94,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .plan-features li{padding:6px 0;display:flex;align-items:flex-start;gap:7px}
 .plan-features li::before{content:'✓';color:var(--success);font-weight:700;flex-shrink:0}
 .concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
-.concept-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;transition:all .2s}
+.concept-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;transition:all .2s;cursor:pointer}
 .concept-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);border-color:var(--primary)}
 .concept-day{display:inline-block;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;margin-bottom:8px}
 .concept-emoji{font-size:24px;margin-bottom:6px}
@@ -158,48 +158,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-light);text-decoration:none;font-size:13px;margin-bottom:1rem;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
 .back-btn:hover{color:var(--primary)}
 .inline-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
-
-/* === REFS PAGE === */
-.refs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
-.ref-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.3rem;transition:all .2s;position:relative}
-.ref-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);border-color:rgba(124,111,255,.3)}
-.ref-card-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:.7rem}
-.ref-icon{font-size:28px;flex-shrink:0;line-height:1}
-.ref-info{flex:1;min-width:0}
-.ref-name{font-size:16px;font-weight:700;margin-bottom:2px;line-height:1.3}
-.ref-role{font-size:12px;color:var(--primary);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.ref-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
-.ref-card:hover .ref-actions{opacity:1}
-.ref-action-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:13px;transition:all .15s;font-family:inherit;color:var(--text)}
-.ref-action-btn:hover{border-color:var(--primary);background:rgba(124,111,255,.05)}
-.ref-action-btn.danger:hover{border-color:var(--error);background:rgba(239,68,68,.05);color:var(--error)}
-.ref-desc{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:.7rem;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.ref-days{display:flex;flex-wrap:wrap;gap:4px;margin-top:.5rem}
-.ref-day{background:rgba(124,111,255,.08);color:var(--primary);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;font-family:monospace}
-
-.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
-.section-header h3{margin-bottom:0;display:flex;align-items:center;gap:8px}
-.section-header h3 span{background:var(--bg);color:var(--text-light);padding:2px 10px;border-radius:99px;font-size:13px;font-weight:600}
-
-/* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(15,15,26,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:100;animation:fadeIn .2s}
-.modal{background:var(--card);border-radius:16px;padding:1.8rem;max-width:520px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal h3{margin-bottom:1rem;font-size:18px}
-.modal-close{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-light);padding:0;line-height:1}
-.modal-close:hover{color:var(--text)}
 </style>
 </head>
 <body>
 
 <div class="page-loader" id="loader"><div class="spinner"></div></div>
-
 <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
 
 <aside class="sidebar">
-  <a href="index.html" class="logo">
-    <div class="logo-icon">🎬</div>
-    Vidoon
-  </a>
+  <a href="index.html" class="logo"><div class="logo-icon">🎬</div>Vidoon</a>
   <div class="nav-section">
     <div class="nav-title">Главное</div>
     <button class="nav-item active" data-page="dashboard"><span class="icon">🏠</span>Главная</button>
@@ -207,1045 +174,283 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   </div>
   <div class="nav-section">
     <div class="nav-title">Контент</div>
-    <button class="nav-item" data-page="research"><span class="icon">📊</span>Исследование рынка</button>
-    <button class="nav-item" data-page="strategy"><span class="icon">📅</span>Контент-стратегия</button>
-    <button class="nav-item" data-page="refs"><span class="icon">🎭</span>Визуальные образы</button>
-    <button class="nav-item" data-page="concepts"><span class="icon">🎬</span>Готовые концепты</button>
-    <button class="nav-item" data-page="videos"><span class="icon">📹</span>Мои видео</button>
+    <button class="nav-item" data-page="research"><span class="icon">📊</span>Исследование</button>
+    <button class="nav-item" data-page="strategy"><span class="icon">📅</span>Стратегия</button>
+    <button class="nav-item" data-page="refs"><span class="icon">🎭</span>Образы</button>
+    <button class="nav-item" data-page="concepts"><span class="icon">🎬</span>Концепты</button>
+    <button class="nav-item" data-page="videos"><span class="icon">📹</span>Видео</button>
   </div>
   <div class="nav-section">
     <div class="nav-title">Аккаунт</div>
-    <button class="nav-item" data-page="pricing"><span class="icon">💳</span>Тариф и оплата</button>
+    <button class="nav-item" data-page="pricing"><span class="icon">💳</span>Тариф</button>
     <button class="nav-item" data-page="support"><span class="icon">💬</span>Поддержка</button>
   </div>
   <a href="admin.html" class="admin-link" id="admin-link" style="display:none">👑 Админ-панель</a>
   <div class="user-card">
     <div class="user-name" id="user-name">Загрузка...</div>
     <div class="user-plan" id="user-plan">—</div>
-    <button class="logout-btn" onclick="logout()">Выйти из аккаунта</button>
+    <button class="logout-btn" onclick="logout()">Выход</button>
   </div>
 </aside>
 
 <main class="main">
 
 <div class="page active" id="page-dashboard">
-  <div class="page-header"><h1>Добро пожаловать в Vidoon 👋</h1><p>Здесь вы видите статус вашего контент-проекта</p></div>
-  <div class="grid-4" style="margin-bottom:1.5rem">
-    <div class="stat"><div class="stat-label">Концепты</div><div class="stat-num" id="stat-scenarios">0</div><div class="stat-sub" id="stat-scenarios-limit">из 5 на Демо</div></div>
-    <div class="stat"><div class="stat-label">Видео</div><div class="stat-num" id="stat-videos">0</div><div class="stat-sub" id="stat-videos-limit">из 0 квоты</div></div>
-    <div class="stat"><div class="stat-label">Готово</div><div class="stat-num" id="stat-done">0</div><div class="stat-sub">завершённых видео</div></div>
-    <div class="stat"><div class="stat-label">Тариф</div><div class="stat-num" id="stat-plan" style="font-size:22px">Демо</div><div class="stat-sub">текущий</div></div>
-  </div>
-  <div class="status-card">
-    <h3>📊 Статус вашего проекта</h3>
-    <div class="status-list">
-      <div class="status-item"><div class="status-icon" id="status-icon-brand">1</div><div class="status-text"><b>Анкета бренда</b><small>Расскажите о своей компании</small></div></div>
-      <div class="status-item"><div class="status-icon" id="status-icon-research">2</div><div class="status-text"><b>Исследование рынка</b><small>Команда изучит вашу нишу</small></div></div>
-      <div class="status-item"><div class="status-icon" id="status-icon-strategy">3</div><div class="status-text"><b>Контент-стратегия</b><small>30 идей на месяц</small></div></div>
-      <div class="status-item"><div class="status-icon" id="status-icon-refs">4</div><div class="status-text"><b>Визуальные образы</b><small>Персонажи и локации</small></div></div>
-      <div class="status-item"><div class="status-icon" id="status-icon-concepts">5</div><div class="status-text"><b>Концепты для производства</b><small>Готовые техзадания</small></div></div>
-    </div>
-    <button class="btn btn-lg" style="margin-top:1.5rem" id="next-step-btn">Начать с анкеты бренда →</button>
-  </div>
+  <div class="page-header"><h1>Добро пожаловать! 👋</h1><p>Статус вашего проекта</p></div>
+  <div class="grid-4"><div class="stat"><div class="stat-label">Концепты</div><div class="stat-num" id="s1">0</div><div class="stat-sub">создано</div></div><div class="stat"><div class="stat-label">Видео</div><div class="stat-num" id="s2">0</div><div class="stat-sub">готово</div></div><div class="stat"><div class="stat-label">Тариф</div><div class="stat-num" id="s3" style="font-size:22px">Демо</div><div class="stat-sub">текущий</div></div><div class="stat"><div class="stat-label">Исследований</div><div class="stat-num" id="s4">0</div><div class="stat-sub">проведено</div></div></div>
+  <div class="status-card"><h3>📊 Ваш прогресс</h3><div class="status-list"><div class="status-item"><div class="status-icon" id="si1">1</div><div class="status-text"><b>Анкета бренда</b><small>О вашей компании</small></div></div><div class="status-item"><div class="status-icon" id="si2">2</div><div class="status-text"><b>Исследование</b><small>Анализ ниши</small></div></div><div class="status-item"><div class="status-icon" id="si3">3</div><div class="status-text"><b>Стратегия</b><small>30 идей на месяц</small></div></div><div class="status-item"><div class="status-icon" id="si4">4</div><div class="status-text"><b>Образы</b><small>Персонажи и локации</small></div></div><div class="status-item"><div class="status-icon" id="si5">5</div><div class="status-text"><b>Концепты</b><small>Готовые техзадания</small></div></div></div><button class="btn btn-lg" style="margin-top:1.5rem" id="next-btn">Начать →</button></div>
 </div>
 
 <div class="page" id="page-brand">
-  <div class="page-header"><h1>🏢 Мой бренд</h1><p>Расскажите о своём бизнесе</p></div>
-  <div class="card">
-    <h3>🖼️ Логотип компании</h3>
-    <p class="card-desc">Будет показан в видео для брендинга (финальный кадр, элементы интерфейса)</p>
-    <div id="logo-empty" class="logo-upload">
-      <input type="file" id="logo-file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
-      <div class="logo-upload-icon">🖼️</div>
-      <div class="logo-upload-text">Кликните или перетащите файл</div>
-      <div class="logo-upload-hint">PNG, JPG, WEBP или SVG · до 2MB · рекомендуется квадрат 512×512</div>
-    </div>
-    <div id="logo-set" class="logo-preview" style="display:none">
-      <img id="logo-preview-img" src="" alt="Логотип">
-      <div class="logo-preview-info">
-        <div class="logo-preview-name" id="logo-preview-name">Логотип загружен</div>
-        <div class="logo-preview-size">Используется в видео и брендинге</div>
-      </div>
-      <div class="logo-preview-actions">
-        <button class="btn btn-sm btn-ghost" onclick="document.getElementById('logo-file').click()">Заменить</button>
-        <button class="btn btn-sm btn-danger" onclick="removeLogo()">Удалить</button>
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <h3>📝 Данные о компании</h3>
-    <form onsubmit="return saveBrand(event)">
-      <div class="field-row">
-        <div class="field"><label>Название компании *</label><input type="text" id="b-name" required placeholder="Например: Е-Гифт"></div>
-        <div class="field"><label>Слоган</label><input type="text" id="b-slogan" placeholder="Например: Электронные сертификаты"></div>
-      </div>
-      <div class="field"><label>Ниша *</label><input type="text" id="b-niche" required placeholder="Например: Финтех для HoReCa"></div>
-      <div class="field"><label>Описание бизнеса *</label><textarea id="b-desc" required placeholder="Чем занимаетесь"></textarea></div>
-      <div class="field"><label>Целевая аудитория *</label><textarea id="b-audience" required placeholder="Кто ваши клиенты"></textarea></div>
-      <div class="field"><label>USP</label><textarea id="b-usp" placeholder="Чем отличаетесь от конкурентов"></textarea></div>
-      <div class="field-row">
-        <div class="field"><label>Стиль</label><select id="b-humor"><option value="funny">😂 С юмором</option><option value="balanced" selected>⚖️ Сбалансированный</option><option value="serious">💼 Серьёзный</option></select></div>
-        <div class="field"><label>Язык</label><select id="b-lang"><option value="simple" selected>👥 Простой</option><option value="expert">🎓 Экспертный</option></select></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Визуальный стиль</label><select id="b-visual"><option value="cartoon" selected>🎨 Мультяшный (Pixar)</option><option value="realistic">📸 Реалистичный</option><option value="minimal">⚪ Минималистичный</option></select></div>
-        <div class="field"><label>Тренды?</label><select id="b-trends"><option value="yes" selected>🔥 Да, с мемами</option><option value="moderate">⚖️ Умеренно</option><option value="no">🚫 Нет, классика</option></select></div>
-      </div>
-      <button type="submit" class="btn btn-lg" id="save-brand-btn">💾 Сохранить</button>
-    </form>
-  </div>
+  <div class="page-header"><h1>🏢 Мой бренд</h1><p>О вашей компании</p></div>
+  <div class="card"><h3>🖼️ Логотип</h3><p class="card-desc">Будет в видео для брендинга</p><div id="logo-e" class="logo-upload"><input type="file" id="logo-f" accept="image/*"><div class="logo-upload-icon">🖼️</div><div class="logo-upload-text">Кликните или перетащите</div><div class="logo-upload-hint">PNG, JPG, WEBP · до 2MB</div></div><div id="logo-s" class="logo-preview" style="display:none"><img id="logo-img" src=""><div class="logo-preview-info"><div class="logo-preview-name">Логотип</div><div class="logo-preview-size">Используется в видео</div></div><div class="logo-preview-actions"><button class="btn btn-sm btn-ghost" onclick="document.getElementById('logo-f').click()">Заменить</button><button class="btn btn-sm btn-danger" onclick="removeLogo()">Удалить</button></div></div></div>
+  <div class="card"><h3>📝 Данные</h3><form onsubmit="return saveBrand(event)"><div class="field-row"><div class="field"><label>Название *</label><input type="text" id="b-name" required></div><div class="field"><label>Слоган</label><input type="text" id="b-slogan"></div></div><div class="field"><label>Ниша *</label><input type="text" id="b-niche" required></div><div class="field"><label>Описание *</label><textarea id="b-desc" required></textarea></div><div class="field"><label>Целевая аудитория *</label><textarea id="b-audience" required></textarea></div><div class="field"><label>USP</label><textarea id="b-usp"></textarea></div><button type="submit" class="btn btn-lg">💾 Сохранить</button></form></div>
 </div>
 
 <div class="page" id="page-research">
-  <div class="page-header"><h1>📊 Исследование рынка</h1><p>Команда изучает конкурентов и тренды в вашей нише</p></div>
-  <div class="card" id="research-empty">
-    <div class="empty">
-      <div class="empty-icon">📊</div>
-      <h3>Исследование ещё не проводилось</h3>
-      <p>Заполните анкету бренда и команда подготовит анализ ниши.</p>
-      <button class="btn btn-lg" onclick="requestResearch()" id="request-research-btn">🚀 Заказать исследование</button>
-    </div>
-  </div>
-  <div class="card" id="research-data" style="display:none">
-    <h3>📋 Результаты исследования</h3>
-    <p class="card-desc" id="research-date"></p>
-    <div id="research-content"></div>
-    <div style="margin-top:1.5rem;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-ghost" onclick="requestResearch()">🔄 Новое исследование</button>
-      <button class="btn" onclick="navTo('strategy')">📅 К стратегии →</button>
-    </div>
-  </div>
+  <div class="page-header"><h1>📊 Исследование рынка</h1><p>Анализ ниши и конкурентов</p></div>
+  <div class="card" id="res-e"><div class="empty"><div class="empty-icon">📊</div><h3>Ещё не проводилось</h3><p>Заполните анкету бренда</p><button class="btn btn-lg" onclick="requestResearch()" id="req-res-btn">🚀 Заказать</button></div></div>
+  <div id="res-d" style="display:none"><div class="card"><h3>📋 Результаты</h3><p class="card-desc" id="res-date"></p><div id="res-c"></div><div style="margin-top:1rem;display:flex;gap:8px"><button class="btn btn-ghost" onclick="requestResearch()">🔄 Новое</button><button class="btn" onclick="navTo('strategy')">📅 К стратегии →</button></div></div></div>
 </div>
 
 <div class="page" id="page-strategy">
-  <div class="page-header"><h1>📅 Контент-стратегия</h1><p>30 разных идей роликов на месяц</p></div>
-  <div class="card" id="strategy-empty">
-    <div class="empty">
-      <div class="empty-icon">📅</div>
-      <h3>Стратегия ещё не готова</h3>
-      <p>Сначала закажите исследование рынка.</p>
-      <button class="btn btn-lg" onclick="requestStrategy()" id="request-strategy-btn">📅 Заказать стратегию</button>
-    </div>
-  </div>
-  <div id="strategy-data" style="display:none">
-    <div class="card">
-      <h3 id="strategy-title">Контент-стратегия на 30 дней</h3>
-      <p class="card-desc" id="strategy-date"></p>
-      <div class="concept-grid" id="concept-grid"></div>
-      <div style="margin-top:1.5rem;display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-ghost" onclick="requestStrategy()">🔄 Новая стратегия</button>
-        <button class="btn" onclick="navTo('refs')">🎭 К образам →</button>
-      </div>
-    </div>
-  </div>
+  <div class="page-header"><h1>📅 Контент-стратегия</h1><p>30 идей на месяц</p></div>
+  <div class="card" id="str-e"><div class="empty"><div class="empty-icon">📅</div><h3>Ещё не готова</h3><p>Сначала заказите исследование</p><button class="btn btn-lg" onclick="requestStrategy()" id="req-str-btn">📅 Создать</button></div></div>
+  <div id="str-d" style="display:none"><div class="card"><div class="concept-grid" id="concept-g"></div><div style="margin-top:1rem;display:flex;gap:8px"><button class="btn btn-ghost" onclick="requestStrategy()">🔄 Новая</button><button class="btn" onclick="navTo('refs')">🎭 К образам →</button></div></div></div>
 </div>
 
-<!-- ===== REFS PAGE (NEW!) ===== -->
 <div class="page" id="page-refs">
-  <div class="page-header"><h1>🎭 Визуальные образы</h1><p>Персонажи и локации которые будут появляться в ваших видео</p></div>
-  
-  <div class="card" id="refs-empty" style="display:none">
-    <div class="empty">
-      <div class="empty-icon">🎭</div>
-      <h3>Образы ещё не подготовлены</h3>
-      <p>Сначала создайте контент-стратегию, потом команда подготовит персонажей и локации на её основе.</p>
-      <button class="btn btn-lg" onclick="requestRefs()" id="request-refs-btn">🎭 Подготовить образы</button>
-    </div>
-  </div>
-  
-  <div id="refs-content" style="display:none">
-    <div class="alert info">
-      💡 Эти персонажи и локации будут использоваться при создании концептов. Это обеспечит <b>единый стиль</b> во всех ваших видео.
-    </div>
-    
-    <div class="card">
-      <div class="section-header">
-        <h3>👤 Персонажи <span id="char-count">0</span></h3>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-sm btn-ghost" onclick="openAddChar()">➕ Добавить</button>
-          <button class="btn btn-sm btn-ghost" onclick="requestRefs()" id="regen-refs-btn">🔄 Обновить</button>
-        </div>
-      </div>
-      <div class="refs-grid" id="chars-grid"></div>
-    </div>
-    
-    <div class="card">
-      <div class="section-header">
-        <h3>🏢 Локации <span id="loc-count">0</span></h3>
-        <button class="btn btn-sm btn-ghost" onclick="openAddLoc()">➕ Добавить</button>
-      </div>
-      <div class="refs-grid" id="locs-grid"></div>
-    </div>
-  </div>
+  <div class="page-header"><h1>🎭 Визуальные образы</h1><p>Персонажи и локации</p></div>
+  <div class="card" id="ref-e"><div class="empty"><div class="empty-icon">🎭</div><h3>Не подготовлены</h3><p>Создайте стратегию</p><button class="btn btn-lg" onclick="requestRefs()" id="req-ref-btn">🎭 Подготовить</button></div></div>
+  <div id="ref-d" style="display:none"><div class="alert info">💡 Персонажи и локации для ваших видео</div><div class="card"><h3>👤 Персонажи</h3><div id="char-g"></div></div><div class="card"><h3>🏢 Локации</h3><div id="loc-g"></div></div></div>
 </div>
 
 <div class="page" id="page-concepts">
-  <div class="page-header"><h1>🎬 Готовые концепты</h1><p>Концепты роликов с раскадровкой и техзаданиями</p></div>
-  <div class="card" id="concepts-empty">
-    <div class="empty">
-      <div class="empty-icon">🎬</div>
-      <h3>Выберите день из стратегии</h3>
-      <p>Перейдите в "Контент-стратегия" и выберите день.</p>
-      <button class="btn" onclick="navTo('strategy')">К стратегии →</button>
-    </div>
-  </div>
-  <div id="concept-detail" style="display:none">
-    <button class="back-btn" onclick="navTo('strategy')">← К стратегии</button>
-    <div id="scenario-content"></div>
-  </div>
+  <div class="page-header"><h1>🎬 Готовые концепты</h1><p>Техзадания для видео</p></div>
+  <div class="card" id="conc-e"><div class="empty"><div class="empty-icon">🎬</div><h3>Выберите день</h3><p>Из контент-стратегии</p><button class="btn" onclick="navTo('strategy')">К стратегии →</button></div></div>
+  <div id="conc-d" style="display:none"><button class="back-btn" onclick="navTo('strategy')">← К стратегии</button><div id="conc-c"></div></div>
 </div>
 
 <div class="page" id="page-videos">
-  <div class="page-header"><h1>📹 Мои видео</h1><p>Видео сгенерированные через систему</p></div>
-  <div id="videos-list">
-    <div class="card">
-      <div class="empty">
-        <div class="empty-icon">📹</div>
-        <h3>Пока нет видео</h3>
-        <p>Создайте концепт и нажмите "Сгенерировать видео".</p>
-        <button class="btn" onclick="navTo('strategy')">К стратегии →</button>
-      </div>
-    </div>
-  </div>
+  <div class="page-header"><h1>📹 Мои видео</h1><p>Сгенерированные ролики</p></div>
+  <div id="videos-l"><div class="card"><div class="empty"><div class="empty-icon">📹</div><h3>Пока пусто</h3><p>Создайте концепт</p></div></div></div>
 </div>
 
 <div class="page" id="page-pricing">
   <div class="page-header"><h1>💳 Тариф и оплата</h1><p>Выберите подходящий тариф</p></div>
-  <div class="alert info">💎 Ваш текущий тариф: <b style="margin-left:6px" id="current-plan-name">Демо</b></div>
+  <div class="alert info">💎 Ваш тариф: <b id="cur-plan">Демо</b></div>
   <div class="plan-grid">
-    <div class="plan">
-      <div class="plan-name">Демо</div>
-      <div class="plan-desc">Бесплатно</div>
-      <div class="plan-price">0 ₽</div>
-      <div class="plan-price-period">навсегда</div>
-      <ul class="plan-features"><li>5 концептов в месяц</li><li>1 стратегия</li><li>1 исследование</li><li>Без генерации видео</li></ul>
-      <button class="btn btn-ghost btn-block" disabled>Текущий тариф</button>
-    </div>
-    <div class="plan featured">
-      <div class="plan-badge">Популярный</div>
-      <div class="plan-name">Старт</div>
-      <div class="plan-desc">Малый бизнес</div>
-      <div class="plan-price">5 000 ₽</div>
-      <div class="plan-price-period">в месяц</div>
-      <ul class="plan-features"><li><b>30 концептов</b></li><li>3 стратегии</li><li>5 исследований</li><li>Визуальные образы</li><li>Видео — за доп. плату</li></ul>
-      <button class="btn btn-block" onclick="upgradePlan('start')">Выбрать Старт</button>
-    </div>
-    <div class="plan">
-      <div class="plan-name">Бизнес</div>
-      <div class="plan-desc">Растущий бизнес</div>
-      <div class="plan-price">12 000 ₽</div>
-      <div class="plan-price-period">в месяц</div>
-      <ul class="plan-features"><li>100 концептов</li><li>10 стратегий</li><li>15 исследований</li><li><b>5 видео в подарок</b></li><li>До 3 компаний</li></ul>
-      <button class="btn btn-ghost btn-block" onclick="upgradePlan('business')">Выбрать Бизнес</button>
-    </div>
-    <div class="plan">
-      <div class="plan-name">Агентство</div>
-      <div class="plan-desc">SMM-агентства</div>
-      <div class="plan-price">25 000 ₽</div>
-      <div class="plan-price-period">в месяц</div>
-      <ul class="plan-features"><li>300 концептов</li><li>Безлимит исследований</li><li><b>20 видео в подарок</b></li><li>До 10 компаний</li><li>Белый лейбл</li></ul>
-      <button class="btn btn-ghost btn-block" onclick="upgradePlan('agency')">Выбрать Агентство</button>
-    </div>
+    <div class="plan"><div class="plan-name">Демо</div><div class="plan-desc">Бесплатно</div><div class="plan-price">0 ₽</div><div class="plan-price-period">навсегда</div><ul class="plan-features"><li>5 концептов/мес</li><li>1 исследование</li><li>Без видео</li></ul><button class="btn btn-ghost btn-block" disabled>Текущий</button></div>
+    <div class="plan featured"><div class="plan-badge">Популярный</div><div class="plan-name">Старт</div><div class="plan-desc">Малый бизнес</div><div class="plan-price">5 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li><b>30 концептов</b></li><li>3 исследования</li><li>Видео — доплата</li></ul><button class="btn btn-block" onclick="upgradePlan('start')">Выбрать</button></div>
+    <div class="plan"><div class="plan-name">Бизнес</div><div class="plan-desc">Растущий</div><div class="plan-price">12 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li>100 концептов</li><li>15 исследований</li><li><b>5 видео в подарок</b></li></ul><button class="btn btn-ghost btn-block" onclick="upgradePlan('business')">Выбрать</button></div>
+    <div class="plan"><div class="plan-name">Агентство</div><div class="plan-desc">SMM-агентства</div><div class="plan-price">25 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li>300 концептов</li><li>Безлимит исследований</li><li><b>20 видео в подарок</b></li></ul><button class="btn btn-ghost btn-block" onclick="upgradePlan('agency')">Выбрать</button></div>
   </div>
 </div>
 
 <div class="page" id="page-support">
   <div class="page-header"><h1>💬 Поддержка</h1><p>Связь с командой</p></div>
-  <div class="grid-2">
-    <div class="card"><h3>📧 Email</h3><p class="card-desc">Для подробных вопросов</p><a href="mailto:hello@vidoon.ru" class="btn btn-ghost">hello@vidoon.ru</a></div>
-    <div class="card"><h3>💬 Telegram</h3><p class="card-desc">Для быстрых вопросов</p><a href="https://t.me/vidoon_support" target="_blank" class="btn btn-ghost">@vidoon_support</a></div>
-  </div>
+  <div class="grid-2"><div class="card"><h3>📧 Email</h3><p class="card-desc">Для вопросов</p><a href="mailto:hello@vidoon.ru" class="btn btn-ghost">hello@vidoon.ru</a></div><div class="card"><h3>💬 Telegram</h3><p class="card-desc">Быстрые вопросы</p><a href="https://t.me/vidoon_support" target="_blank" class="btn btn-ghost">@vidoon_support</a></div></div>
 </div>
 
 </main>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const SUPABASE_URL = 'https://hbucxewagevmzkvdghko.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_CoP7LIQ1O5GN8YoCQJMKIg__MOnGoWe';
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = createClient('https://hbucxewagevmzkvdghko.supabase.co', 'sb_publishable_CoP7LIQ1O5GN8YoCQJMKIg__MOnGoWe');
 window.sb = sb;
-window.SUPABASE_URL = SUPABASE_URL;
 
 const { data: { session } } = await sb.auth.getSession();
 if (!session) { window.location.href = 'login.html'; throw new Error('not auth'); }
-window.session = session;
-window.userId = session.user.id;
-window.userEmail = session.user.email;
+window.session = session; window.userId = session.user.id;
 
 const [pR, cR, plR, aR, vR, chR, lcR] = await Promise.all([
   sb.from('profiles').select('*').eq('id', session.user.id).single(),
-  sb.from('companies').select('*').eq('user_id', session.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
-  sb.from('plans').select('*').eq('user_id', session.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
-  sb.from('analyses').select('*').eq('user_id', session.user.id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
-  sb.from('video_generations').select('*').eq('user_id', session.user.id).order('created_at',{ascending:false}).limit(50),
-  sb.from('characters').select('*').eq('user_id', session.user.id).order('created_at',{ascending:false}),
-  sb.from('locations').select('*').eq('user_id', session.user.id).order('created_at',{ascending:false})
+  sb.from('companies').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
+  sb.from('plans').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
+  sb.from('analyses').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
+  sb.from('video_generations').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(50),
+  sb.from('characters').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}),
+  sb.from('locations').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false})
 ]);
-window.profile = pR.data || {};
-window.company = cR.data || {};
-window.plan = plR.data || null;
-window.analysis = aR.data || null;
-window.videos = vR.data || [];
-window.characters = chR.data || [];
-window.locations = lcR.data || [];
+window.profile = pR.data || {}; window.company = cR.data || {}; window.plan = plR.data || null; window.analysis = aR.data || null; window.videos = vR.data || []; window.characters = chR.data || []; window.locations = lcR.data || [];
 
-if (window.profile.is_admin) document.getElementById('admin-link').style.display='block';
+if(window.profile.is_admin) document.getElementById('admin-link').style.display='block';
+render(); document.getElementById('loader').style.display='none';
 
-renderUser(); renderDashboard(); fillBrandForm(); renderResearch(); renderStrategy(); renderVideos(); renderRefs();
-document.getElementById('loader').style.display='none';
-
-function renderUser(){
-  const name = window.profile.name || window.userEmail?.split('@')[0] || 'User';
+function render(){
+  const name = window.profile.name || session.user.email?.split('@')[0] || 'User';
   document.getElementById('user-name').textContent = name;
-  const planMap = {free:'🆓 Демо',start:'💎 Старт',business:'🚀 Бизнес',agency:'💼 Агентство'};
-  const plan = window.profile.plan || 'free';
-  document.getElementById('user-plan').textContent = planMap[plan] || planMap.free;
-  document.getElementById('stat-plan').textContent = (planMap[plan]||planMap.free).split(' ').slice(1).join(' ');
-  document.getElementById('current-plan-name').textContent = (planMap[plan]||planMap.free).split(' ').slice(1).join(' ');
-}
-
-function renderDashboard(){
-  const limits = {free:{s:5,v:0,n:'Демо'},start:{s:30,v:0,n:'Старт'},business:{s:100,v:5,n:'Бизнес'},agency:{s:300,v:20,n:'Агентство'}};
+  const pMap = {free:'🆓 Демо', start:'💎 Старт', business:'🚀 Бизнес', agency:'💼 Агентство'};
   const p = window.profile.plan || 'free';
-  const l = limits[p];
-  document.getElementById('stat-scenarios').textContent = window.profile.usage_scenarios||0;
-  document.getElementById('stat-scenarios-limit').textContent = `из ${l.s} на ${l.n}`;
-  document.getElementById('stat-videos').textContent = window.profile.usage_videos||0;
-  document.getElementById('stat-videos-limit').textContent = l.v>0 ? `из ${l.v} в подарок` : 'за доп. плату';
-  document.getElementById('stat-done').textContent = window.videos.filter(v=>v.status==='done').length;
+  document.getElementById('user-plan').textContent = pMap[p] || pMap.free;
+  document.getElementById('cur-plan').textContent = (pMap[p] || pMap.free).split(' ').slice(1).join(' ');
+  
+  const lim = {free:{s:5,v:0}, start:{s:30,v:0}, business:{s:100,v:5}, agency:{s:300,v:20}};
+  const l = lim[p];
+  document.getElementById('s1').textContent = window.profile.usage_scenarios || 0;
+  document.getElementById('s2').textContent = window.videos.filter(x=>x.status==='done').length;
+  document.getElementById('s3').textContent = (pMap[p] || pMap.free).split(' ').slice(1).join(' ');
+  document.getElementById('s4').textContent = window.analysis ? '✓' : '0';
   
   const hasBrand = !!(window.company && window.company.name);
-  const hasR = !!window.analysis;
-  const hasP = !!window.plan;
+  const hasAnalysis = !!window.analysis;
+  const hasStrategy = !!window.plan;
   const hasRefs = window.characters.length > 0 || window.locations.length > 0;
-  setStatusIcon('brand', hasBrand);
-  setStatusIcon('research', hasR);
-  setStatusIcon('strategy', hasP);
-  setStatusIcon('refs', hasRefs);
   
-  const cta = document.getElementById('next-step-btn');
-  if(!hasBrand){ cta.textContent='Начать с анкеты бренда →'; cta.onclick=()=>navTo('brand'); }
-  else if(!hasR){ cta.textContent='Заказать исследование →'; cta.onclick=()=>navTo('research'); }
-  else if(!hasP){ cta.textContent='Создать стратегию →'; cta.onclick=()=>navTo('strategy'); }
-  else if(!hasRefs){ cta.textContent='Подготовить образы →'; cta.onclick=()=>navTo('refs'); }
-  else { cta.textContent='К концептам →'; cta.onclick=()=>navTo('strategy'); }
-}
-
-function setStatusIcon(key,done){
-  const i = document.getElementById('status-icon-'+key);
-  if(!i) return;
-  if(done){ i.classList.add('done'); i.textContent='✓'; }
-}
-
-function fillBrandForm(){
-  if(!window.company) return;
-  const c = window.company;
-  ['name','slogan','niche','desc','audience','usp'].forEach(k=>{
-    const el = document.getElementById('b-'+k);
-    if(el) el.value = c[k==='desc'?'description':k] || '';
+  [['s1', hasBrand], ['s2', hasAnalysis], ['s3', hasStrategy], ['s4', hasRefs]].forEach(([id, done])=>{
+    const el = document.getElementById('si' + id.slice(1));
+    if(done) { el.classList.add('done'); el.textContent = '✓'; }
   });
-  if(c.humor) document.getElementById('b-humor').value = c.humor;
-  if(c.audience_lang) document.getElementById('b-lang').value = c.audience_lang;
-  if(c.visual_style) document.getElementById('b-visual').value = c.visual_style;
-  if(c.trends) document.getElementById('b-trends').value = c.trends;
-  if(c.logo_url) showLogoPreview(c.logo_url, c.logo_name||'logo');
-}
-
-function renderResearch(){
-  if(!window.analysis){
-    document.getElementById('research-empty').style.display='';
-    document.getElementById('research-data').style.display='none';
-    return;
-  }
-  document.getElementById('research-empty').style.display='none';
-  document.getElementById('research-data').style.display='';
-  document.getElementById('research-date').textContent='Проведено '+new Date(window.analysis.created_at).toLocaleDateString('ru-RU');
   
-  const d = window.analysis.data || {};
-  let html = '';
-  if(d.competitors?.length){
-    html += '<div class="analysis-section"><h4>🏆 Конкуренты</h4>';
-    d.competitors.forEach(c=>html+=`<div class="analysis-item"><b>${esc(c.name)}</b> — ${esc(c.format||'')}. ${esc(c.strength||'')}</div>`);
-    html += '</div>';
-  }
-  if(d.trends?.length){
-    html += '<div class="analysis-section"><h4>🔥 Тренды</h4>';
-    d.trends.forEach(t=>html+=`<div class="analysis-item"><b>${esc(t.name)}</b> — ${esc(t.desc||'')}</div>`);
-    html += '</div>';
-  }
-  if(d.insights){
-    if(d.insights.viral_hooks?.length){
-      html += '<div class="analysis-section"><h4>🎯 Хуки</h4>';
-      d.insights.viral_hooks.forEach(h=>html+=`<div class="analysis-item">${esc(h)}</div>`);
-      html += '</div>';
-    }
-    if(d.insights.audience_pain?.length){
-      html += '<div class="analysis-section"><h4>💔 Боли аудитории</h4>';
-      d.insights.audience_pain.forEach(p=>html+=`<div class="analysis-item">${esc(p)}</div>`);
-      html += '</div>';
-    }
-    if(d.insights.recommendation){
-      html += `<div class="analysis-section"><h4>💡 Рекомендация</h4><div class="analysis-item">${esc(d.insights.recommendation)}</div></div>`;
-    }
-  }
-  document.getElementById('research-content').innerHTML = html || '<p>Данные недоступны</p>';
-}
-
-function renderStrategy(){
-  if(!window.plan || !window.plan.ideas?.length){
-    document.getElementById('strategy-empty').style.display='';
-    document.getElementById('strategy-data').style.display='none';
-    return;
-  }
-  document.getElementById('strategy-empty').style.display='none';
-  document.getElementById('strategy-data').style.display='';
-  document.getElementById('strategy-date').textContent = 'Создана '+new Date(window.plan.created_at).toLocaleDateString('ru-RU')+' · '+window.plan.ideas.length+' идей';
+  const ctaBtn = document.getElementById('next-btn');
+  if(!hasBrand) { ctaBtn.textContent = 'Начать с анкеты бренда →'; ctaBtn.onclick = () => navTo('brand'); }
+  else if(!hasAnalysis) { ctaBtn.textContent = 'Заказать исследование →'; ctaBtn.onclick = () => navTo('research'); }
+  else if(!hasStrategy) { ctaBtn.textContent = 'Создать стратегию →'; ctaBtn.onclick = () => navTo('strategy'); }
+  else if(!hasRefs) { ctaBtn.textContent = 'Подготовить образы →'; ctaBtn.onclick = () => navTo('refs'); }
+  else { ctaBtn.textContent = 'К концептам →'; ctaBtn.onclick = () => navTo('strategy'); }
   
-  const grid = document.getElementById('concept-grid');
-  grid.innerHTML = '';
-  window.plan.ideas.forEach(idea=>{
-    const card = document.createElement('div');
-    card.className = 'concept-card';
-    card.innerHTML = `
-      <span class="concept-day">День ${idea.day}</span>
-      <div class="concept-emoji">${esc(idea.emoji||'🎬')}</div>
-      <div class="concept-title">${esc(idea.title||'')}</div>
-      <div class="concept-type">${esc(idea.type||'')}</div>
-      <div class="concept-hook">"${esc(idea.hook||'')}"</div>
-      <button class="btn btn-sm btn-block">📝 Подготовить концепт</button>
-    `;
-    card.querySelector('button').addEventListener('click', ()=>openConcept(idea.day));
-    grid.appendChild(card);
-  });
-}
-
-// ===== REFS RENDER =====
-function renderRefs(){
-  const hasAny = window.characters.length > 0 || window.locations.length > 0;
-  
-  if(!hasAny){
-    document.getElementById('refs-empty').style.display = '';
-    document.getElementById('refs-content').style.display = 'none';
-    return;
-  }
-  
-  document.getElementById('refs-empty').style.display = 'none';
-  document.getElementById('refs-content').style.display = '';
-  
-  // Counts
-  document.getElementById('char-count').textContent = window.characters.length;
-  document.getElementById('loc-count').textContent = window.locations.length;
-  
-  // Characters
-  const charsGrid = document.getElementById('chars-grid');
-  if(window.characters.length === 0){
-    charsGrid.innerHTML = '<div class="empty" style="grid-column:1/-1"><p>Персонажей пока нет. Нажмите "Обновить" чтобы команда подготовила их на основе стратегии.</p></div>';
+  // Research
+  if(!window.analysis) {
+    document.getElementById('res-e').style.display = '';
+    document.getElementById('res-d').style.display = 'none';
   } else {
-    charsGrid.innerHTML = '';
-    window.characters.forEach(c => {
-      const days = (c.appears_in || []).map(d => `<span class="ref-day">День ${d}</span>`).join('');
-      const card = document.createElement('div');
-      card.className = 'ref-card';
-      card.innerHTML = `
-        <div class="ref-card-header">
-          <div class="ref-icon">👤</div>
-          <div class="ref-info">
-            <div class="ref-name">${esc(c.name)}</div>
-            ${c.role ? `<div class="ref-role">${esc(c.role)}</div>` : ''}
-          </div>
-          <div class="ref-actions">
-            <button class="ref-action-btn" title="Редактировать" data-edit-char="${c.id}">✏️</button>
-            <button class="ref-action-btn danger" title="Удалить" data-del-char="${c.id}">🗑</button>
-          </div>
-        </div>
-        <div class="ref-desc">${esc(c.description || 'Без описания')}</div>
-        ${days ? `<div class="ref-days">${days}</div>` : ''}
-      `;
-      card.querySelector('[data-edit-char]').addEventListener('click', () => editChar(c));
-      card.querySelector('[data-del-char]').addEventListener('click', () => deleteChar(c));
-      charsGrid.appendChild(card);
-    });
+    document.getElementById('res-e').style.display = 'none';
+    document.getElementById('res-d').style.display = '';
+    document.getElementById('res-date').textContent = 'От ' + new Date(window.analysis.created_at).toLocaleDateString('ru-RU');
+    const d = window.analysis.data || {};
+    let html = '';
+    if(d.competitors?.length) { html += '<div class="analysis-section"><h4>🏆 Конкуренты</h4>'; d.competitors.forEach(c => html += `<div class="analysis-item"><b>${esc(c.name)}</b> — ${esc(c.format||'')}</div>`); html += '</div>'; }
+    if(d.trends?.length) { html += '<div class="analysis-section"><h4>🔥 Тренды</h4>'; d.trends.forEach(t => html += `<div class="analysis-item">${esc(t.name)}</div>`); html += '</div>'; }
+    document.getElementById('res-c').innerHTML = html || '<p>Нет данных</p>';
   }
   
-  // Locations
-  const locsGrid = document.getElementById('locs-grid');
-  if(window.locations.length === 0){
-    locsGrid.innerHTML = '<div class="empty" style="grid-column:1/-1"><p>Локаций пока нет.</p></div>';
+  // Strategy
+  if(!window.plan || !window.plan.ideas?.length) {
+    document.getElementById('str-e').style.display = '';
+    document.getElementById('str-d').style.display = 'none';
   } else {
-    locsGrid.innerHTML = '';
-    window.locations.forEach(l => {
-      const days = (l.appears_in || []).map(d => `<span class="ref-day">День ${d}</span>`).join('');
+    document.getElementById('str-e').style.display = 'none';
+    document.getElementById('str-d').style.display = '';
+    const grid = document.getElementById('concept-g');
+    grid.innerHTML = '';
+    window.plan.ideas.forEach(idea => {
       const card = document.createElement('div');
-      card.className = 'ref-card';
-      card.innerHTML = `
-        <div class="ref-card-header">
-          <div class="ref-icon">🏢</div>
-          <div class="ref-info">
-            <div class="ref-name">${esc(l.name)}</div>
-          </div>
-          <div class="ref-actions">
-            <button class="ref-action-btn" title="Редактировать" data-edit-loc="${l.id}">✏️</button>
-            <button class="ref-action-btn danger" title="Удалить" data-del-loc="${l.id}">🗑</button>
-          </div>
-        </div>
-        <div class="ref-desc">${esc(l.description || 'Без описания')}</div>
-        ${days ? `<div class="ref-days">${days}</div>` : ''}
-      `;
-      card.querySelector('[data-edit-loc]').addEventListener('click', () => editLoc(l));
-      card.querySelector('[data-del-loc]').addEventListener('click', () => deleteLoc(l));
-      locsGrid.appendChild(card);
+      card.className = 'concept-card';
+      card.innerHTML = `<span class="concept-day">День ${idea.day}</span><div class="concept-emoji">${esc(idea.emoji||'🎬')}</div><div class="concept-title">${esc(idea.title||'')}</div><div class="concept-type">${esc(idea.type||'')}</div><button class="btn btn-sm btn-block">📝 Открыть</button>`;
+      card.querySelector('button').addEventListener('click', () => openConcept(idea.day));
+      grid.appendChild(card);
     });
   }
-}
-
-// ===== REFS CRUD =====
-function editChar(c){
-  openModal({
-    title: '✏️ Редактировать персонажа',
-    fields: [
-      {key:'name', label:'Имя', value:c.name, required:true},
-      {key:'role', label:'Роль', value:c.role||''},
-      {key:'description', label:'Описание', value:c.description||'', textarea:true},
-    ],
-    onSave: async (data) => {
-      const { error } = await sb.from('characters').update({
-        name: data.name, role: data.role, description: data.description
-      }).eq('id', c.id);
-      if(error) throw error;
-      Object.assign(c, data);
-      renderRefs();
-    }
-  });
-}
-
-function editLoc(l){
-  openModal({
-    title: '✏️ Редактировать локацию',
-    fields: [
-      {key:'name', label:'Название', value:l.name, required:true},
-      {key:'description', label:'Описание', value:l.description||'', textarea:true},
-    ],
-    onSave: async (data) => {
-      const { error } = await sb.from('locations').update({
-        name: data.name, description: data.description
-      }).eq('id', l.id);
-      if(error) throw error;
-      Object.assign(l, data);
-      renderRefs();
-    }
-  });
-}
-
-async function deleteChar(c){
-  if(!confirm(`Удалить персонажа "${c.name}"?`)) return;
-  try {
-    const { error } = await sb.from('characters').delete().eq('id', c.id);
-    if(error) throw error;
-    window.characters = window.characters.filter(x => x.id !== c.id);
-    renderRefs();
-    toast('🗑 Персонаж удалён', 'ok');
-  } catch(err){ toast('❌ '+err.message, 'err'); }
-}
-
-async function deleteLoc(l){
-  if(!confirm(`Удалить локацию "${l.name}"?`)) return;
-  try {
-    const { error } = await sb.from('locations').delete().eq('id', l.id);
-    if(error) throw error;
-    window.locations = window.locations.filter(x => x.id !== l.id);
-    renderRefs();
-    toast('🗑 Локация удалена', 'ok');
-  } catch(err){ toast('❌ '+err.message, 'err'); }
-}
-
-window.openAddChar = function(){
-  openModal({
-    title: '➕ Новый персонаж',
-    fields: [
-      {key:'name', label:'Имя', placeholder:'Например: Мария', required:true},
-      {key:'role', label:'Роль', placeholder:'Например: главная героиня — бариста'},
-      {key:'description', label:'Описание', placeholder:'Внешность, возраст, стиль одежды...', textarea:true},
-    ],
-    onSave: async (data) => {
-      const { data: newChar, error } = await sb.from('characters').insert({
-        user_id: window.userId,
-        name: data.name,
-        role: data.role,
-        description: data.description,
-        appears_in: []
-      }).select().single();
-      if(error) throw error;
-      window.characters.unshift(newChar);
-      renderRefs();
-    }
-  });
-};
-
-window.openAddLoc = function(){
-  openModal({
-    title: '➕ Новая локация',
-    fields: [
-      {key:'name', label:'Название', placeholder:'Например: Кофейня — интерьер', required:true},
-      {key:'description', label:'Описание', placeholder:'Атмосфера, освещение, детали...', textarea:true},
-    ],
-    onSave: async (data) => {
-      const { data: newLoc, error } = await sb.from('locations').insert({
-        user_id: window.userId,
-        name: data.name,
-        description: data.description,
-        appears_in: []
-      }).select().single();
-      if(error) throw error;
-      window.locations.unshift(newLoc);
-      renderRefs();
-    }
-  });
-};
-
-function openModal({title, fields, onSave}){
-  const bg = document.createElement('div');
-  bg.className = 'modal-bg';
-  const fieldsHtml = fields.map(f => `
-    <div class="field">
-      <label>${f.label}${f.required ? ' *' : ''}</label>
-      ${f.textarea 
-        ? `<textarea data-key="${f.key}" placeholder="${esc(f.placeholder||'')}">${esc(f.value||'')}</textarea>`
-        : `<input type="text" data-key="${f.key}" value="${esc(f.value||'')}" placeholder="${esc(f.placeholder||'')}" ${f.required?'required':''}>`
-      }
-    </div>
-  `).join('');
-  bg.innerHTML = `
-    <div class="modal">
-      <button class="modal-close">×</button>
-      <h3>${esc(title)}</h3>
-      <form>
-        ${fieldsHtml}
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
-          <button type="button" class="btn btn-ghost" data-cancel>Отмена</button>
-          <button type="submit" class="btn">💾 Сохранить</button>
-        </div>
-      </form>
-    </div>
-  `;
-  document.body.appendChild(bg);
-  const close = () => bg.remove();
-  bg.querySelector('.modal-close').addEventListener('click', close);
-  bg.querySelector('[data-cancel]').addEventListener('click', close);
-  bg.addEventListener('click', e => { if(e.target === bg) close(); });
-  bg.querySelector('form').addEventListener('submit', async e => {
-    e.preventDefault();
-    const data = {};
-    bg.querySelectorAll('[data-key]').forEach(el => data[el.dataset.key] = el.value.trim());
-    try {
-      await onSave(data);
-      toast('✅ Сохранено', 'ok');
-      close();
-    } catch(err){
-      toast('❌ '+err.message, 'err');
-    }
-  });
-}
-
-function renderVideos(){
-  const list = document.getElementById('videos-list');
-  if(!window.videos.length) return;
-  list.innerHTML = '';
-  window.videos.forEach(v=>{
-    const card = document.createElement('div');
-    card.className = 'card';
-    let badge = '';
-    if(v.status==='done') badge='<span style="background:rgba(16,185,129,.1);color:#10b981;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700">✓ ГОТОВО</span>';
-    else if(v.status==='processing') badge='<span style="background:rgba(124,111,255,.1);color:#7c6fff;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700"><span class="inline-spinner"></span>ГЕНЕРИРУЕТСЯ</span>';
-    else badge='<span style="background:rgba(239,68,68,.1);color:#ef4444;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700">✗ ОШИБКА</span>';
-    
-    card.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem">
-        <div>
-          <h3>Сцена ${v.scene_num||'—'}</h3>
-          <p class="card-desc">${v.resolution} · ${v.duration_seconds}с · ${new Date(v.created_at).toLocaleString('ru-RU')}</p>
-        </div>
-        ${badge}
-      </div>
-      ${v.status==='done' && v.video_url ? `
-        <div class="video-result">
-          <video controls src="${v.video_url}"></video>
-          <div class="video-info">
-            <span style="font-size:13px;color:var(--text-light)">Готово</span>
-            <a href="${v.video_url}" download class="btn btn-sm">⬇️ Скачать</a>
-          </div>
-        </div>
-      ` : v.status==='processing' ? `
-        <div class="alert info">⏳ Генерация запущена</div>
-        <button class="btn btn-ghost btn-sm" onclick="checkVideoStatus('${v.id}')">🔄 Проверить</button>
-      ` : `<div class="alert err">❌ ${esc(v.error||'Ошибка')}</div>`}
-    `;
-    list.appendChild(card);
-  });
-}
-
-window.openConcept = async function(day){
-  navTo('concepts');
-  document.getElementById('concepts-empty').style.display='none';
-  document.getElementById('concept-detail').style.display='';
   
-  const idea = window.plan.ideas.find(i=>i.day===day);
-  if(!idea) return;
-  
-  const { data: existing } = await sb.from('productions').select('*')
-    .eq('user_id',window.userId).eq('plan_id',window.plan.id).eq('day_number',day)
-    .order('created_at',{ascending:false}).limit(1).maybeSingle();
-  
-  const c = document.getElementById('scenario-content');
-  if(existing?.data){ renderScenario(existing, idea); }
-  else {
-    c.innerHTML = `
-      <div class="card">
-        <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
-        <p class="card-desc">${esc(idea.concept||'')}</p>
-        <div class="alert info">🎬 Команда подготовит концепт с раскадровкой по сценам.</div>
-        <div class="field" style="margin-top:1rem">
-          <label>⏱️ Длительность видео</label>
-          <div class="duration-btns" id="dur-grid">
-            <button class="duration-btn" data-d="10">10с</button>
-            <button class="duration-btn selected" data-d="15">15с</button>
-            <button class="duration-btn" data-d="20">20с</button>
-            <button class="duration-btn" data-d="30">30с</button>
-            <button class="duration-btn" data-d="60">60с</button>
-          </div>
+  // Refs
+  if(window.characters.length === 0 && window.locations.length === 0) {
+    document.getElementById('ref-e').style.display = '';
+    document.getElementById('ref-d').style.display = 'none';
+  } else {
+    document.getElementById('ref-e').style.display = 'none';
+    document.getElementById('ref-d').style.display = '';
+    ['char-g', 'loc-g'].forEach((gid, idx) => {
+      const list = idx === 0 ? window.characters : window.locations;
+      const grid = document.getElementById(gid);
+      grid.innerHTML = list.map(item => `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.5rem">
+          <div style="font-weight:700;margin-bottom:.3rem">${esc(item.name)}</div>
+          <div style="font-size:13px;color:var(--text-light);line-height:1.4">${esc(item.description||'')}</div>
         </div>
-        <div class="field">
-          <label>🎬 Количество сцен</label>
-          <div class="duration-btns" id="scenes-grid">
-            <button class="duration-btn" data-s="3">3</button>
-            <button class="duration-btn" data-s="4">4</button>
-            <button class="duration-btn selected" data-s="5">5</button>
-            <button class="duration-btn" data-s="6">6</button>
-            <button class="duration-btn" data-s="8">8</button>
-          </div>
-          <div class="field-hint">Минимум 2 секунды на сцену</div>
-        </div>
-        <button class="btn btn-lg btn-block" id="gen-scenario-btn">📝 Подготовить концепт</button>
-      </div>
-    `;
-    c.querySelectorAll('#dur-grid .duration-btn').forEach(b=>b.addEventListener('click',()=>{
-      c.querySelectorAll('#dur-grid .duration-btn').forEach(x=>x.classList.remove('selected'));
-      b.classList.add('selected');
-    }));
-    c.querySelectorAll('#scenes-grid .duration-btn').forEach(b=>b.addEventListener('click',()=>{
-      c.querySelectorAll('#scenes-grid .duration-btn').forEach(x=>x.classList.remove('selected'));
-      b.classList.add('selected');
-    }));
-    document.getElementById('gen-scenario-btn').addEventListener('click',()=>{
-      const d = parseInt(c.querySelector('#dur-grid .selected')?.dataset.d) || 15;
-      const s = parseInt(c.querySelector('#scenes-grid .selected')?.dataset.s) || 5;
-      generateScenario(day, d, s);
+      `).join('');
     });
   }
-};
-
-async function generateScenario(day, duration, scenes){
-  const btn = document.getElementById('gen-scenario-btn');
-  btn.classList.add('loading'); btn.disabled=true;
-  toast('🎬 Команда готовит концепт... 1-2 минуты','ok');
-  try {
-    const r = await callFunction('generate-scenario',{plan_id:window.plan.id,day_number:day,duration,scenes});
-    if(!r.success) throw new Error(r.error||'Ошибка');
-    toast('✅ Концепт готов!','ok');
-    const { data: prod } = await sb.from('productions').select('*').eq('id',r.production_id).single();
-    const idea = window.plan.ideas.find(i=>i.day===day);
-    renderScenario(prod, idea);
-    const { data: np } = await sb.from('profiles').select('*').eq('id',window.userId).single();
-    if(np){ window.profile=np; renderDashboard(); renderUser(); }
-  } catch(err){
-    console.error(err); toast('❌ '+err.message,'err');
-    btn.classList.remove('loading'); btn.disabled=false;
-  }
-}
-
-function renderScenario(production, idea){
-  const s = production.data;
-  if(!s?.scenes) return;
-  const c = document.getElementById('scenario-content');
   
-  let scenesHtml = '';
-  s.scenes.forEach(sc=>{
-    scenesHtml += `
-      <div class="scene-block">
-        <div class="scene-header">
-          <div class="scene-num">${sc.num}</div>
-          <div class="scene-time">${esc(sc.time||'')}</div>
-          <div class="scene-title">${esc(sc.title||'')}</div>
-        </div>
-        ${sc.audio ? `
-          <div class="scene-block-audio">
-            <span class="scene-block-label">🎤 Аудио</span>
-            <div class="scene-block-text"><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div>
-            ${sc.audio.tone?`<div style="font-size:12px;color:var(--text-light)">Интонация: ${esc(sc.audio.tone)}</div>`:''}
-            ${sc.audio.sfx?`<div style="font-size:12px;color:var(--text-light)">SFX: ${esc(sc.audio.sfx)}</div>`:''}
-          </div>
-        ` : ''}
-        ${sc.video ? `
-          <div class="scene-block-video">
-            <span class="scene-block-label">🎬 Видео</span>
-            <div class="scene-block-text">${esc(sc.video.action||'')}</div>
-            <details style="margin-top:8px">
-              <summary style="cursor:pointer;font-size:12px;color:var(--text-light);font-weight:600">Техн. промпт (англ.)</summary>
-              <div style="margin-top:6px;padding:8px;background:#fff;border-radius:6px;font-size:12px;font-family:monospace">${esc(sc.video.prompt||'')}</div>
-            </details>
-            <div class="video-gen-panel">
-              <div class="video-gen-title">🎬 Сгенерировать видео для сцены</div>
-              <div class="field-hint" style="margin-bottom:8px">⏱️ Длительность</div>
-              <div class="duration-btns" data-vid-dur="${sc.num}">
-                ${[4,5,6,7,8,9,10,11,12,13,14,15].map(d=>`<button class="duration-btn ${d===15?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
-              </div>
-              <div class="field-hint" style="margin-bottom:8px;margin-top:.7rem">🎯 Качество</div>
-              <div class="quality-grid" data-vid-q="${sc.num}">
-                <button class="quality-btn" data-q="480p">480p<small>дешево</small></button>
-                <button class="quality-btn selected" data-q="720p">720p HD<small>рекомендуем</small></button>
-                <button class="quality-btn" data-q="1080p">1080p<small>премиум</small></button>
-              </div>
-              <div class="price-summary">
-                <div>
-                  <div style="font-weight:700;font-size:13px">Стоимость:</div>
-                  <div class="price-summary-info" id="price-info-${sc.num}">15 сек · 720p HD</div>
-                </div>
-                <div class="price-summary-amount" id="price-amount-${sc.num}">—</div>
-              </div>
-              <button class="btn btn-block" data-gen-vid="${sc.num}" data-prod="${production.id}">🎬 Сгенерировать видео</button>
-            </div>
-          </div>
-        ` : ''}
-      </div>
-    `;
-  });
-  
-  c.innerHTML = `
-    <div class="scenario-view">
-      <div class="card">
-        <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
-        <div class="scenario-meta">
-          <div class="meta-chip">⏱️ <span>${s.duration||15} сек</span></div>
-          <div class="meta-chip">🎬 <span>${s.scenes_count||s.scenes.length} сцен</span></div>
-          <div class="meta-chip">📝 <span>${esc(idea.type||'')}</span></div>
-        </div>
-        <p class="card-desc">${esc(s.concept||'')}</p>
-      </div>
-      ${scenesHtml}
-      ${s.caption?`<div class="card"><h3>📱 Подпись</h3><div class="analysis-item">${esc(s.caption)}</div>${s.hashtags?.length?`<div style="margin-top:1rem;display:flex;gap:6px;flex-wrap:wrap">${s.hashtags.map(h=>`<span style="background:rgba(124,111,255,.08);color:var(--primary);padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600">${esc(h)}</span>`).join('')}</div>`:''}</div>`:''}
-      ${s.final_instructions?`<div class="card"><h3>📋 Инструкции по сборке</h3><div class="analysis-item">${esc(s.final_instructions)}</div></div>`:''}
-      <button class="btn btn-ghost" onclick="openConcept(${idea.day})" style="margin-top:1rem">🔄 Пересоздать</button>
-    </div>
-  `;
-  
-  c.querySelectorAll('[data-vid-dur]').forEach(grid=>{
-    const n = grid.dataset.vidDur;
-    grid.querySelectorAll('.duration-btn').forEach(b=>b.addEventListener('click',()=>{
-      grid.querySelectorAll('.duration-btn').forEach(x=>x.classList.remove('selected'));
-      b.classList.add('selected');
-      updateVideoPrice(n);
-    }));
-  });
-  c.querySelectorAll('[data-vid-q]').forEach(grid=>{
-    const n = grid.dataset.vidQ;
-    grid.querySelectorAll('.quality-btn').forEach(b=>b.addEventListener('click',()=>{
-      grid.querySelectorAll('.quality-btn').forEach(x=>x.classList.remove('selected'));
-      b.classList.add('selected');
-      updateVideoPrice(n);
-    }));
-  });
-  c.querySelectorAll('[data-gen-vid]').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const n = btn.dataset.genVid;
-      const pid = btn.dataset.prod;
-      const scene = s.scenes.find(x=>x.num==n);
-      generateVideo(pid, n, scene);
+  // Videos
+  if(window.videos.length === 0) {
+    document.getElementById('videos-l').innerHTML = '<div class="card"><div class="empty"><div class="empty-icon">📹</div><h3>Пока пусто</h3><p>Создайте концепт и видео</p></div></div>';
+  } else {
+    let html = '';
+    window.videos.forEach(v => {
+      const status = v.status === 'done' ? '✅ Готово' : v.status === 'processing' ? '⏳ Генерируется' : '❌ Ошибка';
+      html += `<div class="card"><h3>${status}</h3><p style="font-size:12px;color:var(--text-light)">${v.resolution} · ${v.duration_seconds}с</p>${v.video_url ? `<video style="width:100%;border-radius:8px;margin-top:1rem" controls src="${v.video_url}"></video>` : ''}</div>`;
     });
-  });
-  
-  s.scenes.forEach(sc=>updateVideoPrice(sc.num));
-}
-
-function updateVideoPrice(sceneNum){
-  const dG = document.querySelector(`[data-vid-dur="${sceneNum}"]`);
-  const qG = document.querySelector(`[data-vid-q="${sceneNum}"]`);
-  if(!dG||!qG) return;
-  const d = parseInt(dG.querySelector('.selected')?.dataset.d) || 15;
-  const q = qG.querySelector('.selected')?.dataset.q || '720p';
-  const cps = {'480p':0.10,'720p':0.12,'1080p':0.13};
-  const cost = (cps[q]||0.12)*d*95;
-  let price = Math.ceil(cost*1.8/10)*10;
-  if(price<50) price=50;
-  
-  const limits = {free:0,start:0,business:5,agency:20};
-  const plan = window.profile.plan||'free';
-  const used = window.profile.usage_videos||0;
-  const hasQuota = used<(limits[plan]||0);
-  
-  const info = document.getElementById(`price-info-${sceneNum}`);
-  const amount = document.getElementById(`price-amount-${sceneNum}`);
-  if(info) info.textContent = `${d} сек · ${q}${hasQuota?' · Бесплатно (квота)':' · к оплате'}`;
-  if(amount){
-    amount.textContent = hasQuota?'Free':price+'₽';
-    amount.style.color = hasQuota?'var(--success)':'var(--primary)';
+    document.getElementById('videos-l').innerHTML = html;
   }
-}
-
-async function generateVideo(prodId, sceneNum, scene){
-  const btn = document.querySelector(`[data-gen-vid="${sceneNum}"]`);
-  const dG = document.querySelector(`[data-vid-dur="${sceneNum}"]`);
-  const qG = document.querySelector(`[data-vid-q="${sceneNum}"]`);
-  const d = parseInt(dG.querySelector('.selected')?.dataset.d) || 15;
-  const q = qG.querySelector('.selected')?.dataset.q || '720p';
   
-  btn.classList.add('loading'); btn.disabled=true;
-  
-  try {
-    const r = await callFunction('generate-video',{
-      production_id: prodId,
-      scene_num: parseInt(sceneNum),
-      resolution: q,
-      duration: d,
-      prompt: scene?.video?.prompt || 'Video scene',
-      image_url: window.company?.logo_url || undefined
+  // Brand form
+  if(window.company && window.company.name) {
+    ['name', 'slogan', 'niche', 'desc', 'audience', 'usp'].forEach(k => {
+      const el = document.getElementById('b-' + k);
+      if(el) el.value = window.company[k === 'desc' ? 'description' : k] || '';
     });
-    
-    if(r.needs_payment){
-      toast(`💳 Видео сверх квоты — ${r.price_rub}₽. ЮKassa скоро.`,'warn');
-      btn.classList.remove('loading'); btn.disabled=false;
-      return;
-    }
-    if(!r.success) throw new Error(r.error||'Ошибка');
-    
-    toast('🎬 Видео генерируется! Проверяйте через 1-2 минуты.','ok');
-    
-    const { data: vids } = await sb.from('video_generations').select('*')
-      .eq('user_id',window.userId).order('created_at',{ascending:false}).limit(50);
-    window.videos = vids || [];
-    renderVideos();
-    
-    setTimeout(()=>checkVideoStatus(r.video_id), 30000);
-    
-  } catch(err){
-    console.error(err); toast('❌ '+err.message,'err');
-  } finally {
-    btn.classList.remove('loading'); btn.disabled=false;
+    if(window.company.logo_url) showLogoPreview(window.company.logo_url, window.company.logo_name || 'logo');
   }
 }
 
-window.checkVideoStatus = async function(videoId){
-  try {
-    const r = await callFunction('check-video-status',{video_id:videoId});
-    if(r.status==='done'){
-      toast('✅ Видео готово!','ok');
-      const { data: vids } = await sb.from('video_generations').select('*')
-        .eq('user_id',window.userId).order('created_at',{ascending:false}).limit(50);
-      window.videos = vids || [];
-      renderVideos();
-      navTo('videos');
-    } else if(r.status==='failed'){
-      toast('❌ '+(r.error||'Не удалось'),'err');
-    } else {
-      toast('⏳ '+(r.message||'Ещё генерируется...'),'warn');
-    }
-  } catch(err){ toast('❌ '+err.message,'err'); }
-};
-
-// === LOGO UPLOAD ===
-document.getElementById('logo-file').addEventListener('change', async (e)=>{
+document.getElementById('logo-f').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if(!file) return;
-  if(file.size > 2*1024*1024){ toast('Файл больше 2MB','err'); return; }
+  if(file.size > 2*1024*1024) { toast('Файл больше 2MB', 'err'); return; }
   
-  toast('📤 Загружаем...','ok');
+  toast('📤 Загружаем...', 'ok');
   try {
-    const compressed = await compressImage(file, 1024, 0.92);
-    const ext = file.name.split('.').pop() || 'png';
-    const fileName = `${window.userId}/logo-${Date.now()}.${ext}`;
-    const { error } = await sb.storage.from('refs').upload(fileName, compressed, {upsert:true, contentType:file.type});
+    const canvas = document.createElement('canvas');
+    const img = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const i = new Image();
+        i.onload = () => res(i);
+        i.onerror = rej;
+        i.src = e.target.result;
+      };
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+    let w = img.width, h = img.height;
+    if(w > 1024 || h > 1024) { if(w > h) { h = h * (1024 / w); w = 1024; } else { w = w * (1024 / h); h = 1024; } }
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    const blob = await new Promise(res => canvas.toBlob(res, file.type, 0.92));
+    
+    const fileName = window.userId + '/logo-' + Date.now() + '.' + (file.name.split('.').pop() || 'png');
+    const { error } = await sb.storage.from('refs').upload(fileName, blob, { upsert: true, contentType: file.type });
     if(error) throw error;
     
     const { data: urlData } = sb.storage.from('refs').getPublicUrl(fileName);
     const logoUrl = urlData.publicUrl;
     
     let result;
-    if(window.company?.id){
-      result = await sb.from('companies').update({logo_url:logoUrl, logo_name:file.name, updated_at:new Date().toISOString()}).eq('id',window.company.id).select().single();
+    if(window.company?.id) {
+      result = await sb.from('companies').update({ logo_url: logoUrl, logo_name: file.name, updated_at: new Date().toISOString() }).eq('id', window.company.id).select().single();
     } else {
-      result = await sb.from('companies').insert({user_id:window.userId, name:'Без названия', logo_url:logoUrl, logo_name:file.name}).select().single();
+      result = await sb.from('companies').insert({ user_id: window.userId, name: 'Без названия', logo_url: logoUrl, logo_name: file.name }).select().single();
     }
     if(result.error) throw result.error;
     window.company = result.data;
     showLogoPreview(logoUrl, file.name);
-    toast('✅ Логотип загружен!','ok');
-  } catch(err){
-    console.error(err); toast('❌ '+err.message,'err');
-  }
+    toast('✅ Логотип загружен!', 'ok');
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
 });
 
-function showLogoPreview(url, name){
-  document.getElementById('logo-empty').style.display='none';
-  document.getElementById('logo-set').style.display='';
-  document.getElementById('logo-preview-img').src = url;
-  document.getElementById('logo-preview-name').textContent = name||'Логотип';
+function showLogoPreview(url, name) {
+  document.getElementById('logo-e').style.display = 'none';
+  document.getElementById('logo-s').style.display = '';
+  document.getElementById('logo-img').src = url;
+  document.querySelector('.logo-preview-name').textContent = name || 'Логотип';
 }
 
-window.removeLogo = async function(){
-  if(!confirm('Удалить логотип?')) return;
+window.removeLogo = async function() {
+  if(!confirm('Удалить?')) return;
   try {
-    if(window.company?.id){
-      await sb.from('companies').update({logo_url:null, logo_name:null}).eq('id',window.company.id);
+    if(window.company?.id) {
+      await sb.from('companies').update({ logo_url: null, logo_name: null }).eq('id', window.company.id);
       window.company.logo_url = null;
     }
-    document.getElementById('logo-empty').style.display='';
-    document.getElementById('logo-set').style.display='none';
-    document.getElementById('logo-file').value='';
-    toast('Логотип удалён','ok');
-  } catch(err){ toast('❌ '+err.message,'err'); }
+    document.getElementById('logo-e').style.display = '';
+    document.getElementById('logo-s').style.display = 'none';
+    document.getElementById('logo-f').value = '';
+    toast('Логотип удалён', 'ok');
+  } catch(err) { toast('❌ ' + err.message, 'err'); }
 };
 
-async function compressImage(file, maxSize=1024, quality=0.92){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload = (e)=>{
-      const img = new Image();
-      img.onload = ()=>{
-        let w=img.width, h=img.height;
-        if(w>maxSize||h>maxSize){
-          if(w>h){ h=h*(maxSize/w); w=maxSize; }
-          else { w=w*(maxSize/h); h=maxSize; }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width=w; canvas.height=h;
-        canvas.getContext('2d').drawImage(img,0,0,w,h);
-        canvas.toBlob(blob=>resolve(blob), file.type, quality);
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-window.navTo = function(pageId){
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.page===pageId));
-  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id==='page-'+pageId));
-  document.querySelector('.sidebar').classList.remove('open');
-};
-document.querySelectorAll('.nav-item').forEach(btn=>btn.addEventListener('click',()=>navTo(btn.dataset.page)));
-
-window.logout = async function(){
-  if(!confirm('Выйти?')) return;
-  await sb.auth.signOut();
-  window.location.href='login.html';
-};
-
-window.saveBrand = async function(e){
+window.saveBrand = async function(e) {
   e.preventDefault();
-  const btn = document.getElementById('save-brand-btn');
-  btn.classList.add('loading'); btn.disabled=true;
   const data = {
     user_id: window.userId,
     name: document.getElementById('b-name').value.trim(),
@@ -1254,131 +459,282 @@ window.saveBrand = async function(e){
     description: document.getElementById('b-desc').value.trim(),
     audience: document.getElementById('b-audience').value.trim(),
     usp: document.getElementById('b-usp').value.trim(),
-    humor: document.getElementById('b-humor').value,
-    audience_lang: document.getElementById('b-lang').value,
-    visual_style: document.getElementById('b-visual').value,
-    trends: document.getElementById('b-trends').value,
     updated_at: new Date().toISOString()
   };
   try {
     let result;
-    if(window.company?.id){
-      result = await sb.from('companies').update(data).eq('id',window.company.id).select().single();
+    if(window.company?.id) {
+      result = await sb.from('companies').update(data).eq('id', window.company.id).select().single();
     } else {
       result = await sb.from('companies').insert(data).select().single();
     }
     if(result.error) throw result.error;
     window.company = result.data;
-    toast('✅ Бренд сохранён!','ok');
-    renderDashboard();
-  } catch(err){
-    console.error(err); toast('❌ '+err.message,'err');
-  } finally {
-    btn.classList.remove('loading'); btn.disabled=false;
-  }
+    toast('✅ Бренд сохранён!', 'ok');
+    render();
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
   return false;
 };
 
-window.requestResearch = async function(){
-  if(!window.company?.name){ toast('Заполните анкету бренда','err'); setTimeout(()=>navTo('brand'),800); return; }
-  const btn = document.getElementById('request-research-btn');
-  if(btn){ btn.classList.add('loading'); btn.disabled=true; }
-  toast('🔍 Команда работает... 1-2 минуты','ok');
+window.requestResearch = async function() {
+  if(!window.company?.name) { toast('Заполните анкету', 'err'); setTimeout(() => navTo('brand'), 800); return; }
+  document.getElementById('req-res-btn').classList.add('loading');
+  toast('🔍 Команда работает...', 'ok');
   try {
-    const r = await callFunction('generate-analysis',{});
-    if(!r.success) throw new Error(r.error||'Ошибка');
-    toast('✅ Исследование готово!','ok');
-    const { data: a } = await sb.from('analyses').select('*').eq('user_id',window.userId).order('created_at',{ascending:false}).limit(1).maybeSingle();
+    const r = await callFunction('generate-analysis', {});
+    if(!r.success) throw new Error(r.error || 'Ошибка');
+    const { data: a } = await sb.from('analyses').select('*').eq('user_id', window.userId).order('created_at', {ascending:false}).limit(1).maybeSingle();
     window.analysis = a;
-    renderResearch();
-    const { data: np } = await sb.from('profiles').select('*').eq('id',window.userId).single();
-    if(np){ window.profile=np; renderDashboard(); renderUser(); }
-  } catch(err){
-    console.error(err); toast('❌ '+err.message,'err');
-  } finally {
-    if(btn){ btn.classList.remove('loading'); btn.disabled=false; }
-  }
+    render();
+    toast('✅ Исследование готово!', 'ok');
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
 };
 
-window.requestStrategy = async function(){
-  if(!window.company?.name){ toast('Заполните анкету','err'); setTimeout(()=>navTo('brand'),800); return; }
-  const btn = document.getElementById('request-strategy-btn');
-  if(btn){ btn.classList.add('loading'); btn.disabled=true; }
-  toast('📅 Команда создаёт стратегию... 2-3 минуты','ok');
+window.requestStrategy = async function() {
+  if(!window.company?.name) { toast('Заполните анкету', 'err'); setTimeout(() => navTo('brand'), 800); return; }
+  document.getElementById('req-str-btn').classList.add('loading');
+  toast('📅 Команда создаёт...', 'ok');
   try {
-    const r = await callFunction('generate-plan',{});
-    if(!r.success) throw new Error(r.error||'Ошибка');
-    toast('✅ Стратегия готова — '+r.count+' идей!','ok');
-    const { data: p } = await sb.from('plans').select('*').eq('user_id',window.userId).order('created_at',{ascending:false}).limit(1).maybeSingle();
+    const r = await callFunction('generate-plan', {});
+    if(!r.success) throw new Error(r.error || 'Ошибка');
+    const { data: p } = await sb.from('plans').select('*').eq('user_id', window.userId).order('created_at', {ascending:false}).limit(1).maybeSingle();
     window.plan = p;
-    renderStrategy();
-    const { data: np } = await sb.from('profiles').select('*').eq('id',window.userId).single();
-    if(np){ window.profile=np; renderDashboard(); renderUser(); }
-  } catch(err){
-    console.error(err); toast('❌ '+err.message,'err');
-  } finally {
-    if(btn){ btn.classList.remove('loading'); btn.disabled=false; }
-  }
+    render();
+    toast('✅ Стратегия готова!', 'ok');
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
 };
 
-window.requestRefs = async function(){
-  if(!window.plan){ toast('Создайте стратегию','err'); return; }
-  const btn = document.getElementById('request-refs-btn') || document.getElementById('regen-refs-btn');
-  if(btn){ btn.classList.add('loading'); btn.disabled=true; }
-  toast('🎭 Команда готовит образы... 30-60 секунд','ok');
+window.requestRefs = async function() {
+  if(!window.plan) { toast('Создайте стратегию', 'err'); return; }
+  document.getElementById('req-ref-btn').classList.add('loading');
+  toast('🎭 Готовим образы...', 'ok');
   try {
-    const r = await callFunction('generate-refs',{plan_id:window.plan.id});
-    if(!r.success) throw new Error(r.error||'Ошибка');
-    if(r.total===0) toast('ℹ️ Все образы уже подготовлены','ok');
-    else toast(`✅ Готово: ${r.characters?.length||0} персонажей, ${r.locations?.length||0} локаций`,'ok');
-    
-    // Reload chars and locs
+    const r = await callFunction('generate-refs', { plan_id: window.plan.id });
+    if(!r.success) throw new Error(r.error || 'Ошибка');
     const [chR, lcR] = await Promise.all([
-      sb.from('characters').select('*').eq('user_id',window.userId).order('created_at',{ascending:false}),
-      sb.from('locations').select('*').eq('user_id',window.userId).order('created_at',{ascending:false})
+      sb.from('characters').select('*').eq('user_id', window.userId),
+      sb.from('locations').select('*').eq('user_id', window.userId)
     ]);
     window.characters = chR.data || [];
     window.locations = lcR.data || [];
-    renderRefs();
-    renderDashboard();
-  } catch(err){
-    console.error(err); toast('❌ '+err.message,'err');
-  } finally {
-    if(btn){ btn.classList.remove('loading'); btn.disabled=false; }
+    render();
+    toast('✅ Образы готовы!', 'ok');
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
+};
+
+window.openConcept = async function(day) {
+  navTo('concepts');
+  document.getElementById('conc-e').style.display = 'none';
+  document.getElementById('conc-d').style.display = '';
+  
+  const idea = window.plan.ideas.find(i => i.day === day);
+  if(!idea) return;
+  
+  const { data: existing } = await sb.from('productions').select('*')
+    .eq('user_id', window.userId).eq('plan_id', window.plan.id).eq('day_number', day)
+    .order('created_at', {ascending:false}).limit(1).maybeSingle();
+  
+  const c = document.getElementById('conc-c');
+  if(existing?.data) {
+    renderConcept(existing, idea);
+  } else {
+    c.innerHTML = `
+      <div class="card">
+        <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
+        <p class="card-desc">${esc(idea.concept||'')}</p>
+        <div class="alert info">🎬 Команда подготовит концепт из 5 сцен на 15 сек.</div>
+        <button class="btn btn-lg btn-block" id="gen-conc-btn" style="margin-top:1rem">📝 Подготовить концепт</button>
+      </div>
+    `;
+    document.getElementById('gen-conc-btn').addEventListener('click', () => generateConcept(day));
   }
 };
 
-window.upgradePlan = function(plan){
-  const prices = {start:5000,business:12000,agency:25000};
-  toast(`💳 ЮKassa в разработке. ${plan.toUpperCase()} — ${prices[plan]}₽/мес.`,'warn');
+async function generateConcept(day) {
+  const btn = document.getElementById('gen-conc-btn');
+  btn.classList.add('loading'); btn.disabled = true;
+  toast('🎬 Команда готовит...', 'ok');
+  try {
+    const r = await callFunction('generate-scenario', { plan_id: window.plan.id, day_number: day });
+    if(!r.success) throw new Error(r.error || 'Ошибка');
+    const { data: prod } = await sb.from('productions').select('*').eq('id', r.production_id).single();
+    const idea = window.plan.ideas.find(i => i.day === day);
+    renderConcept(prod, idea);
+    toast('✅ Концепт готов!', 'ok');
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); btn.classList.remove('loading'); btn.disabled = false; }
+}
+
+function renderConcept(production, idea) {
+  const s = production.data;
+  if(!s?.scenes) return;
+  const c = document.getElementById('conc-c');
+  
+  let html = `
+    <div class="scenario-view">
+      <div class="card">
+        <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
+        <div class="scenario-meta">
+          <div class="meta-chip">⏱️ <span>${s.duration||15} сек</span></div>
+          <div class="meta-chip">🎬 <span>${s.scenes_count||s.scenes.length} сцен</span></div>
+        </div>
+        <p class="card-desc">${esc(s.concept||'')}</p>
+      </div>
+  `;
+  
+  s.scenes.forEach(sc => {
+    html += `
+      <div class="scene-block">
+        <div class="scene-header">
+          <div class="scene-num">${sc.num}</div>
+          <div class="scene-time">${esc(sc.time||'')}</div>
+          <div class="scene-title">${esc(sc.title||'')}</div>
+        </div>
+        ${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}
+        ${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬</span><div>${esc(sc.video.action||'')}</div></div>` : ''}
+      </div>
+    `;
+  });
+  
+  html += `
+    <div class="card">
+      <h3>🎬 Создание видео</h3>
+      <div class="field"><label>⏱️ Длительность</label><div class="duration-btns" id="dur-sel">
+        <button class="duration-btn" data-d="4">4с</button>
+        <button class="duration-btn" data-d="10">10с</button>
+        <button class="duration-btn selected" data-d="15">15с</button>
+        <button class="duration-btn" data-d="20">20с</button>
+      </div></div>
+      <div class="field"><label>🎬 Сцен</label><div class="duration-btns" id="sc-sel">
+        <button class="duration-btn" data-s="3">3</button>
+        <button class="duration-btn" data-s="4">4</button>
+        <button class="duration-btn selected" data-s="5">5</button>
+        <button class="duration-btn" data-s="6">6</button>
+      </div></div>
+      <div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel">
+        <button class="quality-btn" data-q="480p">480p</button>
+        <button class="quality-btn selected" data-q="720p">720p</button>
+        <button class="quality-btn" data-q="1080p">1080p</button>
+      </div></div>
+      <div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">15 сек · 5 видео</div></div><div class="price-summary-amount" id="price-amt">—</div></div>
+      <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
+    </div>
+    </div>
+  `;
+  
+  c.innerHTML = html;
+  
+  c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => {
+    c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+    updatePrice();
+  }));
+  
+  c.querySelectorAll('#sc-sel .duration-btn').forEach(b => b.addEventListener('click', () => {
+    c.querySelectorAll('#sc-sel .duration-btn').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+    updatePrice();
+  }));
+  
+  c.querySelectorAll('#q-sel .quality-btn').forEach(b => b.addEventListener('click', () => {
+    c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+    updatePrice();
+  }));
+  
+  function updatePrice() {
+    const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d) || 15;
+    const n = parseInt(c.querySelector('#sc-sel .selected')?.dataset.s) || 5;
+    const q = c.querySelector('#q-sel .selected')?.dataset.q || '720p';
+    const cps = {'480p': 0.10, '720p': 0.12, '1080p': 0.13};
+    const cost = (cps[q] || 0.12) * (d / n) * 95 * n;
+    let price = Math.ceil(cost * 1.8 / 10) * 10;
+    if(price < 50) price = 50;
+    document.getElementById('price-info').textContent = `${d} сек · ${n} видео · ${q}`;
+    document.getElementById('price-amt').textContent = price + '₽';
+  }
+  
+  updatePrice();
+  
+  c.querySelector('#gen-vid-btn').addEventListener('click', () => {
+    const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d) || 15;
+    const n = parseInt(c.querySelector('#sc-sel .selected')?.dataset.s) || 5;
+    const q = c.querySelector('#q-sel .selected')?.dataset.q || '720p';
+    generateVideos(production.id, s.scenes, d, n, q);
+  });
+}
+
+async function generateVideos(prodId, scenes, duration, scenesCount, quality) {
+  const btn = document.querySelector('#gen-vid-btn');
+  btn.classList.add('loading'); btn.disabled = true;
+  toast(`🎬 Генерируем ${scenesCount} видео...`, 'ok');
+  
+  try {
+    const timePerScene = duration / scenesCount;
+    const selected = scenes.slice(0, scenesCount);
+    
+    for(const sc of selected) {
+      try {
+        await callFunction('generate-video', {
+          production_id: prodId,
+          scene_num: sc.num,
+          resolution: quality,
+          duration: Math.round(timePerScene * 10) / 10,
+          prompt: sc.video?.prompt || 'Scene',
+          image_url: window.company?.logo_url || undefined
+        });
+        await new Promise(r => setTimeout(r, 500));
+      } catch(err) { console.error(err); }
+    }
+    
+    toast(`✅ Видео запущены!`, 'ok');
+    setTimeout(async () => {
+      const { data: vids } = await sb.from('video_generations').select('*').eq('user_id', window.userId).order('created_at', {ascending:false}).limit(50);
+      window.videos = vids || [];
+      render();
+    }, 2000);
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
+}
+
+window.navTo = function(pageId) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
+  document.querySelector('.sidebar').classList.remove('open');
+};
+document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', () => navTo(btn.dataset.page)));
+
+window.logout = async function() {
+  if(!confirm('Выйти?')) return;
+  await sb.auth.signOut();
+  window.location.href = 'login.html';
 };
 
-async function callFunction(name, body){
-  const r = await fetch(`${SUPABASE_URL}/functions/v1/${name}`, {
+window.upgradePlan = function(plan) {
+  toast(`💳 ЮKassa скоро. ${plan.toUpperCase()} в разработке.`, 'warn');
+};
+
+async function callFunction(name, body) {
+  const r = await fetch('https://hbucxewagevmzkvdghko.supabase.co/functions/v1/' + name, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${window.session.access_token}`
-    },
-    body: JSON.stringify(body||{})
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + window.session.access_token },
+    body: JSON.stringify(body || {})
   });
   const data = await r.json();
-  if(!r.ok && !data.success) throw new Error(data.error || `HTTP ${r.status}`);
+  if(!r.ok && !data.success) throw new Error(data.error || 'HTTP ' + r.status);
   return data;
 }
 
-function esc(str){
-  if(str===undefined||str===null) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+function esc(str) {
+  if(!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
-function toast(msg, type){
-  document.querySelectorAll('.toast').forEach(t=>t.remove());
+function toast(msg, type) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
   const t = document.createElement('div');
-  t.className = 'toast '+(type||'');
+  t.className = 'toast ' + (type || '');
   t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 4500);
+  setTimeout(() => t.remove(), 4500);
 }
 window.toast = toast;
 window.callFunction = callFunction;

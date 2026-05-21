@@ -93,14 +93,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .plan-features{list-style:none;flex:1;margin-bottom:1.5rem;font-size:13px}
 .plan-features li{padding:6px 0;display:flex;align-items:flex-start;gap:7px}
 .plan-features li::before{content:'✓';color:var(--success);font-weight:700;flex-shrink:0}
-.concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
-.concept-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;transition:all .2s;cursor:pointer}
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
+.concept-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;transition:all .2s}
 .concept-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);border-color:var(--primary)}
 .concept-day{display:inline-block;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;margin-bottom:8px}
 .concept-emoji{font-size:24px;margin-bottom:6px}
 .concept-title{font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.35}
 .concept-type{font-size:11px;color:var(--text-light);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
-.concept-hook{font-size:13px;font-style:italic;line-height:1.4;border-left:3px solid var(--primary);padding-left:10px;margin-bottom:10px}
+.concept-hook{font-size:13px;font-style:italic;line-height:1.4;border-left:3px solid var(--primary);padding-left:10px;margin-bottom:10px;color:var(--text-light)}
+.concept-settings{background:var(--bg);border-radius:10px;padding:.7rem .9rem;margin-bottom:.8rem;border:1px solid var(--border)}
+.concept-settings-label{font-size:11px;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;display:block}
+.tiny-btns{display:flex;gap:4px;flex-wrap:wrap}
+.tiny-btn{padding:4px 8px;background:#fff;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;transition:all .15s;font-family:inherit;color:var(--text)}
+.tiny-btn:hover{border-color:var(--primary)}
+.tiny-btn.selected{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border-color:transparent}
+.apply-all-bar{background:linear-gradient(135deg,rgba(124,111,255,.08),rgba(255,107,157,.05));border:2px solid var(--primary);border-radius:14px;padding:1.2rem;margin-bottom:1.5rem}
+.apply-all-bar h4{font-size:14px;font-weight:700;margin-bottom:.7rem;display:flex;align-items:center;gap:6px}
+.apply-all-grid{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap}
+.apply-all-grid > div{flex:1;min-width:120px}
+.apply-all-grid label{font-size:11px;color:var(--text-light);font-weight:600;text-transform:uppercase;margin-bottom:6px;display:block}
 .scenario-view{max-width:900px}
 .scenario-meta{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
 .meta-chip{background:var(--bg);border:1px solid var(--border);padding:7px 14px;border-radius:99px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
@@ -114,10 +125,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .scene-block-audio{background:rgba(124,111,255,.05);border:1px solid rgba(124,111,255,.15)}
 .scene-block-video{background:rgba(255,107,157,.05);border:1px solid rgba(255,107,157,.15)}
 .scene-block-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:6px;display:block}
-.scene-block-text{margin-bottom:6px}
-.scene-block-text b{color:var(--primary);font-weight:600}
-.video-gen-panel{background:linear-gradient(135deg,rgba(124,111,255,.05),rgba(255,107,157,.03));border:1px solid rgba(124,111,255,.2);border-radius:14px;padding:1.3rem;margin-top:1rem}
-.video-gen-title{font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
 .duration-btns{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1rem}
 .duration-btn{padding:8px 12px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;font-family:inherit;color:var(--text);min-width:48px}
 .duration-btn:hover{border-color:var(--primary)}
@@ -130,9 +137,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .price-summary{display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--card);border-radius:10px;margin-bottom:1rem;border:1px dashed var(--primary)}
 .price-summary-info{font-size:12px;color:var(--text-light);margin-top:3px}
 .price-summary-amount{font-size:22px;font-weight:800;color:var(--primary)}
-.video-result{margin-top:1rem;border-radius:14px;overflow:hidden;background:#000}
-.video-result video{width:100%;display:block;max-height:600px}
-.video-info{background:var(--card);padding:1rem;border:1px solid var(--border);border-top:none;border-radius:0 0 14px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.refs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
+.ref-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;transition:all .2s}
+.ref-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);border-color:var(--primary)}
+.ref-card-name{font-size:15px;font-weight:700;margin-bottom:.4rem}
+.ref-card-role{font-size:11px;color:var(--primary);font-weight:600;text-transform:uppercase;margin-bottom:.6rem}
+.ref-card-desc{font-size:13px;color:var(--text);line-height:1.5}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.2);z-index:1000;animation:slideUp .25s;max-width:380px}
 @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
 .toast.err{background:var(--error)}
@@ -151,13 +161,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .alert.warn{background:rgba(251,191,36,.1);color:#92400e;border:1px solid rgba(251,191,36,.3)}
 .alert.ok{background:rgba(16,185,129,.08);color:var(--success);border:1px solid rgba(16,185,129,.2)}
 .alert.err{background:rgba(239,68,68,.08);color:var(--error);border:1px solid rgba(239,68,68,.2)}
-.analysis-section{margin-bottom:1.5rem}
-.analysis-section h4{font-size:15px;font-weight:700;margin-bottom:.8rem}
-.analysis-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;margin-bottom:.5rem;font-size:13.5px;line-height:1.55}
-.analysis-item b{color:var(--primary)}
 .back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-light);text-decoration:none;font-size:13px;margin-bottom:1rem;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
 .back-btn:hover{color:var(--primary)}
-.inline-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
 </style>
 </head>
 <body>
@@ -197,14 +202,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <div class="page active" id="page-dashboard">
   <div class="page-header"><h1>Добро пожаловать! 👋</h1><p>Статус вашего проекта</p></div>
-  <div class="grid-4"><div class="stat"><div class="stat-label">Концепты</div><div class="stat-num" id="s1">0</div><div class="stat-sub">создано</div></div><div class="stat"><div class="stat-label">Видео</div><div class="stat-num" id="s2">0</div><div class="stat-sub">готово</div></div><div class="stat"><div class="stat-label">Тариф</div><div class="stat-num" id="s3" style="font-size:22px">Демо</div><div class="stat-sub">текущий</div></div><div class="stat"><div class="stat-label">Исследований</div><div class="stat-num" id="s4">0</div><div class="stat-sub">проведено</div></div></div>
-  <div class="status-card"><h3>📊 Ваш прогресс</h3><div class="status-list"><div class="status-item"><div class="status-icon" id="si1">1</div><div class="status-text"><b>Анкета бренда</b><small>О вашей компании</small></div></div><div class="status-item"><div class="status-icon" id="si2">2</div><div class="status-text"><b>Исследование</b><small>Анализ ниши</small></div></div><div class="status-item"><div class="status-icon" id="si3">3</div><div class="status-text"><b>Стратегия</b><small>30 идей на месяц</small></div></div><div class="status-item"><div class="status-icon" id="si4">4</div><div class="status-text"><b>Образы</b><small>Персонажи и локации</small></div></div><div class="status-item"><div class="status-icon" id="si5">5</div><div class="status-text"><b>Концепты</b><small>Готовые техзадания</small></div></div></div><button class="btn btn-lg" style="margin-top:1.5rem" id="next-btn">Начать →</button></div>
+  <div class="grid-4" style="margin-bottom:1.5rem">
+    <div class="stat"><div class="stat-label">Концепты</div><div class="stat-num" id="s1">0</div><div class="stat-sub" id="s1lim">из 1</div></div>
+    <div class="stat"><div class="stat-label">Видео</div><div class="stat-num" id="s2">0</div><div class="stat-sub">готово</div></div>
+    <div class="stat"><div class="stat-label">Тариф</div><div class="stat-num" id="s3" style="font-size:22px">Демо</div><div class="stat-sub">текущий</div></div>
+    <div class="stat"><div class="stat-label">Стратегии</div><div class="stat-num" id="s4">0</div><div class="stat-sub">создано</div></div>
+  </div>
+  <div class="status-card">
+    <h3>📊 Ваш прогресс</h3>
+    <div class="status-list">
+      <div class="status-item"><div class="status-icon" id="si1">1</div><div class="status-text"><b>Анкета бренда</b><small>О вашей компании</small></div></div>
+      <div class="status-item"><div class="status-icon" id="si2">2</div><div class="status-text"><b>Исследование</b><small>Анализ ниши</small></div></div>
+      <div class="status-item"><div class="status-icon" id="si3">3</div><div class="status-text"><b>Стратегия</b><small>30 идей на месяц</small></div></div>
+      <div class="status-item"><div class="status-icon" id="si4">4</div><div class="status-text"><b>Образы</b><small>Персонажи и локации</small></div></div>
+      <div class="status-item"><div class="status-icon" id="si5">5</div><div class="status-text"><b>Концепты</b><small>Готовые техзадания</small></div></div>
+    </div>
+    <button class="btn btn-lg" style="margin-top:1.5rem" id="next-btn">Начать →</button>
+  </div>
 </div>
 
 <div class="page" id="page-brand">
   <div class="page-header"><h1>🏢 Мой бренд</h1><p>О вашей компании</p></div>
-  <div class="card"><h3>🖼️ Логотип</h3><p class="card-desc">Будет в видео для брендинга</p><div id="logo-e" class="logo-upload"><input type="file" id="logo-f" accept="image/*"><div class="logo-upload-icon">🖼️</div><div class="logo-upload-text">Кликните или перетащите</div><div class="logo-upload-hint">PNG, JPG, WEBP · до 2MB</div></div><div id="logo-s" class="logo-preview" style="display:none"><img id="logo-img" src=""><div class="logo-preview-info"><div class="logo-preview-name">Логотип</div><div class="logo-preview-size">Используется в видео</div></div><div class="logo-preview-actions"><button class="btn btn-sm btn-ghost" onclick="document.getElementById('logo-f').click()">Заменить</button><button class="btn btn-sm btn-danger" onclick="removeLogo()">Удалить</button></div></div></div>
-  <div class="card"><h3>📝 Данные</h3><form onsubmit="return saveBrand(event)"><div class="field-row"><div class="field"><label>Название *</label><input type="text" id="b-name" required></div><div class="field"><label>Слоган</label><input type="text" id="b-slogan"></div></div><div class="field"><label>Ниша *</label><input type="text" id="b-niche" required></div><div class="field"><label>Описание *</label><textarea id="b-desc" required></textarea></div><div class="field"><label>Целевая аудитория *</label><textarea id="b-audience" required></textarea></div><div class="field"><label>USP</label><textarea id="b-usp"></textarea></div><button type="submit" class="btn btn-lg">💾 Сохранить</button></form></div>
+  <div class="card">
+    <h3>🖼️ Логотип</h3>
+    <p class="card-desc">Будет в видео для брендинга</p>
+    <div id="logo-e" class="logo-upload"><input type="file" id="logo-f" accept="image/*"><div class="logo-upload-icon">🖼️</div><div class="logo-upload-text">Кликните или перетащите</div><div class="logo-upload-hint">PNG, JPG, WEBP · до 2MB</div></div>
+    <div id="logo-s" class="logo-preview" style="display:none">
+      <img id="logo-img" src="">
+      <div class="logo-preview-info"><div class="logo-preview-name">Логотип</div><div class="logo-preview-size">Используется в видео</div></div>
+      <div class="logo-preview-actions"><button class="btn btn-sm btn-ghost" onclick="document.getElementById('logo-f').click()">Заменить</button><button class="btn btn-sm btn-danger" onclick="removeLogo()">Удалить</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>📝 Данные о компании</h3>
+    <form onsubmit="return saveBrand(event)">
+      <div class="field-row">
+        <div class="field"><label>Название *</label><input type="text" id="b-name" required></div>
+        <div class="field"><label>Слоган</label><input type="text" id="b-slogan"></div>
+      </div>
+      <div class="field"><label>Ниша *</label><input type="text" id="b-niche" required></div>
+      <div class="field"><label>Описание *</label><textarea id="b-desc" required></textarea></div>
+      <div class="field"><label>Целевая аудитория *</label><textarea id="b-audience" required></textarea></div>
+      <div class="field"><label>USP</label><textarea id="b-usp"></textarea></div>
+      <button type="submit" class="btn btn-lg">💾 Сохранить</button>
+    </form>
+  </div>
 </div>
 
 <div class="page" id="page-research">
@@ -214,15 +256,62 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <div class="page" id="page-strategy">
-  <div class="page-header"><h1>📅 Контент-стратегия</h1><p>30 идей на месяц</p></div>
+  <div class="page-header"><h1>📅 Контент-стратегия</h1><p>30 идей на месяц — настройте параметры видео</p></div>
   <div class="card" id="str-e"><div class="empty"><div class="empty-icon">📅</div><h3>Ещё не готова</h3><p>Сначала заказите исследование</p><button class="btn btn-lg" onclick="requestStrategy()" id="req-str-btn">📅 Создать</button></div></div>
-  <div id="str-d" style="display:none"><div class="card"><div class="concept-grid" id="concept-g"></div><div style="margin-top:1rem;display:flex;gap:8px"><button class="btn btn-ghost" onclick="requestStrategy()">🔄 Новая</button><button class="btn" onclick="navTo('refs')">🎭 К образам →</button></div></div></div>
+  <div id="str-d" style="display:none">
+    
+    <div class="apply-all-bar">
+      <h4>⚙️ Быстрая настройка для всех 30 дней</h4>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:1rem">Установите общие параметры одним кликом (или настройте каждый день отдельно ниже)</p>
+      <div class="apply-all-grid">
+        <div>
+          <label>⏱️ Длительность</label>
+          <div class="tiny-btns" id="all-dur">
+            <button class="tiny-btn" data-d="4">4с</button>
+            <button class="tiny-btn" data-d="8">8с</button>
+            <button class="tiny-btn" data-d="10">10с</button>
+            <button class="tiny-btn selected" data-d="15">15с</button>
+            <button class="tiny-btn" data-d="20">20с</button>
+            <button class="tiny-btn" data-d="30">30с</button>
+          </div>
+        </div>
+        <div>
+          <label>🎬 Сцен</label>
+          <div class="tiny-btns" id="all-sc">
+            <button class="tiny-btn" data-s="3">3</button>
+            <button class="tiny-btn" data-s="4">4</button>
+            <button class="tiny-btn selected" data-s="5">5</button>
+            <button class="tiny-btn" data-s="6">6</button>
+            <button class="tiny-btn" data-s="8">8</button>
+          </div>
+        </div>
+        <button class="btn btn-sm" id="apply-all-btn">✓ Применить ко всем</button>
+      </div>
+    </div>
+    
+    <div class="card">
+      <p class="card-desc" id="str-date" style="margin-bottom:1rem"></p>
+      <div class="concept-grid" id="concept-g"></div>
+      <div style="margin-top:1.5rem;display:flex;gap:8px"><button class="btn btn-ghost" onclick="requestStrategy()">🔄 Новая стратегия</button><button class="btn" onclick="navTo('refs')">🎭 К образам →</button></div>
+    </div>
+  </div>
 </div>
 
 <div class="page" id="page-refs">
-  <div class="page-header"><h1>🎭 Визуальные образы</h1><p>Персонажи и локации</p></div>
+  <div class="page-header"><h1>🎭 Визуальные образы</h1><p>Персонажи и локации для видео</p></div>
   <div class="card" id="ref-e"><div class="empty"><div class="empty-icon">🎭</div><h3>Не подготовлены</h3><p>Создайте стратегию</p><button class="btn btn-lg" onclick="requestRefs()" id="req-ref-btn">🎭 Подготовить</button></div></div>
-  <div id="ref-d" style="display:none"><div class="alert info">💡 Персонажи и локации для ваших видео</div><div class="card"><h3>👤 Персонажи</h3><div id="char-g"></div></div><div class="card"><h3>🏢 Локации</h3><div id="loc-g"></div></div></div>
+  <div id="ref-d" style="display:none">
+    <div class="alert info">💡 Эти персонажи и локации будут использоваться при создании концептов</div>
+    <div class="card">
+      <h3>👤 Персонажи <span id="char-count" style="font-size:13px;color:var(--text-light);font-weight:600;margin-left:6px">0</span></h3>
+      <div class="refs-grid" id="char-g" style="margin-top:1rem"></div>
+    </div>
+    <div class="card">
+      <h3>🏢 Локации <span id="loc-count" style="font-size:13px;color:var(--text-light);font-weight:600;margin-left:6px">0</span></h3>
+      <div class="refs-grid" id="loc-g" style="margin-top:1rem"></div>
+    </div>
+    <button class="btn btn-ghost" onclick="requestRefs()">🔄 Обновить образы</button>
+  </div>
 </div>
 
 <div class="page" id="page-concepts">
@@ -233,15 +322,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <div class="page" id="page-videos">
   <div class="page-header"><h1>📹 Мои видео</h1><p>Сгенерированные ролики</p></div>
-  <div id="videos-l"><div class="card"><div class="empty"><div class="empty-icon">📹</div><h3>Пока пусто</h3><p>Создайте концепт</p></div></div></div>
+  <div id="videos-l"><div class="card"><div class="empty"><div class="empty-icon">📹</div><h3>Пока пусто</h3><p>Создайте концепт и видео</p></div></div></div>
 </div>
 
 <div class="page" id="page-pricing">
   <div class="page-header"><h1>💳 Тариф и оплата</h1><p>Выберите подходящий тариф</p></div>
   <div class="alert info">💎 Ваш тариф: <b id="cur-plan">Демо</b></div>
   <div class="plan-grid">
-    <div class="plan"><div class="plan-name">Демо</div><div class="plan-desc">Бесплатно</div><div class="plan-price">0 ₽</div><div class="plan-price-period">навсегда</div><ul class="plan-features"><li>5 концептов/мес</li><li>1 исследование</li><li>Без видео</li></ul><button class="btn btn-ghost btn-block" disabled>Текущий</button></div>
-    <div class="plan featured"><div class="plan-badge">Популярный</div><div class="plan-name">Старт</div><div class="plan-desc">Малый бизнес</div><div class="plan-price">5 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li><b>30 концептов</b></li><li>3 исследования</li><li>Видео — доплата</li></ul><button class="btn btn-block" onclick="upgradePlan('start')">Выбрать</button></div>
+    <div class="plan"><div class="plan-name">Демо</div><div class="plan-desc">Бесплатно</div><div class="plan-price">0 ₽</div><div class="plan-price-period">навсегда</div><ul class="plan-features"><li>1 концепт в месяц</li><li>1 исследование</li><li>1 стратегия</li><li>Без видео</li></ul><button class="btn btn-ghost btn-block" disabled>Текущий</button></div>
+    <div class="plan featured"><div class="plan-badge">Популярный</div><div class="plan-name">Старт</div><div class="plan-desc">Малый бизнес</div><div class="plan-price">5 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li><b>30 концептов</b></li><li>5 исследований</li><li>Видео — доплата</li></ul><button class="btn btn-block" onclick="upgradePlan('start')">Выбрать</button></div>
     <div class="plan"><div class="plan-name">Бизнес</div><div class="plan-desc">Растущий</div><div class="plan-price">12 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li>100 концептов</li><li>15 исследований</li><li><b>5 видео в подарок</b></li></ul><button class="btn btn-ghost btn-block" onclick="upgradePlan('business')">Выбрать</button></div>
     <div class="plan"><div class="plan-name">Агентство</div><div class="plan-desc">SMM-агентства</div><div class="plan-price">25 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li>300 концептов</li><li>Безлимит исследований</li><li><b>20 видео в подарок</b></li></ul><button class="btn btn-ghost btn-block" onclick="upgradePlan('agency')">Выбрать</button></div>
   </div>
@@ -263,21 +352,66 @@ const { data: { session } } = await sb.auth.getSession();
 if (!session) { window.location.href = 'login.html'; throw new Error('not auth'); }
 window.session = session; window.userId = session.user.id;
 
-const [pR, cR, plR, aR, vR, chR, lcR] = await Promise.all([
-  sb.from('profiles').select('*').eq('id', session.user.id).single(),
-  sb.from('companies').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
-  sb.from('plans').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
-  sb.from('analyses').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
-  sb.from('video_generations').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(50),
-  sb.from('characters').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}),
-  sb.from('locations').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false})
-]);
-window.profile = pR.data || {}; window.company = cR.data || {}; window.plan = plR.data || null; window.analysis = aR.data || null; window.videos = vR.data || []; window.characters = chR.data || []; window.locations = lcR.data || [];
+async function loadAll() {
+  const [pR, cR, plR, aR, vR, chR, lcR] = await Promise.all([
+    sb.from('profiles').select('*').eq('id', session.user.id).single(),
+    sb.from('companies').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
+    sb.from('plans').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
+    sb.from('analyses').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
+    sb.from('video_generations').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(50),
+    sb.from('characters').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}),
+    sb.from('locations').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false})
+  ]);
+  window.profile = pR.data || {};
+  window.company = cR.data || {};
+  window.plan = plR.data || null;
+  window.analysis = aR.data || null;
+  window.videos = vR.data || [];
+  window.characters = chR.data || [];
+  window.locations = lcR.data || [];
+  console.log('📊 Loaded data:', {
+    characters: window.characters.length,
+    locations: window.locations.length,
+    plan: window.plan ? 'yes' : 'no',
+    ideas: window.plan?.ideas?.length || 0
+  });
+}
+
+await loadAll();
 
 if(window.profile.is_admin) document.getElementById('admin-link').style.display='block';
-render(); document.getElementById('loader').style.display='none';
 
-function render(){
+render();
+document.getElementById('loader').style.display='none';
+
+// === APPLY ALL ===
+document.querySelectorAll('#all-dur .tiny-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#all-dur .tiny-btn').forEach(x => x.classList.remove('selected'));
+  b.classList.add('selected');
+}));
+document.querySelectorAll('#all-sc .tiny-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#all-sc .tiny-btn').forEach(x => x.classList.remove('selected'));
+  b.classList.add('selected');
+}));
+
+document.getElementById('apply-all-btn').addEventListener('click', async () => {
+  if(!window.plan?.ideas) return;
+  const d = parseInt(document.querySelector('#all-dur .selected')?.dataset.d) || 15;
+  const s = parseInt(document.querySelector('#all-sc .selected')?.dataset.s) || 5;
+  
+  if(!confirm(`Применить ${d} сек и ${s} сцен ко всем 30 дням?`)) return;
+  
+  const newIdeas = window.plan.ideas.map(idea => ({...idea, duration: d, scenes_count: s}));
+  
+  const { error } = await sb.from('plans').update({ideas: newIdeas, updated_at: new Date().toISOString()}).eq('id', window.plan.id);
+  if(error) { toast('❌ ' + error.message, 'err'); return; }
+  
+  window.plan.ideas = newIdeas;
+  render();
+  toast(`✅ Применено ко всем 30 дням: ${d} сек, ${s} сцен`, 'ok');
+});
+
+function render() {
   const name = window.profile.name || session.user.email?.split('@')[0] || 'User';
   document.getElementById('user-name').textContent = name;
   const pMap = {free:'🆓 Демо', start:'💎 Старт', business:'🚀 Бизнес', agency:'💼 Агентство'};
@@ -285,31 +419,32 @@ function render(){
   document.getElementById('user-plan').textContent = pMap[p] || pMap.free;
   document.getElementById('cur-plan').textContent = (pMap[p] || pMap.free).split(' ').slice(1).join(' ');
   
-  const lim = {free:{s:5,v:0}, start:{s:30,v:0}, business:{s:100,v:5}, agency:{s:300,v:20}};
+  const lim = {free:{s:1,v:0}, start:{s:30,v:0}, business:{s:100,v:5}, agency:{s:300,v:20}};
   const l = lim[p];
   document.getElementById('s1').textContent = window.profile.usage_scenarios || 0;
+  document.getElementById('s1lim').textContent = 'из ' + l.s;
   document.getElementById('s2').textContent = window.videos.filter(x=>x.status==='done').length;
   document.getElementById('s3').textContent = (pMap[p] || pMap.free).split(' ').slice(1).join(' ');
-  document.getElementById('s4').textContent = window.analysis ? '✓' : '0';
+  document.getElementById('s4').textContent = window.plan ? '1' : '0';
   
   const hasBrand = !!(window.company && window.company.name);
   const hasAnalysis = !!window.analysis;
   const hasStrategy = !!window.plan;
   const hasRefs = window.characters.length > 0 || window.locations.length > 0;
   
-  [['s1', hasBrand], ['s2', hasAnalysis], ['s3', hasStrategy], ['s4', hasRefs]].forEach(([id, done])=>{
-    const el = document.getElementById('si' + id.slice(1));
-    if(done) { el.classList.add('done'); el.textContent = '✓'; }
+  [[1, hasBrand], [2, hasAnalysis], [3, hasStrategy], [4, hasRefs]].forEach(([n, done]) => {
+    const el = document.getElementById('si' + n);
+    if(done) { el.classList.add('done'); el.textContent = '✓'; } else { el.classList.remove('done'); el.textContent = n; }
   });
   
   const ctaBtn = document.getElementById('next-btn');
-  if(!hasBrand) { ctaBtn.textContent = 'Начать с анкеты бренда →'; ctaBtn.onclick = () => navTo('brand'); }
+  if(!hasBrand) { ctaBtn.textContent = 'Начать с анкеты →'; ctaBtn.onclick = () => navTo('brand'); }
   else if(!hasAnalysis) { ctaBtn.textContent = 'Заказать исследование →'; ctaBtn.onclick = () => navTo('research'); }
   else if(!hasStrategy) { ctaBtn.textContent = 'Создать стратегию →'; ctaBtn.onclick = () => navTo('strategy'); }
   else if(!hasRefs) { ctaBtn.textContent = 'Подготовить образы →'; ctaBtn.onclick = () => navTo('refs'); }
   else { ctaBtn.textContent = 'К концептам →'; ctaBtn.onclick = () => navTo('strategy'); }
   
-  // Research
+  // RESEARCH
   if(!window.analysis) {
     document.getElementById('res-e').style.display = '';
     document.getElementById('res-d').style.display = 'none';
@@ -319,70 +454,149 @@ function render(){
     document.getElementById('res-date').textContent = 'От ' + new Date(window.analysis.created_at).toLocaleDateString('ru-RU');
     const d = window.analysis.data || {};
     let html = '';
-    if(d.competitors?.length) { html += '<div class="analysis-section"><h4>🏆 Конкуренты</h4>'; d.competitors.forEach(c => html += `<div class="analysis-item"><b>${esc(c.name)}</b> — ${esc(c.format||'')}</div>`); html += '</div>'; }
-    if(d.trends?.length) { html += '<div class="analysis-section"><h4>🔥 Тренды</h4>'; d.trends.forEach(t => html += `<div class="analysis-item">${esc(t.name)}</div>`); html += '</div>'; }
+    if(d.competitors?.length) { html += '<h4 style="margin:1rem 0 .5rem">🏆 Конкуренты</h4>'; d.competitors.forEach(c => html += `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin-bottom:.5rem"><b>${esc(c.name)}</b> — ${esc(c.format||c.strength||'')}</div>`); }
+    if(d.trends?.length) { html += '<h4 style="margin:1rem 0 .5rem">🔥 Тренды</h4>'; d.trends.forEach(t => html += `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin-bottom:.5rem"><b>${esc(t.name)}</b> ${t.desc?`— ${esc(t.desc)}`:''}</div>`); }
+    if(d.insights?.viral_hooks?.length) { html += '<h4 style="margin:1rem 0 .5rem">🎯 Хуки</h4>'; d.insights.viral_hooks.forEach(h => html += `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin-bottom:.5rem">${esc(h)}</div>`); }
     document.getElementById('res-c').innerHTML = html || '<p>Нет данных</p>';
   }
   
-  // Strategy
+  // STRATEGY
   if(!window.plan || !window.plan.ideas?.length) {
     document.getElementById('str-e').style.display = '';
     document.getElementById('str-d').style.display = 'none';
   } else {
     document.getElementById('str-e').style.display = 'none';
     document.getElementById('str-d').style.display = '';
+    document.getElementById('str-date').textContent = `Создана ${new Date(window.plan.created_at).toLocaleDateString('ru-RU')} · ${window.plan.ideas.length} идей`;
+    
     const grid = document.getElementById('concept-g');
     grid.innerHTML = '';
-    window.plan.ideas.forEach(idea => {
+    window.plan.ideas.forEach((idea, idx) => {
+      const dur = idea.duration || 15;
+      const scn = idea.scenes_count || 5;
+      
       const card = document.createElement('div');
       card.className = 'concept-card';
-      card.innerHTML = `<span class="concept-day">День ${idea.day}</span><div class="concept-emoji">${esc(idea.emoji||'🎬')}</div><div class="concept-title">${esc(idea.title||'')}</div><div class="concept-type">${esc(idea.type||'')}</div><button class="btn btn-sm btn-block">📝 Открыть</button>`;
-      card.querySelector('button').addEventListener('click', () => openConcept(idea.day));
+      card.innerHTML = `
+        <span class="concept-day">День ${idea.day}</span>
+        <div class="concept-emoji">${esc(idea.emoji||'🎬')}</div>
+        <div class="concept-title">${esc(idea.title||'')}</div>
+        <div class="concept-type">${esc(idea.type||'')}</div>
+        ${idea.hook ? `<div class="concept-hook">"${esc(idea.hook)}"</div>` : ''}
+        
+        <div class="concept-settings">
+          <span class="concept-settings-label">⏱️ Длительность</span>
+          <div class="tiny-btns" data-day-dur="${idea.day}">
+            ${[4,8,10,15,20,30].map(d => `<button class="tiny-btn ${d===dur?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
+          </div>
+          <span class="concept-settings-label" style="margin-top:.7rem">🎬 Сцен</span>
+          <div class="tiny-btns" data-day-sc="${idea.day}">
+            ${[3,4,5,6,8].map(s => `<button class="tiny-btn ${s===scn?'selected':''}" data-s="${s}">${s}</button>`).join('')}
+          </div>
+        </div>
+        
+        <button class="btn btn-sm btn-block">📝 Подготовить концепт</button>
+      `;
+      
+      // Day-level duration buttons
+      card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(b => {
+        b.addEventListener('click', async () => {
+          card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(x => x.classList.remove('selected'));
+          b.classList.add('selected');
+          const newD = parseInt(b.dataset.d);
+          await updateIdeaParam(idea.day, 'duration', newD);
+        });
+      });
+      
+      // Day-level scenes buttons
+      card.querySelectorAll(`[data-day-sc="${idea.day}"] .tiny-btn`).forEach(b => {
+        b.addEventListener('click', async () => {
+          card.querySelectorAll(`[data-day-sc="${idea.day}"] .tiny-btn`).forEach(x => x.classList.remove('selected'));
+          b.classList.add('selected');
+          const newS = parseInt(b.dataset.s);
+          await updateIdeaParam(idea.day, 'scenes_count', newS);
+        });
+      });
+      
+      card.querySelector('button.btn-block').addEventListener('click', () => openConcept(idea.day));
       grid.appendChild(card);
     });
   }
   
-  // Refs
+  // REFS (with debug)
+  console.log('🎭 Render refs:', {chars: window.characters.length, locs: window.locations.length});
   if(window.characters.length === 0 && window.locations.length === 0) {
     document.getElementById('ref-e').style.display = '';
     document.getElementById('ref-d').style.display = 'none';
   } else {
     document.getElementById('ref-e').style.display = 'none';
     document.getElementById('ref-d').style.display = '';
-    ['char-g', 'loc-g'].forEach((gid, idx) => {
-      const list = idx === 0 ? window.characters : window.locations;
-      const grid = document.getElementById(gid);
-      grid.innerHTML = list.map(item => `
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.5rem">
-          <div style="font-weight:700;margin-bottom:.3rem">${esc(item.name)}</div>
-          <div style="font-size:13px;color:var(--text-light);line-height:1.4">${esc(item.description||'')}</div>
+    
+    document.getElementById('char-count').textContent = window.characters.length;
+    document.getElementById('loc-count').textContent = window.locations.length;
+    
+    const charGrid = document.getElementById('char-g');
+    if(window.characters.length === 0) {
+      charGrid.innerHTML = '<p style="color:var(--text-light);grid-column:1/-1">Персонажей пока нет</p>';
+    } else {
+      charGrid.innerHTML = window.characters.map(c => `
+        <div class="ref-card">
+          <div class="ref-card-name">👤 ${esc(c.name || 'Без имени')}</div>
+          ${c.role ? `<div class="ref-card-role">${esc(c.role)}</div>` : ''}
+          <div class="ref-card-desc">${esc(c.description || 'Без описания')}</div>
+          ${c.appears_in?.length ? `<div style="margin-top:.7rem;display:flex;flex-wrap:wrap;gap:4px">${c.appears_in.map(d => `<span style="background:rgba(124,111,255,.1);color:var(--primary);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600">День ${d}</span>`).join('')}</div>` : ''}
         </div>
       `).join('');
-    });
+    }
+    
+    const locGrid = document.getElementById('loc-g');
+    if(window.locations.length === 0) {
+      locGrid.innerHTML = '<p style="color:var(--text-light);grid-column:1/-1">Локаций пока нет</p>';
+    } else {
+      locGrid.innerHTML = window.locations.map(l => `
+        <div class="ref-card">
+          <div class="ref-card-name">🏢 ${esc(l.name || 'Без названия')}</div>
+          <div class="ref-card-desc">${esc(l.description || 'Без описания')}</div>
+          ${l.appears_in?.length ? `<div style="margin-top:.7rem;display:flex;flex-wrap:wrap;gap:4px">${l.appears_in.map(d => `<span style="background:rgba(255,107,157,.1);color:var(--secondary);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600">День ${d}</span>`).join('')}</div>` : ''}
+        </div>
+      `).join('');
+    }
   }
   
-  // Videos
+  // VIDEOS
   if(window.videos.length === 0) {
     document.getElementById('videos-l').innerHTML = '<div class="card"><div class="empty"><div class="empty-icon">📹</div><h3>Пока пусто</h3><p>Создайте концепт и видео</p></div></div>';
   } else {
     let html = '';
     window.videos.forEach(v => {
       const status = v.status === 'done' ? '✅ Готово' : v.status === 'processing' ? '⏳ Генерируется' : '❌ Ошибка';
-      html += `<div class="card"><h3>${status}</h3><p style="font-size:12px;color:var(--text-light)">${v.resolution} · ${v.duration_seconds}с</p>${v.video_url ? `<video style="width:100%;border-radius:8px;margin-top:1rem" controls src="${v.video_url}"></video>` : ''}</div>`;
+      html += `<div class="card"><h3>${status} · Сцена ${v.scene_num || '?'}</h3><p style="font-size:12px;color:var(--text-light)">${v.resolution} · ${v.duration_seconds}с · ${new Date(v.created_at).toLocaleString('ru-RU')}</p>${v.video_url ? `<video style="width:100%;border-radius:8px;margin-top:1rem" controls src="${v.video_url}"></video>` : ''}</div>`;
     });
     document.getElementById('videos-l').innerHTML = html;
   }
   
-  // Brand form
+  // BRAND FORM
   if(window.company && window.company.name) {
-    ['name', 'slogan', 'niche', 'desc', 'audience', 'usp'].forEach(k => {
+    ['name', 'slogan', 'niche', 'audience', 'usp'].forEach(k => {
       const el = document.getElementById('b-' + k);
-      if(el) el.value = window.company[k === 'desc' ? 'description' : k] || '';
+      if(el) el.value = window.company[k] || '';
     });
+    const descEl = document.getElementById('b-desc');
+    if(descEl) descEl.value = window.company.description || '';
     if(window.company.logo_url) showLogoPreview(window.company.logo_url, window.company.logo_name || 'logo');
   }
 }
 
+async function updateIdeaParam(day, field, value) {
+  if(!window.plan?.ideas) return;
+  const newIdeas = window.plan.ideas.map(i => i.day === day ? {...i, [field]: value} : i);
+  const { error } = await sb.from('plans').update({ideas: newIdeas, updated_at: new Date().toISOString()}).eq('id', window.plan.id);
+  if(error) { toast('❌ Не удалось сохранить', 'err'); return; }
+  window.plan.ideas = newIdeas;
+  toast(`✓ День ${day}: ${field === 'duration' ? value + ' сек' : value + ' сцен'}`, 'ok');
+}
+
+// === LOGO UPLOAD ===
 document.getElementById('logo-f').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if(!file) return;
@@ -393,17 +607,12 @@ document.getElementById('logo-f').addEventListener('change', async (e) => {
     const canvas = document.createElement('canvas');
     const img = await new Promise((res, rej) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const i = new Image();
-        i.onload = () => res(i);
-        i.onerror = rej;
-        i.src = e.target.result;
-      };
+      reader.onload = (e) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = e.target.result; };
       reader.onerror = rej;
       reader.readAsDataURL(file);
     });
     let w = img.width, h = img.height;
-    if(w > 1024 || h > 1024) { if(w > h) { h = h * (1024 / w); w = 1024; } else { w = w * (1024 / h); h = 1024; } }
+    if(w > 1024 || h > 1024) { if(w > h) { h = h * (1024/w); w = 1024; } else { w = w * (1024/h); h = 1024; } }
     canvas.width = w; canvas.height = h;
     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
     const blob = await new Promise(res => canvas.toBlob(res, file.type, 0.92));
@@ -478,48 +687,45 @@ window.saveBrand = async function(e) {
 
 window.requestResearch = async function() {
   if(!window.company?.name) { toast('Заполните анкету', 'err'); setTimeout(() => navTo('brand'), 800); return; }
-  document.getElementById('req-res-btn').classList.add('loading');
+  const btn = document.getElementById('req-res-btn');
+  if(btn) { btn.classList.add('loading'); btn.disabled = true; }
   toast('🔍 Команда работает...', 'ok');
   try {
     const r = await callFunction('generate-analysis', {});
     if(!r.success) throw new Error(r.error || 'Ошибка');
-    const { data: a } = await sb.from('analyses').select('*').eq('user_id', window.userId).order('created_at', {ascending:false}).limit(1).maybeSingle();
-    window.analysis = a;
+    await loadAll();
     render();
     toast('✅ Исследование готово!', 'ok');
-  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); if(btn) { btn.classList.remove('loading'); btn.disabled = false; } }
 };
 
 window.requestStrategy = async function() {
   if(!window.company?.name) { toast('Заполните анкету', 'err'); setTimeout(() => navTo('brand'), 800); return; }
-  document.getElementById('req-str-btn').classList.add('loading');
+  const btn = document.getElementById('req-str-btn');
+  if(btn) { btn.classList.add('loading'); btn.disabled = true; }
   toast('📅 Команда создаёт...', 'ok');
   try {
     const r = await callFunction('generate-plan', {});
     if(!r.success) throw new Error(r.error || 'Ошибка');
-    const { data: p } = await sb.from('plans').select('*').eq('user_id', window.userId).order('created_at', {ascending:false}).limit(1).maybeSingle();
-    window.plan = p;
+    await loadAll();
     render();
     toast('✅ Стратегия готова!', 'ok');
-  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); if(btn) { btn.classList.remove('loading'); btn.disabled = false; } }
 };
 
 window.requestRefs = async function() {
   if(!window.plan) { toast('Создайте стратегию', 'err'); return; }
-  document.getElementById('req-ref-btn').classList.add('loading');
+  const btn = document.getElementById('req-ref-btn');
+  if(btn) { btn.classList.add('loading'); btn.disabled = true; }
   toast('🎭 Готовим образы...', 'ok');
   try {
     const r = await callFunction('generate-refs', { plan_id: window.plan.id });
+    console.log('🎭 generate-refs response:', r);
     if(!r.success) throw new Error(r.error || 'Ошибка');
-    const [chR, lcR] = await Promise.all([
-      sb.from('characters').select('*').eq('user_id', window.userId),
-      sb.from('locations').select('*').eq('user_id', window.userId)
-    ]);
-    window.characters = chR.data || [];
-    window.locations = lcR.data || [];
+    await loadAll();
     render();
     toast('✅ Образы готовы!', 'ok');
-  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
+  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); if(btn) { btn.classList.remove('loading'); btn.disabled = false; } }
 };
 
 window.openConcept = async function(day) {
@@ -538,28 +744,37 @@ window.openConcept = async function(day) {
   if(existing?.data) {
     renderConcept(existing, idea);
   } else {
+    const dur = idea.duration || 15;
+    const scn = idea.scenes_count || 5;
     c.innerHTML = `
       <div class="card">
         <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
         <p class="card-desc">${esc(idea.concept||'')}</p>
-        <div class="alert info">🎬 Команда подготовит концепт из 5 сцен на 15 сек.</div>
+        <div class="alert info">🎬 Параметры из стратегии: <b>${dur} сек, ${scn} сцен</b><br>Команда подготовит концепт. Изменить параметры можно в стратегии.</div>
         <button class="btn btn-lg btn-block" id="gen-conc-btn" style="margin-top:1rem">📝 Подготовить концепт</button>
       </div>
     `;
-    document.getElementById('gen-conc-btn').addEventListener('click', () => generateConcept(day));
+    document.getElementById('gen-conc-btn').addEventListener('click', () => generateConcept(day, dur, scn));
   }
 };
 
-async function generateConcept(day) {
+async function generateConcept(day, duration, scenes) {
   const btn = document.getElementById('gen-conc-btn');
   btn.classList.add('loading'); btn.disabled = true;
   toast('🎬 Команда готовит...', 'ok');
   try {
-    const r = await callFunction('generate-scenario', { plan_id: window.plan.id, day_number: day });
+    const r = await callFunction('generate-scenario', {
+      plan_id: window.plan.id,
+      day_number: day,
+      duration: duration,
+      scenes: scenes
+    });
     if(!r.success) throw new Error(r.error || 'Ошибка');
     const { data: prod } = await sb.from('productions').select('*').eq('id', r.production_id).single();
     const idea = window.plan.ideas.find(i => i.day === day);
     renderConcept(prod, idea);
+    await loadAll();
+    render();
     toast('✅ Концепт готов!', 'ok');
   } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); btn.classList.remove('loading'); btn.disabled = false; }
 }
@@ -569,17 +784,15 @@ function renderConcept(production, idea) {
   if(!s?.scenes) return;
   const c = document.getElementById('conc-c');
   
-  let html = `
-    <div class="scenario-view">
-      <div class="card">
-        <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
-        <div class="scenario-meta">
-          <div class="meta-chip">⏱️ <span>${s.duration||15} сек</span></div>
-          <div class="meta-chip">🎬 <span>${s.scenes_count||s.scenes.length} сцен</span></div>
-        </div>
-        <p class="card-desc">${esc(s.concept||'')}</p>
+  let html = `<div class="scenario-view">
+    <div class="card">
+      <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
+      <div class="scenario-meta">
+        <div class="meta-chip">⏱️ <span>${s.duration||15} сек</span></div>
+        <div class="meta-chip">🎬 <span>${s.scenes_count||s.scenes.length} сцен</span></div>
       </div>
-  `;
+      <p class="card-desc">${esc(s.concept||'')}</p>
+    </div>`;
   
   s.scenes.forEach(sc => {
     html += `
@@ -589,8 +802,8 @@ function renderConcept(production, idea) {
           <div class="scene-time">${esc(sc.time||'')}</div>
           <div class="scene-title">${esc(sc.title||'')}</div>
         </div>
-        ${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}
-        ${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬</span><div>${esc(sc.video.action||'')}</div></div>` : ''}
+        ${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤 Аудио</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}
+        ${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬 Видео</span><div>${esc(sc.video.action||'')}</div></div>` : ''}
       </div>
     `;
   });
@@ -598,47 +811,36 @@ function renderConcept(production, idea) {
   html += `
     <div class="card">
       <h3>🎬 Создание видео</h3>
+      <p class="card-desc">Можно отдельно изменить параметры для этого ролика</p>
       <div class="field"><label>⏱️ Длительность</label><div class="duration-btns" id="dur-sel">
-        <button class="duration-btn" data-d="4">4с</button>
-        <button class="duration-btn" data-d="10">10с</button>
-        <button class="duration-btn selected" data-d="15">15с</button>
-        <button class="duration-btn" data-d="20">20с</button>
+        ${[4,8,10,15,20,30].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
       </div></div>
-      <div class="field"><label>🎬 Сцен</label><div class="duration-btns" id="sc-sel">
-        <button class="duration-btn" data-s="3">3</button>
-        <button class="duration-btn" data-s="4">4</button>
-        <button class="duration-btn selected" data-s="5">5</button>
-        <button class="duration-btn" data-s="6">6</button>
+      <div class="field"><label>🎬 Сцен (видео)</label><div class="duration-btns" id="sc-sel">
+        ${[3,4,5,6].map(sn => `<button class="duration-btn ${sn===Math.min(s.scenes_count||5, 6)?'selected':''}" data-s="${sn}">${sn}</button>`).join('')}
       </div></div>
       <div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel">
-        <button class="quality-btn" data-q="480p">480p</button>
-        <button class="quality-btn selected" data-q="720p">720p</button>
-        <button class="quality-btn" data-q="1080p">1080p</button>
+        <button class="quality-btn" data-q="480p">480p<small>дёшево</small></button>
+        <button class="quality-btn selected" data-q="720p">720p<small>HD</small></button>
+        <button class="quality-btn" data-q="1080p">1080p<small>премиум</small></button>
       </div></div>
-      <div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">15 сек · 5 видео</div></div><div class="price-summary-amount" id="price-amt">—</div></div>
+      <div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div><div class="price-summary-amount" id="price-amt">—</div></div>
       <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
     </div>
-    </div>
-  `;
+  </div>`;
   
   c.innerHTML = html;
   
   c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => {
     c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected'));
-    b.classList.add('selected');
-    updatePrice();
+    b.classList.add('selected'); updatePrice();
   }));
-  
   c.querySelectorAll('#sc-sel .duration-btn').forEach(b => b.addEventListener('click', () => {
     c.querySelectorAll('#sc-sel .duration-btn').forEach(x => x.classList.remove('selected'));
-    b.classList.add('selected');
-    updatePrice();
+    b.classList.add('selected'); updatePrice();
   }));
-  
   c.querySelectorAll('#q-sel .quality-btn').forEach(b => b.addEventListener('click', () => {
     c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected'));
-    b.classList.add('selected');
-    updatePrice();
+    b.classList.add('selected'); updatePrice();
   }));
   
   function updatePrice() {
@@ -646,13 +848,12 @@ function renderConcept(production, idea) {
     const n = parseInt(c.querySelector('#sc-sel .selected')?.dataset.s) || 5;
     const q = c.querySelector('#q-sel .selected')?.dataset.q || '720p';
     const cps = {'480p': 0.10, '720p': 0.12, '1080p': 0.13};
-    const cost = (cps[q] || 0.12) * (d / n) * 95 * n;
+    const cost = (cps[q] || 0.12) * (d/n) * 95 * n;
     let price = Math.ceil(cost * 1.8 / 10) * 10;
     if(price < 50) price = 50;
     document.getElementById('price-info').textContent = `${d} сек · ${n} видео · ${q}`;
     document.getElementById('price-amt').textContent = price + '₽';
   }
-  
   updatePrice();
   
   c.querySelector('#gen-vid-btn').addEventListener('click', () => {
@@ -686,12 +887,8 @@ async function generateVideos(prodId, scenes, duration, scenesCount, quality) {
       } catch(err) { console.error(err); }
     }
     
-    toast(`✅ Видео запущены!`, 'ok');
-    setTimeout(async () => {
-      const { data: vids } = await sb.from('video_generations').select('*').eq('user_id', window.userId).order('created_at', {ascending:false}).limit(50);
-      window.videos = vids || [];
-      render();
-    }, 2000);
+    toast('✅ Видео запущены!', 'ok');
+    setTimeout(async () => { await loadAll(); render(); }, 2000);
   } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
 }
 
@@ -724,7 +921,7 @@ async function callFunction(name, body) {
 }
 
 function esc(str) {
-  if(!str) return '';
+  if(str === undefined || str === null) return '';
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 

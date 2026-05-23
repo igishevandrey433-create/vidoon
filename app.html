@@ -163,12 +163,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .alert.err{background:rgba(239,68,68,.08);color:var(--error);border:1px solid rgba(239,68,68,.2)}
 .back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-light);text-decoration:none;font-size:13px;margin-bottom:1rem;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
 .back-btn:hover{color:var(--primary)}
+
+/* ===== ПРОГРЕСС МОДАЛКА ===== */
+.progress-overlay{position:fixed;inset:0;background:rgba(15,15,26,.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn .25s}
+.progress-modal{background:var(--card);border-radius:20px;padding:2.5rem 2rem;max-width:480px;width:90%;box-shadow:0 25px 60px rgba(0,0,0,.3);text-align:center}
+.progress-emoji{font-size:48px;margin-bottom:1rem;animation:bounce 1.5s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.progress-title{font-size:20px;font-weight:800;margin-bottom:.4rem}
+.progress-subtitle{font-size:14px;color:var(--text-light);margin-bottom:1.8rem}
+.progress-bar-wrap{background:var(--bg);height:10px;border-radius:99px;overflow:hidden;margin-bottom:1.5rem;position:relative}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:99px;width:0%;transition:width .5s ease;position:relative;overflow:hidden}
+.progress-bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.progress-percent{font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1.5rem}
+.progress-steps{text-align:left;max-width:340px;margin:0 auto}
+.progress-step{display:flex;align-items:center;gap:12px;padding:8px 0;font-size:14px;transition:all .3s;opacity:.4}
+.progress-step.active{opacity:1;font-weight:600}
+.progress-step.done{opacity:1;color:var(--success)}
+.progress-step-icon{width:24px;height:24px;border-radius:50%;background:var(--bg);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .3s}
+.progress-step.active .progress-step-icon{background:var(--primary);border-color:var(--primary);color:#fff;animation:pulse 1s infinite}
+.progress-step.done .progress-step-icon{background:var(--success);border-color:var(--success);color:#fff}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(124,111,255,.5)}50%{box-shadow:0 0 0 8px rgba(124,111,255,0)}}
+.progress-hint{font-size:12px;color:var(--text-light);margin-top:1rem;font-style:italic}
 </style>
 </head>
 <body>
 
 <div class="page-loader" id="loader"><div class="spinner"></div></div>
 <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<!-- Прогресс модалка -->
+<div class="progress-overlay" id="progress-modal" style="display:none">
+  <div class="progress-modal">
+    <div class="progress-emoji" id="prog-emoji">🚀</div>
+    <div class="progress-title" id="prog-title">Загрузка...</div>
+    <div class="progress-subtitle" id="prog-subtitle">Пожалуйста подождите</div>
+    <div class="progress-percent" id="prog-percent">0%</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-bar"></div></div>
+    <div class="progress-steps" id="prog-steps"></div>
+    <div class="progress-hint" id="prog-hint">Обычно занимает 30-60 секунд</div>
+  </div>
+</div>
 
 <aside class="sidebar">
   <a href="index.html" class="logo"><div class="logo-icon">🎬</div>Vidoon</a>
@@ -256,13 +291,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <div class="page" id="page-strategy">
-  <div class="page-header"><h1>📅 Контент-стратегия</h1><p>30 идей на месяц — настройте параметры видео</p></div>
+  <div class="page-header"><h1>📅 Контент-стратегия</h1><p>30 идей на месяц</p></div>
   <div class="card" id="str-e"><div class="empty"><div class="empty-icon">📅</div><h3>Ещё не готова</h3><p>Сначала заказите исследование</p><button class="btn btn-lg" onclick="requestStrategy()" id="req-str-btn">📅 Создать</button></div></div>
   <div id="str-d" style="display:none">
-    
     <div class="apply-all-bar">
-      <h4>⚙️ Быстрая настройка для всех 30 дней</h4>
-      <p style="font-size:12px;color:var(--text-light);margin-bottom:1rem">Установите общие параметры одним кликом (или настройте каждый день отдельно ниже)</p>
+      <h4>⚙️ Быстрая настройка для всех дней</h4>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:1rem">Одна команда для всех 30 видео</p>
       <div class="apply-all-grid">
         <div>
           <label>⏱️ Длительность</label>
@@ -288,7 +322,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <button class="btn btn-sm" id="apply-all-btn">✓ Применить ко всем</button>
       </div>
     </div>
-    
     <div class="card">
       <p class="card-desc" id="str-date" style="margin-bottom:1rem"></p>
       <div class="concept-grid" id="concept-g"></div>
@@ -352,6 +385,70 @@ const { data: { session } } = await sb.auth.getSession();
 if (!session) { window.location.href = 'login.html'; throw new Error('not auth'); }
 window.session = session; window.userId = session.user.id;
 
+// ===== ПРОГРЕСС-СИСТЕМА =====
+let progressInterval = null;
+
+function showProgress(config) {
+  const modal = document.getElementById('progress-modal');
+  document.getElementById('prog-emoji').textContent = config.emoji || '🚀';
+  document.getElementById('prog-title').textContent = config.title || 'Загрузка...';
+  document.getElementById('prog-subtitle').textContent = config.subtitle || '';
+  document.getElementById('prog-hint').textContent = config.hint || 'Обычно занимает 30-60 секунд';
+  
+  const stepsEl = document.getElementById('prog-steps');
+  stepsEl.innerHTML = config.steps.map((s, i) => `
+    <div class="progress-step" data-step="${i}">
+      <div class="progress-step-icon">${i+1}</div>
+      <div>${s}</div>
+    </div>
+  `).join('');
+  
+  document.getElementById('prog-bar').style.width = '0%';
+  document.getElementById('prog-percent').textContent = '0%';
+  modal.style.display = '';
+  
+  // Симуляция прогресса
+  const totalSteps = config.steps.length;
+  const stepDuration = (config.duration || 45000) / totalSteps;
+  let currentStep = 0;
+  let currentPercent = 0;
+  
+  // Активируем первый шаг
+  stepsEl.querySelector('[data-step="0"]')?.classList.add('active');
+  
+  progressInterval = setInterval(() => {
+    currentPercent += 100 / (totalSteps * 10);
+    if (currentPercent > 95) currentPercent = 95;
+    
+    document.getElementById('prog-bar').style.width = currentPercent + '%';
+    document.getElementById('prog-percent').textContent = Math.floor(currentPercent) + '%';
+    
+    const newStep = Math.floor(currentPercent / (100 / totalSteps));
+    if (newStep > currentStep && newStep < totalSteps) {
+      const prevEl = stepsEl.querySelector(`[data-step="${currentStep}"]`);
+      const nextEl = stepsEl.querySelector(`[data-step="${newStep}"]`);
+      if (prevEl) { prevEl.classList.remove('active'); prevEl.classList.add('done'); prevEl.querySelector('.progress-step-icon').textContent = '✓'; }
+      if (nextEl) nextEl.classList.add('active');
+      currentStep = newStep;
+    }
+  }, stepDuration / 10);
+}
+
+function hideProgress(success = true) {
+  if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
+  if (success) {
+    document.getElementById('prog-bar').style.width = '100%';
+    document.getElementById('prog-percent').textContent = '100%';
+    document.querySelectorAll('.progress-step').forEach(el => {
+      el.classList.remove('active'); el.classList.add('done');
+      el.querySelector('.progress-step-icon').textContent = '✓';
+    });
+    setTimeout(() => { document.getElementById('progress-modal').style.display = 'none'; }, 600);
+  } else {
+    document.getElementById('progress-modal').style.display = 'none';
+  }
+}
+
 async function loadAll() {
   const [pR, cR, plR, aR, vR, chR, lcR] = await Promise.all([
     sb.from('profiles').select('*').eq('id', session.user.id).single(),
@@ -369,22 +466,15 @@ async function loadAll() {
   window.videos = vR.data || [];
   window.characters = chR.data || [];
   window.locations = lcR.data || [];
-  console.log('📊 Loaded data:', {
-    characters: window.characters.length,
-    locations: window.locations.length,
-    plan: window.plan ? 'yes' : 'no',
-    ideas: window.plan?.ideas?.length || 0
-  });
+  console.log('📊 Loaded:', {chars: window.characters.length, locs: window.locations.length, plan: !!window.plan});
 }
 
 await loadAll();
-
 if(window.profile.is_admin) document.getElementById('admin-link').style.display='block';
-
 render();
 document.getElementById('loader').style.display='none';
 
-// === APPLY ALL ===
+// APPLY ALL
 document.querySelectorAll('#all-dur .tiny-btn').forEach(b => b.addEventListener('click', () => {
   document.querySelectorAll('#all-dur .tiny-btn').forEach(x => x.classList.remove('selected'));
   b.classList.add('selected');
@@ -398,17 +488,13 @@ document.getElementById('apply-all-btn').addEventListener('click', async () => {
   if(!window.plan?.ideas) return;
   const d = parseInt(document.querySelector('#all-dur .selected')?.dataset.d) || 15;
   const s = parseInt(document.querySelector('#all-sc .selected')?.dataset.s) || 5;
-  
   if(!confirm(`Применить ${d} сек и ${s} сцен ко всем 30 дням?`)) return;
-  
   const newIdeas = window.plan.ideas.map(idea => ({...idea, duration: d, scenes_count: s}));
-  
   const { error } = await sb.from('plans').update({ideas: newIdeas, updated_at: new Date().toISOString()}).eq('id', window.plan.id);
   if(error) { toast('❌ ' + error.message, 'err'); return; }
-  
   window.plan.ideas = newIdeas;
   render();
-  toast(`✅ Применено ко всем 30 дням: ${d} сек, ${s} сцен`, 'ok');
+  toast(`✅ Применено ко всем: ${d} сек, ${s} сцен`, 'ok');
 });
 
 function render() {
@@ -445,10 +531,8 @@ function render() {
   else { ctaBtn.textContent = 'К концептам →'; ctaBtn.onclick = () => navTo('strategy'); }
   
   // RESEARCH
-  if(!window.analysis) {
-    document.getElementById('res-e').style.display = '';
-    document.getElementById('res-d').style.display = 'none';
-  } else {
+  if(!window.analysis) { document.getElementById('res-e').style.display = ''; document.getElementById('res-d').style.display = 'none'; }
+  else {
     document.getElementById('res-e').style.display = 'none';
     document.getElementById('res-d').style.display = '';
     document.getElementById('res-date').textContent = 'От ' + new Date(window.analysis.created_at).toLocaleDateString('ru-RU');
@@ -456,25 +540,20 @@ function render() {
     let html = '';
     if(d.competitors?.length) { html += '<h4 style="margin:1rem 0 .5rem">🏆 Конкуренты</h4>'; d.competitors.forEach(c => html += `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin-bottom:.5rem"><b>${esc(c.name)}</b> — ${esc(c.format||c.strength||'')}</div>`); }
     if(d.trends?.length) { html += '<h4 style="margin:1rem 0 .5rem">🔥 Тренды</h4>'; d.trends.forEach(t => html += `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin-bottom:.5rem"><b>${esc(t.name)}</b> ${t.desc?`— ${esc(t.desc)}`:''}</div>`); }
-    if(d.insights?.viral_hooks?.length) { html += '<h4 style="margin:1rem 0 .5rem">🎯 Хуки</h4>'; d.insights.viral_hooks.forEach(h => html += `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin-bottom:.5rem">${esc(h)}</div>`); }
     document.getElementById('res-c').innerHTML = html || '<p>Нет данных</p>';
   }
   
   // STRATEGY
-  if(!window.plan || !window.plan.ideas?.length) {
-    document.getElementById('str-e').style.display = '';
-    document.getElementById('str-d').style.display = 'none';
-  } else {
+  if(!window.plan || !window.plan.ideas?.length) { document.getElementById('str-e').style.display = ''; document.getElementById('str-d').style.display = 'none'; }
+  else {
     document.getElementById('str-e').style.display = 'none';
     document.getElementById('str-d').style.display = '';
     document.getElementById('str-date').textContent = `Создана ${new Date(window.plan.created_at).toLocaleDateString('ru-RU')} · ${window.plan.ideas.length} идей`;
-    
     const grid = document.getElementById('concept-g');
     grid.innerHTML = '';
-    window.plan.ideas.forEach((idea, idx) => {
+    window.plan.ideas.forEach(idea => {
       const dur = idea.duration || 15;
       const scn = idea.scenes_count || 5;
-      
       const card = document.createElement('div');
       card.className = 'concept-card';
       card.innerHTML = `
@@ -483,7 +562,6 @@ function render() {
         <div class="concept-title">${esc(idea.title||'')}</div>
         <div class="concept-type">${esc(idea.type||'')}</div>
         ${idea.hook ? `<div class="concept-hook">"${esc(idea.hook)}"</div>` : ''}
-        
         <div class="concept-settings">
           <span class="concept-settings-label">⏱️ Длительность</span>
           <div class="tiny-btns" data-day-dur="${idea.day}">
@@ -494,36 +572,28 @@ function render() {
             ${[3,4,5,6,8].map(s => `<button class="tiny-btn ${s===scn?'selected':''}" data-s="${s}">${s}</button>`).join('')}
           </div>
         </div>
-        
         <button class="btn btn-sm btn-block">📝 Подготовить концепт</button>
       `;
-      
-      // Day-level duration buttons
       card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(b => {
         b.addEventListener('click', async () => {
           card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(x => x.classList.remove('selected'));
           b.classList.add('selected');
-          const newD = parseInt(b.dataset.d);
-          await updateIdeaParam(idea.day, 'duration', newD);
+          await updateIdeaParam(idea.day, 'duration', parseInt(b.dataset.d));
         });
       });
-      
-      // Day-level scenes buttons
       card.querySelectorAll(`[data-day-sc="${idea.day}"] .tiny-btn`).forEach(b => {
         b.addEventListener('click', async () => {
           card.querySelectorAll(`[data-day-sc="${idea.day}"] .tiny-btn`).forEach(x => x.classList.remove('selected'));
           b.classList.add('selected');
-          const newS = parseInt(b.dataset.s);
-          await updateIdeaParam(idea.day, 'scenes_count', newS);
+          await updateIdeaParam(idea.day, 'scenes_count', parseInt(b.dataset.s));
         });
       });
-      
       card.querySelector('button.btn-block').addEventListener('click', () => openConcept(idea.day));
       grid.appendChild(card);
     });
   }
   
-  // REFS (with debug)
+  // REFS
   console.log('🎭 Render refs:', {chars: window.characters.length, locs: window.locations.length});
   if(window.characters.length === 0 && window.locations.length === 0) {
     document.getElementById('ref-e').style.display = '';
@@ -531,15 +601,13 @@ function render() {
   } else {
     document.getElementById('ref-e').style.display = 'none';
     document.getElementById('ref-d').style.display = '';
-    
     document.getElementById('char-count').textContent = window.characters.length;
     document.getElementById('loc-count').textContent = window.locations.length;
     
     const charGrid = document.getElementById('char-g');
-    if(window.characters.length === 0) {
-      charGrid.innerHTML = '<p style="color:var(--text-light);grid-column:1/-1">Персонажей пока нет</p>';
-    } else {
-      charGrid.innerHTML = window.characters.map(c => `
+    charGrid.innerHTML = window.characters.length === 0
+      ? '<p style="color:var(--text-light)">Персонажей пока нет</p>'
+      : window.characters.map(c => `
         <div class="ref-card">
           <div class="ref-card-name">👤 ${esc(c.name || 'Без имени')}</div>
           ${c.role ? `<div class="ref-card-role">${esc(c.role)}</div>` : ''}
@@ -547,20 +615,17 @@ function render() {
           ${c.appears_in?.length ? `<div style="margin-top:.7rem;display:flex;flex-wrap:wrap;gap:4px">${c.appears_in.map(d => `<span style="background:rgba(124,111,255,.1);color:var(--primary);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600">День ${d}</span>`).join('')}</div>` : ''}
         </div>
       `).join('');
-    }
     
     const locGrid = document.getElementById('loc-g');
-    if(window.locations.length === 0) {
-      locGrid.innerHTML = '<p style="color:var(--text-light);grid-column:1/-1">Локаций пока нет</p>';
-    } else {
-      locGrid.innerHTML = window.locations.map(l => `
+    locGrid.innerHTML = window.locations.length === 0
+      ? '<p style="color:var(--text-light)">Локаций пока нет</p>'
+      : window.locations.map(l => `
         <div class="ref-card">
           <div class="ref-card-name">🏢 ${esc(l.name || 'Без названия')}</div>
           <div class="ref-card-desc">${esc(l.description || 'Без описания')}</div>
           ${l.appears_in?.length ? `<div style="margin-top:.7rem;display:flex;flex-wrap:wrap;gap:4px">${l.appears_in.map(d => `<span style="background:rgba(255,107,157,.1);color:var(--secondary);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600">День ${d}</span>`).join('')}</div>` : ''}
         </div>
       `).join('');
-    }
   }
   
   // VIDEOS
@@ -570,7 +635,7 @@ function render() {
     let html = '';
     window.videos.forEach(v => {
       const status = v.status === 'done' ? '✅ Готово' : v.status === 'processing' ? '⏳ Генерируется' : '❌ Ошибка';
-      html += `<div class="card"><h3>${status} · Сцена ${v.scene_num || '?'}</h3><p style="font-size:12px;color:var(--text-light)">${v.resolution} · ${v.duration_seconds}с · ${new Date(v.created_at).toLocaleString('ru-RU')}</p>${v.video_url ? `<video style="width:100%;border-radius:8px;margin-top:1rem" controls src="${v.video_url}"></video>` : ''}</div>`;
+      html += `<div class="card"><h3>${status} · Сцена ${v.scene_num || '?'}</h3><p style="font-size:12px;color:var(--text-light)">${v.resolution} · ${v.duration_seconds}с</p>${v.video_url ? `<video style="width:100%;border-radius:8px;margin-top:1rem" controls src="${v.video_url}"></video>` : ''}</div>`;
     });
     document.getElementById('videos-l').innerHTML = html;
   }
@@ -596,40 +661,32 @@ async function updateIdeaParam(day, field, value) {
   toast(`✓ День ${day}: ${field === 'duration' ? value + ' сек' : value + ' сцен'}`, 'ok');
 }
 
-// === LOGO UPLOAD ===
+// LOGO
 document.getElementById('logo-f').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if(!file) return;
   if(file.size > 2*1024*1024) { toast('Файл больше 2MB', 'err'); return; }
-  
   toast('📤 Загружаем...', 'ok');
   try {
     const canvas = document.createElement('canvas');
     const img = await new Promise((res, rej) => {
       const reader = new FileReader();
       reader.onload = (e) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = e.target.result; };
-      reader.onerror = rej;
-      reader.readAsDataURL(file);
+      reader.onerror = rej; reader.readAsDataURL(file);
     });
     let w = img.width, h = img.height;
     if(w > 1024 || h > 1024) { if(w > h) { h = h * (1024/w); w = 1024; } else { w = w * (1024/h); h = 1024; } }
     canvas.width = w; canvas.height = h;
     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
     const blob = await new Promise(res => canvas.toBlob(res, file.type, 0.92));
-    
     const fileName = window.userId + '/logo-' + Date.now() + '.' + (file.name.split('.').pop() || 'png');
     const { error } = await sb.storage.from('refs').upload(fileName, blob, { upsert: true, contentType: file.type });
     if(error) throw error;
-    
     const { data: urlData } = sb.storage.from('refs').getPublicUrl(fileName);
     const logoUrl = urlData.publicUrl;
-    
     let result;
-    if(window.company?.id) {
-      result = await sb.from('companies').update({ logo_url: logoUrl, logo_name: file.name, updated_at: new Date().toISOString() }).eq('id', window.company.id).select().single();
-    } else {
-      result = await sb.from('companies').insert({ user_id: window.userId, name: 'Без названия', logo_url: logoUrl, logo_name: file.name }).select().single();
-    }
+    if(window.company?.id) result = await sb.from('companies').update({ logo_url: logoUrl, logo_name: file.name, updated_at: new Date().toISOString() }).eq('id', window.company.id).select().single();
+    else result = await sb.from('companies').insert({ user_id: window.userId, name: 'Без названия', logo_url: logoUrl, logo_name: file.name }).select().single();
     if(result.error) throw result.error;
     window.company = result.data;
     showLogoPreview(logoUrl, file.name);
@@ -647,14 +704,11 @@ function showLogoPreview(url, name) {
 window.removeLogo = async function() {
   if(!confirm('Удалить?')) return;
   try {
-    if(window.company?.id) {
-      await sb.from('companies').update({ logo_url: null, logo_name: null }).eq('id', window.company.id);
-      window.company.logo_url = null;
-    }
+    if(window.company?.id) { await sb.from('companies').update({ logo_url: null, logo_name: null }).eq('id', window.company.id); window.company.logo_url = null; }
     document.getElementById('logo-e').style.display = '';
     document.getElementById('logo-s').style.display = 'none';
     document.getElementById('logo-f').value = '';
-    toast('Логотип удалён', 'ok');
+    toast('Удалено', 'ok');
   } catch(err) { toast('❌ ' + err.message, 'err'); }
 };
 
@@ -672,11 +726,8 @@ window.saveBrand = async function(e) {
   };
   try {
     let result;
-    if(window.company?.id) {
-      result = await sb.from('companies').update(data).eq('id', window.company.id).select().single();
-    } else {
-      result = await sb.from('companies').insert(data).select().single();
-    }
+    if(window.company?.id) result = await sb.from('companies').update(data).eq('id', window.company.id).select().single();
+    else result = await sb.from('companies').insert(data).select().single();
     if(result.error) throw result.error;
     window.company = result.data;
     toast('✅ Бренд сохранён!', 'ok');
@@ -687,59 +738,72 @@ window.saveBrand = async function(e) {
 
 window.requestResearch = async function() {
   if(!window.company?.name) { toast('Заполните анкету', 'err'); setTimeout(() => navTo('brand'), 800); return; }
-  const btn = document.getElementById('req-res-btn');
-  if(btn) { btn.classList.add('loading'); btn.disabled = true; }
-  toast('🔍 Команда работает...', 'ok');
+  showProgress({
+    emoji: '🔍',
+    title: 'Исследование рынка',
+    subtitle: 'Команда анализирует вашу нишу',
+    duration: 45000,
+    steps: ['Изучение бренда', 'Анализ конкурентов', 'Поиск трендов', 'Формирование выводов']
+  });
   try {
     const r = await callFunction('generate-analysis', {});
     if(!r.success) throw new Error(r.error || 'Ошибка');
     await loadAll();
     render();
+    hideProgress(true);
     toast('✅ Исследование готово!', 'ok');
-  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); if(btn) { btn.classList.remove('loading'); btn.disabled = false; } }
+  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
 };
 
 window.requestStrategy = async function() {
   if(!window.company?.name) { toast('Заполните анкету', 'err'); setTimeout(() => navTo('brand'), 800); return; }
-  const btn = document.getElementById('req-str-btn');
-  if(btn) { btn.classList.add('loading'); btn.disabled = true; }
-  toast('📅 Команда создаёт...', 'ok');
+  showProgress({
+    emoji: '📅',
+    title: 'Создание стратегии',
+    subtitle: '30 идей на месяц',
+    duration: 60000,
+    hint: 'Это самая длинная операция — 1-2 минуты',
+    steps: ['Изучение бренда', 'Анализ ниши', 'Генерация 30 идей', 'Группировка по дням']
+  });
   try {
     const r = await callFunction('generate-plan', {});
     if(!r.success) throw new Error(r.error || 'Ошибка');
     await loadAll();
     render();
+    hideProgress(true);
     toast('✅ Стратегия готова!', 'ok');
-  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); if(btn) { btn.classList.remove('loading'); btn.disabled = false; } }
+  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
 };
 
 window.requestRefs = async function() {
   if(!window.plan) { toast('Создайте стратегию', 'err'); return; }
-  const btn = document.getElementById('req-ref-btn');
-  if(btn) { btn.classList.add('loading'); btn.disabled = true; }
-  toast('🎭 Готовим образы...', 'ok');
+  showProgress({
+    emoji: '🎭',
+    title: 'Создание образов',
+    subtitle: 'Персонажи и локации для ваших видео',
+    duration: 40000,
+    steps: ['Анализ контент-плана', 'Создание персонажей', 'Создание локаций', 'Сохранение в библиотеку']
+  });
   try {
     const r = await callFunction('generate-refs', { plan_id: window.plan.id });
-    console.log('🎭 generate-refs response:', r);
+    console.log('🎭 generate-refs result:', r);
     if(!r.success) throw new Error(r.error || 'Ошибка');
     await loadAll();
     render();
-    toast('✅ Образы готовы!', 'ok');
-  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); if(btn) { btn.classList.remove('loading'); btn.disabled = false; } }
+    hideProgress(true);
+    toast(`✅ Готово: ${r.characters?.length || 0} персонажей, ${r.locations?.length || 0} локаций`, 'ok');
+  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
 };
 
 window.openConcept = async function(day) {
   navTo('concepts');
   document.getElementById('conc-e').style.display = 'none';
   document.getElementById('conc-d').style.display = '';
-  
   const idea = window.plan.ideas.find(i => i.day === day);
   if(!idea) return;
-  
   const { data: existing } = await sb.from('productions').select('*')
     .eq('user_id', window.userId).eq('plan_id', window.plan.id).eq('day_number', day)
     .order('created_at', {ascending:false}).limit(1).maybeSingle();
-  
   const c = document.getElementById('conc-c');
   if(existing?.data) {
     renderConcept(existing, idea);
@@ -750,7 +814,7 @@ window.openConcept = async function(day) {
       <div class="card">
         <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
         <p class="card-desc">${esc(idea.concept||'')}</p>
-        <div class="alert info">🎬 Параметры из стратегии: <b>${dur} сек, ${scn} сцен</b><br>Команда подготовит концепт. Изменить параметры можно в стратегии.</div>
+        <div class="alert info">🎬 Параметры из стратегии: <b>${dur} сек, ${scn} сцен</b></div>
         <button class="btn btn-lg btn-block" id="gen-conc-btn" style="margin-top:1rem">📝 Подготовить концепт</button>
       </div>
     `;
@@ -759,31 +823,30 @@ window.openConcept = async function(day) {
 };
 
 async function generateConcept(day, duration, scenes) {
-  const btn = document.getElementById('gen-conc-btn');
-  btn.classList.add('loading'); btn.disabled = true;
-  toast('🎬 Команда готовит...', 'ok');
+  showProgress({
+    emoji: '🎬',
+    title: 'Подготовка концепта',
+    subtitle: `${duration} сек · ${scenes} сцен`,
+    duration: 40000,
+    steps: ['Анализ идеи дня', 'Создание раскадровки', 'Написание реплик', 'Подготовка промптов']
+  });
   try {
-    const r = await callFunction('generate-scenario', {
-      plan_id: window.plan.id,
-      day_number: day,
-      duration: duration,
-      scenes: scenes
-    });
+    const r = await callFunction('generate-scenario', { plan_id: window.plan.id, day_number: day, duration: duration, scenes: scenes });
     if(!r.success) throw new Error(r.error || 'Ошибка');
     const { data: prod } = await sb.from('productions').select('*').eq('id', r.production_id).single();
     const idea = window.plan.ideas.find(i => i.day === day);
     renderConcept(prod, idea);
     await loadAll();
     render();
+    hideProgress(true);
     toast('✅ Концепт готов!', 'ok');
-  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); btn.classList.remove('loading'); btn.disabled = false; }
+  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
 }
 
 function renderConcept(production, idea) {
   const s = production.data;
   if(!s?.scenes) return;
   const c = document.getElementById('conc-c');
-  
   let html = `<div class="scenario-view">
     <div class="card">
       <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
@@ -793,7 +856,6 @@ function renderConcept(production, idea) {
       </div>
       <p class="card-desc">${esc(s.concept||'')}</p>
     </div>`;
-  
   s.scenes.forEach(sc => {
     html += `
       <div class="scene-block">
@@ -807,15 +869,14 @@ function renderConcept(production, idea) {
       </div>
     `;
   });
-  
   html += `
     <div class="card">
       <h3>🎬 Создание видео</h3>
-      <p class="card-desc">Можно отдельно изменить параметры для этого ролика</p>
+      <p class="card-desc">Настройте параметры для генерации</p>
       <div class="field"><label>⏱️ Длительность</label><div class="duration-btns" id="dur-sel">
         ${[4,8,10,15,20,30].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
       </div></div>
-      <div class="field"><label>🎬 Сцен (видео)</label><div class="duration-btns" id="sc-sel">
+      <div class="field"><label>🎬 Сцен</label><div class="duration-btns" id="sc-sel">
         ${[3,4,5,6].map(sn => `<button class="duration-btn ${sn===Math.min(s.scenes_count||5, 6)?'selected':''}" data-s="${sn}">${sn}</button>`).join('')}
       </div></div>
       <div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel">
@@ -827,21 +888,11 @@ function renderConcept(production, idea) {
       <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
     </div>
   </div>`;
-  
   c.innerHTML = html;
   
-  c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => {
-    c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected'));
-    b.classList.add('selected'); updatePrice();
-  }));
-  c.querySelectorAll('#sc-sel .duration-btn').forEach(b => b.addEventListener('click', () => {
-    c.querySelectorAll('#sc-sel .duration-btn').forEach(x => x.classList.remove('selected'));
-    b.classList.add('selected'); updatePrice();
-  }));
-  c.querySelectorAll('#q-sel .quality-btn').forEach(b => b.addEventListener('click', () => {
-    c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected'));
-    b.classList.add('selected'); updatePrice();
-  }));
+  c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
+  c.querySelectorAll('#sc-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#sc-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
+  c.querySelectorAll('#q-sel .quality-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
   
   function updatePrice() {
     const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d) || 15;
@@ -855,7 +906,6 @@ function renderConcept(production, idea) {
     document.getElementById('price-amt').textContent = price + '₽';
   }
   updatePrice();
-  
   c.querySelector('#gen-vid-btn').addEventListener('click', () => {
     const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d) || 15;
     const n = parseInt(c.querySelector('#sc-sel .selected')?.dataset.s) || 5;
@@ -865,31 +915,34 @@ function renderConcept(production, idea) {
 }
 
 async function generateVideos(prodId, scenes, duration, scenesCount, quality) {
-  const btn = document.querySelector('#gen-vid-btn');
-  btn.classList.add('loading'); btn.disabled = true;
-  toast(`🎬 Генерируем ${scenesCount} видео...`, 'ok');
+  const selected = scenes.slice(0, scenesCount);
+  const stepNames = selected.map(s => `Сцена ${s.num} — ${s.title?.slice(0, 30) || 'видео'}`);
+  
+  showProgress({
+    emoji: '🚀',
+    title: `Генерация ${scenesCount} видео`,
+    subtitle: `${quality} · ${duration} сек общая длительность`,
+    duration: scenesCount * 8000,
+    hint: 'WaveSpeedAI обрабатывает каждую сцену 1-2 минуты',
+    steps: stepNames
+  });
   
   try {
     const timePerScene = duration / scenesCount;
-    const selected = scenes.slice(0, scenesCount);
-    
     for(const sc of selected) {
       try {
         await callFunction('generate-video', {
-          production_id: prodId,
-          scene_num: sc.num,
-          resolution: quality,
+          production_id: prodId, scene_num: sc.num, resolution: quality,
           duration: Math.round(timePerScene * 10) / 10,
-          prompt: sc.video?.prompt || 'Scene',
-          image_url: window.company?.logo_url || undefined
+          prompt: sc.video?.prompt || 'Scene', image_url: window.company?.logo_url || undefined
         });
         await new Promise(r => setTimeout(r, 500));
       } catch(err) { console.error(err); }
     }
-    
+    hideProgress(true);
     toast('✅ Видео запущены!', 'ok');
     setTimeout(async () => { await loadAll(); render(); }, 2000);
-  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
+  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
 }
 
 window.navTo = function(pageId) {
@@ -905,9 +958,7 @@ window.logout = async function() {
   window.location.href = 'login.html';
 };
 
-window.upgradePlan = function(plan) {
-  toast(`💳 ЮKassa скоро. ${plan.toUpperCase()} в разработке.`, 'warn');
-};
+window.upgradePlan = function(plan) { toast(`💳 ЮKassa скоро. ${plan.toUpperCase()} в разработке.`, 'warn'); };
 
 async function callFunction(name, body) {
   const r = await fetch('https://hbucxewagevmzkvdghko.supabase.co/functions/v1/' + name, {
@@ -920,11 +971,7 @@ async function callFunction(name, body) {
   return data;
 }
 
-function esc(str) {
-  if(str === undefined || str === null) return '';
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-}
-
+function esc(str) { if(str===undefined||str===null) return ''; return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
 function toast(msg, type) {
   document.querySelectorAll('.toast').forEach(t => t.remove());
   const t = document.createElement('div');

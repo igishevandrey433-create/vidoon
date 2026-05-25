@@ -137,12 +137,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .price-summary{display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--card);border-radius:10px;margin-bottom:1rem;border:1px dashed var(--primary)}
 .price-summary-info{font-size:12px;color:var(--text-light);margin-top:3px}
 .price-summary-amount{font-size:22px;font-weight:800;color:var(--primary)}
-.refs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
-.ref-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;transition:all .2s}
-.ref-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);border-color:var(--primary)}
-.ref-card-name{font-size:15px;font-weight:700;margin-bottom:.4rem}
-.ref-card-role{font-size:11px;color:var(--primary);font-weight:600;text-transform:uppercase;margin-bottom:.6rem}
-.ref-card-desc{font-size:13px;color:var(--text);line-height:1.5}
+
+/* === REFS С КАРТИНКАМИ === */
+.refs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.ref-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s;display:flex;flex-direction:column}
+.ref-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(124,111,255,.15);border-color:var(--primary)}
+.ref-image{width:100%;height:240px;background:linear-gradient(135deg,#f0f1f5,#e8e9ed);position:relative;overflow:hidden}
+.ref-image img{width:100%;height:100%;object-fit:cover;display:block}
+.ref-image-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-light);font-size:13px;flex-direction:column;gap:.5rem}
+.ref-image-loading .spinner{width:24px;height:24px;border-width:3px}
+.ref-content{padding:1rem 1.2rem}
+.ref-card-name{font-size:15px;font-weight:700;margin-bottom:.3rem}
+.ref-card-role{font-size:11px;color:var(--primary);font-weight:600;text-transform:uppercase;margin-bottom:.5rem}
+.ref-card-desc{font-size:13px;color:var(--text);line-height:1.5;margin-bottom:.5rem}
+.ref-days{display:flex;flex-wrap:wrap;gap:4px;margin-top:.5rem}
+.ref-day{background:rgba(124,111,255,.1);color:var(--primary);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;font-family:monospace}
+
 .toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.2);z-index:1000;animation:slideUp .25s;max-width:380px}
 @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
 .toast.err{background:var(--error)}
@@ -164,7 +174,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-light);text-decoration:none;font-size:13px;margin-bottom:1rem;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
 .back-btn:hover{color:var(--primary)}
 
-/* ===== ПРОГРЕСС МОДАЛКА ===== */
+/* ПРОГРЕСС МОДАЛКА */
 .progress-overlay{position:fixed;inset:0;background:rgba(15,15,26,.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:300;animation:fadeIn .25s}
 .progress-modal{background:var(--card);border-radius:20px;padding:2.5rem 2rem;max-width:480px;width:90%;box-shadow:0 25px 60px rgba(0,0,0,.3);text-align:center}
 .progress-emoji{font-size:48px;margin-bottom:1rem;animation:bounce 1.5s infinite}
@@ -192,7 +202,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="page-loader" id="loader"><div class="spinner"></div></div>
 <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
 
-<!-- Прогресс модалка -->
 <div class="progress-overlay" id="progress-modal" style="display:none">
   <div class="progress-modal">
     <div class="progress-emoji" id="prog-emoji">🚀</div>
@@ -249,7 +258,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="status-item"><div class="status-icon" id="si1">1</div><div class="status-text"><b>Анкета бренда</b><small>О вашей компании</small></div></div>
       <div class="status-item"><div class="status-icon" id="si2">2</div><div class="status-text"><b>Исследование</b><small>Анализ ниши</small></div></div>
       <div class="status-item"><div class="status-icon" id="si3">3</div><div class="status-text"><b>Стратегия</b><small>30 идей на месяц</small></div></div>
-      <div class="status-item"><div class="status-icon" id="si4">4</div><div class="status-text"><b>Образы</b><small>Персонажи и локации</small></div></div>
+      <div class="status-item"><div class="status-icon" id="si4">4</div><div class="status-text"><b>Образы с картинками</b><small>AI генерация</small></div></div>
       <div class="status-item"><div class="status-icon" id="si5">5</div><div class="status-text"><b>Концепты</b><small>Готовые техзадания</small></div></div>
     </div>
     <button class="btn btn-lg" style="margin-top:1.5rem" id="next-btn">Начать →</button>
@@ -331,10 +340,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <div class="page" id="page-refs">
-  <div class="page-header"><h1>🎭 Визуальные образы</h1><p>Персонажи и локации для видео</p></div>
+  <div class="page-header"><h1>🎭 Визуальные образы</h1><p>AI-сгенерированные персонажи и локации с картинками</p></div>
   <div class="card" id="ref-e"><div class="empty"><div class="empty-icon">🎭</div><h3>Не подготовлены</h3><p>Создайте стратегию</p><button class="btn btn-lg" onclick="requestRefs()" id="req-ref-btn">🎭 Подготовить</button></div></div>
   <div id="ref-d" style="display:none">
-    <div class="alert info">💡 Эти персонажи и локации будут использоваться при создании концептов</div>
+    <div class="alert info">💡 AI создаёт картинки персонажей и локаций — они будут использоваться при создании видео</div>
     <div class="card">
       <h3>👤 Персонажи <span id="char-count" style="font-size:13px;color:var(--text-light);font-weight:600;margin-left:6px">0</span></h3>
       <div class="refs-grid" id="char-g" style="margin-top:1rem"></div>
@@ -362,7 +371,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="page-header"><h1>💳 Тариф и оплата</h1><p>Выберите подходящий тариф</p></div>
   <div class="alert info">💎 Ваш тариф: <b id="cur-plan">Демо</b></div>
   <div class="plan-grid">
-    <div class="plan"><div class="plan-name">Демо</div><div class="plan-desc">Бесплатно</div><div class="plan-price">0 ₽</div><div class="plan-price-period">навсегда</div><ul class="plan-features"><li>1 концепт в месяц</li><li>1 исследование</li><li>1 стратегия</li><li>Без видео</li></ul><button class="btn btn-ghost btn-block" disabled>Текущий</button></div>
+    <div class="plan"><div class="plan-name">Демо</div><div class="plan-desc">Бесплатно</div><div class="plan-price">0 ₽</div><div class="plan-price-period">навсегда</div><ul class="plan-features"><li>1 концепт</li><li>1 исследование</li><li>Без видео</li></ul><button class="btn btn-ghost btn-block" disabled>Текущий</button></div>
     <div class="plan featured"><div class="plan-badge">Популярный</div><div class="plan-name">Старт</div><div class="plan-desc">Малый бизнес</div><div class="plan-price">5 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li><b>30 концептов</b></li><li>5 исследований</li><li>Видео — доплата</li></ul><button class="btn btn-block" onclick="upgradePlan('start')">Выбрать</button></div>
     <div class="plan"><div class="plan-name">Бизнес</div><div class="plan-desc">Растущий</div><div class="plan-price">12 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li>100 концептов</li><li>15 исследований</li><li><b>5 видео в подарок</b></li></ul><button class="btn btn-ghost btn-block" onclick="upgradePlan('business')">Выбрать</button></div>
     <div class="plan"><div class="plan-name">Агентство</div><div class="plan-desc">SMM-агентства</div><div class="plan-price">25 000 ₽</div><div class="plan-price-period">в месяц</div><ul class="plan-features"><li>300 концептов</li><li>Безлимит исследований</li><li><b>20 видео в подарок</b></li></ul><button class="btn btn-ghost btn-block" onclick="upgradePlan('agency')">Выбрать</button></div>
@@ -380,55 +389,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const sb = createClient('https://hbucxewagevmzkvdghko.supabase.co', 'sb_publishable_CoP7LIQ1O5GN8YoCQJMKIg__MOnGoWe');
 window.sb = sb;
-
 const { data: { session } } = await sb.auth.getSession();
 if (!session) { window.location.href = 'login.html'; throw new Error('not auth'); }
 window.session = session; window.userId = session.user.id;
 
-// ===== ПРОГРЕСС-СИСТЕМА =====
 let progressInterval = null;
-
 function showProgress(config) {
   const modal = document.getElementById('progress-modal');
   document.getElementById('prog-emoji').textContent = config.emoji || '🚀';
   document.getElementById('prog-title').textContent = config.title || 'Загрузка...';
   document.getElementById('prog-subtitle').textContent = config.subtitle || '';
   document.getElementById('prog-hint').textContent = config.hint || 'Обычно занимает 30-60 секунд';
-  
   const stepsEl = document.getElementById('prog-steps');
-  stepsEl.innerHTML = config.steps.map((s, i) => `
-    <div class="progress-step" data-step="${i}">
-      <div class="progress-step-icon">${i+1}</div>
-      <div>${s}</div>
-    </div>
-  `).join('');
-  
+  stepsEl.innerHTML = config.steps.map((s, i) => `<div class="progress-step" data-step="${i}"><div class="progress-step-icon">${i+1}</div><div>${s}</div></div>`).join('');
   document.getElementById('prog-bar').style.width = '0%';
   document.getElementById('prog-percent').textContent = '0%';
   modal.style.display = '';
-  
-  // Симуляция прогресса
   const totalSteps = config.steps.length;
   const stepDuration = (config.duration || 45000) / totalSteps;
   let currentStep = 0;
   let currentPercent = 0;
-  
-  // Активируем первый шаг
   stepsEl.querySelector('[data-step="0"]')?.classList.add('active');
-  
   progressInterval = setInterval(() => {
     currentPercent += 100 / (totalSteps * 10);
     if (currentPercent > 95) currentPercent = 95;
-    
     document.getElementById('prog-bar').style.width = currentPercent + '%';
     document.getElementById('prog-percent').textContent = Math.floor(currentPercent) + '%';
-    
     const newStep = Math.floor(currentPercent / (100 / totalSteps));
     if (newStep > currentStep && newStep < totalSteps) {
-      const prevEl = stepsEl.querySelector(`[data-step="${currentStep}"]`);
-      const nextEl = stepsEl.querySelector(`[data-step="${newStep}"]`);
-      if (prevEl) { prevEl.classList.remove('active'); prevEl.classList.add('done'); prevEl.querySelector('.progress-step-icon').textContent = '✓'; }
-      if (nextEl) nextEl.classList.add('active');
+      const prev = stepsEl.querySelector(`[data-step="${currentStep}"]`);
+      const next = stepsEl.querySelector(`[data-step="${newStep}"]`);
+      if (prev) { prev.classList.remove('active'); prev.classList.add('done'); prev.querySelector('.progress-step-icon').textContent = '✓'; }
+      if (next) next.classList.add('active');
       currentStep = newStep;
     }
   }, stepDuration / 10);
@@ -459,31 +451,15 @@ async function loadAll() {
     sb.from('characters').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}),
     sb.from('locations').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false})
   ]);
-  window.profile = pR.data || {};
-  window.company = cR.data || {};
-  window.plan = plR.data || null;
-  window.analysis = aR.data || null;
-  window.videos = vR.data || [];
-  window.characters = chR.data || [];
-  window.locations = lcR.data || [];
-  console.log('📊 Loaded:', {chars: window.characters.length, locs: window.locations.length, plan: !!window.plan});
+  window.profile = pR.data || {}; window.company = cR.data || {}; window.plan = plR.data || null; window.analysis = aR.data || null; window.videos = vR.data || []; window.characters = chR.data || []; window.locations = lcR.data || [];
 }
-
 await loadAll();
 if(window.profile.is_admin) document.getElementById('admin-link').style.display='block';
 render();
 document.getElementById('loader').style.display='none';
 
-// APPLY ALL
-document.querySelectorAll('#all-dur .tiny-btn').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('#all-dur .tiny-btn').forEach(x => x.classList.remove('selected'));
-  b.classList.add('selected');
-}));
-document.querySelectorAll('#all-sc .tiny-btn').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('#all-sc .tiny-btn').forEach(x => x.classList.remove('selected'));
-  b.classList.add('selected');
-}));
-
+document.querySelectorAll('#all-dur .tiny-btn').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('#all-dur .tiny-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); }));
+document.querySelectorAll('#all-sc .tiny-btn').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('#all-sc .tiny-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); }));
 document.getElementById('apply-all-btn').addEventListener('click', async () => {
   if(!window.plan?.ideas) return;
   const d = parseInt(document.querySelector('#all-dur .selected')?.dataset.d) || 15;
@@ -494,7 +470,7 @@ document.getElementById('apply-all-btn').addEventListener('click', async () => {
   if(error) { toast('❌ ' + error.message, 'err'); return; }
   window.plan.ideas = newIdeas;
   render();
-  toast(`✅ Применено ко всем: ${d} сек, ${s} сцен`, 'ok');
+  toast(`✅ Применено: ${d} сек, ${s} сцен`, 'ok');
 });
 
 function render() {
@@ -504,11 +480,9 @@ function render() {
   const p = window.profile.plan || 'free';
   document.getElementById('user-plan').textContent = pMap[p] || pMap.free;
   document.getElementById('cur-plan').textContent = (pMap[p] || pMap.free).split(' ').slice(1).join(' ');
-  
-  const lim = {free:{s:1,v:0}, start:{s:30,v:0}, business:{s:100,v:5}, agency:{s:300,v:20}};
-  const l = lim[p];
+  const lim = {free:{s:1}, start:{s:30}, business:{s:100}, agency:{s:300}};
   document.getElementById('s1').textContent = window.profile.usage_scenarios || 0;
-  document.getElementById('s1lim').textContent = 'из ' + l.s;
+  document.getElementById('s1lim').textContent = 'из ' + lim[p].s;
   document.getElementById('s2').textContent = window.videos.filter(x=>x.status==='done').length;
   document.getElementById('s3').textContent = (pMap[p] || pMap.free).split(' ').slice(1).join(' ');
   document.getElementById('s4').textContent = window.plan ? '1' : '0';
@@ -517,20 +491,17 @@ function render() {
   const hasAnalysis = !!window.analysis;
   const hasStrategy = !!window.plan;
   const hasRefs = window.characters.length > 0 || window.locations.length > 0;
-  
   [[1, hasBrand], [2, hasAnalysis], [3, hasStrategy], [4, hasRefs]].forEach(([n, done]) => {
     const el = document.getElementById('si' + n);
     if(done) { el.classList.add('done'); el.textContent = '✓'; } else { el.classList.remove('done'); el.textContent = n; }
   });
-  
   const ctaBtn = document.getElementById('next-btn');
-  if(!hasBrand) { ctaBtn.textContent = 'Начать с анкеты →'; ctaBtn.onclick = () => navTo('brand'); }
-  else if(!hasAnalysis) { ctaBtn.textContent = 'Заказать исследование →'; ctaBtn.onclick = () => navTo('research'); }
-  else if(!hasStrategy) { ctaBtn.textContent = 'Создать стратегию →'; ctaBtn.onclick = () => navTo('strategy'); }
-  else if(!hasRefs) { ctaBtn.textContent = 'Подготовить образы →'; ctaBtn.onclick = () => navTo('refs'); }
-  else { ctaBtn.textContent = 'К концептам →'; ctaBtn.onclick = () => navTo('strategy'); }
+  if(!hasBrand) { ctaBtn.textContent = 'Анкета →'; ctaBtn.onclick = () => navTo('brand'); }
+  else if(!hasAnalysis) { ctaBtn.textContent = 'Исследование →'; ctaBtn.onclick = () => navTo('research'); }
+  else if(!hasStrategy) { ctaBtn.textContent = 'Стратегия →'; ctaBtn.onclick = () => navTo('strategy'); }
+  else if(!hasRefs) { ctaBtn.textContent = 'Образы →'; ctaBtn.onclick = () => navTo('refs'); }
+  else { ctaBtn.textContent = 'Концепты →'; ctaBtn.onclick = () => navTo('strategy'); }
   
-  // RESEARCH
   if(!window.analysis) { document.getElementById('res-e').style.display = ''; document.getElementById('res-d').style.display = 'none'; }
   else {
     document.getElementById('res-e').style.display = 'none';
@@ -543,12 +514,11 @@ function render() {
     document.getElementById('res-c').innerHTML = html || '<p>Нет данных</p>';
   }
   
-  // STRATEGY
   if(!window.plan || !window.plan.ideas?.length) { document.getElementById('str-e').style.display = ''; document.getElementById('str-d').style.display = 'none'; }
   else {
     document.getElementById('str-e').style.display = 'none';
     document.getElementById('str-d').style.display = '';
-    document.getElementById('str-date').textContent = `Создана ${new Date(window.plan.created_at).toLocaleDateString('ru-RU')} · ${window.plan.ideas.length} идей`;
+    document.getElementById('str-date').textContent = `${new Date(window.plan.created_at).toLocaleDateString('ru-RU')} · ${window.plan.ideas.length} идей`;
     const grid = document.getElementById('concept-g');
     grid.innerHTML = '';
     window.plan.ideas.forEach(idea => {
@@ -564,37 +534,28 @@ function render() {
         ${idea.hook ? `<div class="concept-hook">"${esc(idea.hook)}"</div>` : ''}
         <div class="concept-settings">
           <span class="concept-settings-label">⏱️ Длительность</span>
-          <div class="tiny-btns" data-day-dur="${idea.day}">
-            ${[4,8,10,15,20,30].map(d => `<button class="tiny-btn ${d===dur?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
-          </div>
+          <div class="tiny-btns" data-day-dur="${idea.day}">${[4,8,10,15,20,30].map(d => `<button class="tiny-btn ${d===dur?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div>
           <span class="concept-settings-label" style="margin-top:.7rem">🎬 Сцен</span>
-          <div class="tiny-btns" data-day-sc="${idea.day}">
-            ${[3,4,5,6,8].map(s => `<button class="tiny-btn ${s===scn?'selected':''}" data-s="${s}">${s}</button>`).join('')}
-          </div>
+          <div class="tiny-btns" data-day-sc="${idea.day}">${[3,4,5,6,8].map(s => `<button class="tiny-btn ${s===scn?'selected':''}" data-s="${s}">${s}</button>`).join('')}</div>
         </div>
         <button class="btn btn-sm btn-block">📝 Подготовить концепт</button>
       `;
-      card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(b => {
-        b.addEventListener('click', async () => {
-          card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(x => x.classList.remove('selected'));
-          b.classList.add('selected');
-          await updateIdeaParam(idea.day, 'duration', parseInt(b.dataset.d));
-        });
-      });
-      card.querySelectorAll(`[data-day-sc="${idea.day}"] .tiny-btn`).forEach(b => {
-        b.addEventListener('click', async () => {
-          card.querySelectorAll(`[data-day-sc="${idea.day}"] .tiny-btn`).forEach(x => x.classList.remove('selected'));
-          b.classList.add('selected');
-          await updateIdeaParam(idea.day, 'scenes_count', parseInt(b.dataset.s));
-        });
-      });
+      card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(b => b.addEventListener('click', async () => {
+        card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(x => x.classList.remove('selected'));
+        b.classList.add('selected');
+        await updateIdeaParam(idea.day, 'duration', parseInt(b.dataset.d));
+      }));
+      card.querySelectorAll(`[data-day-sc="${idea.day}"] .tiny-btn`).forEach(b => b.addEventListener('click', async () => {
+        card.querySelectorAll(`[data-day-sc="${idea.day}"] .tiny-btn`).forEach(x => x.classList.remove('selected'));
+        b.classList.add('selected');
+        await updateIdeaParam(idea.day, 'scenes_count', parseInt(b.dataset.s));
+      }));
       card.querySelector('button.btn-block').addEventListener('click', () => openConcept(idea.day));
       grid.appendChild(card);
     });
   }
   
-  // REFS
-  console.log('🎭 Render refs:', {chars: window.characters.length, locs: window.locations.length});
+  // REFS С КАРТИНКАМИ
   if(window.characters.length === 0 && window.locations.length === 0) {
     document.getElementById('ref-e').style.display = '';
     document.getElementById('ref-d').style.display = 'none';
@@ -605,30 +566,50 @@ function render() {
     document.getElementById('loc-count').textContent = window.locations.length;
     
     const charGrid = document.getElementById('char-g');
-    charGrid.innerHTML = window.characters.length === 0
-      ? '<p style="color:var(--text-light)">Персонажей пока нет</p>'
-      : window.characters.map(c => `
-        <div class="ref-card">
-          <div class="ref-card-name">👤 ${esc(c.name || 'Без имени')}</div>
-          ${c.role ? `<div class="ref-card-role">${esc(c.role)}</div>` : ''}
-          <div class="ref-card-desc">${esc(c.description || 'Без описания')}</div>
-          ${c.appears_in?.length ? `<div style="margin-top:.7rem;display:flex;flex-wrap:wrap;gap:4px">${c.appears_in.map(d => `<span style="background:rgba(124,111,255,.1);color:var(--primary);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600">День ${d}</span>`).join('')}</div>` : ''}
+    charGrid.innerHTML = window.characters.length === 0 ? '<p style="color:var(--text-light)">Нет</p>' : window.characters.map(c => `
+      <div class="ref-card">
+        <div class="ref-image">
+          ${c.image_url 
+            ? `<img src="${c.image_url}" alt="${esc(c.name)}" loading="lazy">` 
+            : `<div class="ref-image-loading"><div class="spinner"></div><div>Создание AI-портрета...</div></div>`
+          }
         </div>
-      `).join('');
+        <div class="ref-content">
+          <div class="ref-card-name">${esc(c.name || 'Без имени')}</div>
+          ${c.role ? `<div class="ref-card-role">${esc(c.role)}</div>` : ''}
+          <div class="ref-card-desc">${esc(c.description || '')}</div>
+          ${c.appears_in?.length ? `<div class="ref-days">${c.appears_in.map(d => `<span class="ref-day">${d}</span>`).join('')}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
     
     const locGrid = document.getElementById('loc-g');
-    locGrid.innerHTML = window.locations.length === 0
-      ? '<p style="color:var(--text-light)">Локаций пока нет</p>'
-      : window.locations.map(l => `
-        <div class="ref-card">
-          <div class="ref-card-name">🏢 ${esc(l.name || 'Без названия')}</div>
-          <div class="ref-card-desc">${esc(l.description || 'Без описания')}</div>
-          ${l.appears_in?.length ? `<div style="margin-top:.7rem;display:flex;flex-wrap:wrap;gap:4px">${l.appears_in.map(d => `<span style="background:rgba(255,107,157,.1);color:var(--secondary);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600">День ${d}</span>`).join('')}</div>` : ''}
+    locGrid.innerHTML = window.locations.length === 0 ? '<p style="color:var(--text-light)">Нет</p>' : window.locations.map(l => `
+      <div class="ref-card">
+        <div class="ref-image">
+          ${l.image_url 
+            ? `<img src="${l.image_url}" alt="${esc(l.name)}" loading="lazy">` 
+            : `<div class="ref-image-loading"><div class="spinner"></div><div>Создание AI-картинки...</div></div>`
+          }
         </div>
-      `).join('');
+        <div class="ref-content">
+          <div class="ref-card-name">🏢 ${esc(l.name || 'Без названия')}</div>
+          <div class="ref-card-desc">${esc(l.description || '')}</div>
+          ${l.appears_in?.length ? `<div class="ref-days">${l.appears_in.map(d => `<span class="ref-day">${d}</span>`).join('')}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+    
+    // Авто-обновление если есть карточки без картинок
+    const missing = window.characters.filter(c => !c.image_url).length + window.locations.filter(l => !l.image_url).length;
+    if(missing > 0) {
+      setTimeout(async () => {
+        await loadAll();
+        render();
+      }, 5000);
+    }
   }
   
-  // VIDEOS
   if(window.videos.length === 0) {
     document.getElementById('videos-l').innerHTML = '<div class="card"><div class="empty"><div class="empty-icon">📹</div><h3>Пока пусто</h3><p>Создайте концепт и видео</p></div></div>';
   } else {
@@ -640,12 +621,8 @@ function render() {
     document.getElementById('videos-l').innerHTML = html;
   }
   
-  // BRAND FORM
   if(window.company && window.company.name) {
-    ['name', 'slogan', 'niche', 'audience', 'usp'].forEach(k => {
-      const el = document.getElementById('b-' + k);
-      if(el) el.value = window.company[k] || '';
-    });
+    ['name', 'slogan', 'niche', 'audience', 'usp'].forEach(k => { const el = document.getElementById('b-' + k); if(el) el.value = window.company[k] || ''; });
     const descEl = document.getElementById('b-desc');
     if(descEl) descEl.value = window.company.description || '';
     if(window.company.logo_url) showLogoPreview(window.company.logo_url, window.company.logo_name || 'logo');
@@ -656,12 +633,11 @@ async function updateIdeaParam(day, field, value) {
   if(!window.plan?.ideas) return;
   const newIdeas = window.plan.ideas.map(i => i.day === day ? {...i, [field]: value} : i);
   const { error } = await sb.from('plans').update({ideas: newIdeas, updated_at: new Date().toISOString()}).eq('id', window.plan.id);
-  if(error) { toast('❌ Не удалось сохранить', 'err'); return; }
+  if(error) { toast('❌ ' + error.message, 'err'); return; }
   window.plan.ideas = newIdeas;
   toast(`✓ День ${day}: ${field === 'duration' ? value + ' сек' : value + ' сцен'}`, 'ok');
 }
 
-// LOGO
 document.getElementById('logo-f').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if(!file) return;
@@ -669,11 +645,7 @@ document.getElementById('logo-f').addEventListener('change', async (e) => {
   toast('📤 Загружаем...', 'ok');
   try {
     const canvas = document.createElement('canvas');
-    const img = await new Promise((res, rej) => {
-      const reader = new FileReader();
-      reader.onload = (e) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = e.target.result; };
-      reader.onerror = rej; reader.readAsDataURL(file);
-    });
+    const img = await new Promise((res, rej) => { const reader = new FileReader(); reader.onload = (e) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = e.target.result; }; reader.onerror = rej; reader.readAsDataURL(file); });
     let w = img.width, h = img.height;
     if(w > 1024 || h > 1024) { if(w > h) { h = h * (1024/w); w = 1024; } else { w = w * (1024/h); h = 1024; } }
     canvas.width = w; canvas.height = h;
@@ -685,7 +657,7 @@ document.getElementById('logo-f').addEventListener('change', async (e) => {
     const { data: urlData } = sb.storage.from('refs').getPublicUrl(fileName);
     const logoUrl = urlData.publicUrl;
     let result;
-    if(window.company?.id) result = await sb.from('companies').update({ logo_url: logoUrl, logo_name: file.name, updated_at: new Date().toISOString() }).eq('id', window.company.id).select().single();
+    if(window.company?.id) result = await sb.from('companies').update({ logo_url: logoUrl, logo_name: file.name }).eq('id', window.company.id).select().single();
     else result = await sb.from('companies').insert({ user_id: window.userId, name: 'Без названия', logo_url: logoUrl, logo_name: file.name }).select().single();
     if(result.error) throw result.error;
     window.company = result.data;
@@ -703,27 +675,15 @@ function showLogoPreview(url, name) {
 
 window.removeLogo = async function() {
   if(!confirm('Удалить?')) return;
-  try {
-    if(window.company?.id) { await sb.from('companies').update({ logo_url: null, logo_name: null }).eq('id', window.company.id); window.company.logo_url = null; }
-    document.getElementById('logo-e').style.display = '';
-    document.getElementById('logo-s').style.display = 'none';
-    document.getElementById('logo-f').value = '';
-    toast('Удалено', 'ok');
-  } catch(err) { toast('❌ ' + err.message, 'err'); }
+  if(window.company?.id) { await sb.from('companies').update({ logo_url: null, logo_name: null }).eq('id', window.company.id); window.company.logo_url = null; }
+  document.getElementById('logo-e').style.display = '';
+  document.getElementById('logo-s').style.display = 'none';
+  document.getElementById('logo-f').value = '';
 };
 
 window.saveBrand = async function(e) {
   e.preventDefault();
-  const data = {
-    user_id: window.userId,
-    name: document.getElementById('b-name').value.trim(),
-    slogan: document.getElementById('b-slogan').value.trim(),
-    niche: document.getElementById('b-niche').value.trim(),
-    description: document.getElementById('b-desc').value.trim(),
-    audience: document.getElementById('b-audience').value.trim(),
-    usp: document.getElementById('b-usp').value.trim(),
-    updated_at: new Date().toISOString()
-  };
+  const data = { user_id: window.userId, name: document.getElementById('b-name').value.trim(), slogan: document.getElementById('b-slogan').value.trim(), niche: document.getElementById('b-niche').value.trim(), description: document.getElementById('b-desc').value.trim(), audience: document.getElementById('b-audience').value.trim(), usp: document.getElementById('b-usp').value.trim() };
   try {
     let result;
     if(window.company?.id) result = await sb.from('companies').update(data).eq('id', window.company.id).select().single();
@@ -732,67 +692,44 @@ window.saveBrand = async function(e) {
     window.company = result.data;
     toast('✅ Бренд сохранён!', 'ok');
     render();
-  } catch(err) { console.error(err); toast('❌ ' + err.message, 'err'); }
+  } catch(err) { toast('❌ ' + err.message, 'err'); }
   return false;
 };
 
 window.requestResearch = async function() {
   if(!window.company?.name) { toast('Заполните анкету', 'err'); setTimeout(() => navTo('brand'), 800); return; }
-  showProgress({
-    emoji: '🔍',
-    title: 'Исследование рынка',
-    subtitle: 'Команда анализирует вашу нишу',
-    duration: 45000,
-    steps: ['Изучение бренда', 'Анализ конкурентов', 'Поиск трендов', 'Формирование выводов']
-  });
+  showProgress({ emoji: '🔍', title: 'Исследование рынка', subtitle: 'Команда анализирует нишу', duration: 45000, steps: ['Изучение бренда', 'Анализ конкурентов', 'Поиск трендов', 'Формирование выводов'] });
   try {
     const r = await callFunction('generate-analysis', {});
     if(!r.success) throw new Error(r.error || 'Ошибка');
-    await loadAll();
-    render();
+    await loadAll(); render();
     hideProgress(true);
-    toast('✅ Исследование готово!', 'ok');
-  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
+    toast('✅ Готово!', 'ok');
+  } catch(err) { hideProgress(false); toast('❌ ' + err.message, 'err'); }
 };
 
 window.requestStrategy = async function() {
   if(!window.company?.name) { toast('Заполните анкету', 'err'); setTimeout(() => navTo('brand'), 800); return; }
-  showProgress({
-    emoji: '📅',
-    title: 'Создание стратегии',
-    subtitle: '30 идей на месяц',
-    duration: 60000,
-    hint: 'Это самая длинная операция — 1-2 минуты',
-    steps: ['Изучение бренда', 'Анализ ниши', 'Генерация 30 идей', 'Группировка по дням']
-  });
+  showProgress({ emoji: '📅', title: 'Создание стратегии', subtitle: '30 идей на месяц', duration: 60000, hint: 'Это длится 1-2 минуты', steps: ['Изучение бренда', 'Анализ ниши', 'Генерация 30 идей', 'Группировка по дням'] });
   try {
     const r = await callFunction('generate-plan', {});
     if(!r.success) throw new Error(r.error || 'Ошибка');
-    await loadAll();
-    render();
+    await loadAll(); render();
     hideProgress(true);
-    toast('✅ Стратегия готова!', 'ok');
-  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
+    toast('✅ Готово!', 'ok');
+  } catch(err) { hideProgress(false); toast('❌ ' + err.message, 'err'); }
 };
 
 window.requestRefs = async function() {
   if(!window.plan) { toast('Создайте стратегию', 'err'); return; }
-  showProgress({
-    emoji: '🎭',
-    title: 'Создание образов',
-    subtitle: 'Персонажи и локации для ваших видео',
-    duration: 40000,
-    steps: ['Анализ контент-плана', 'Создание персонажей', 'Создание локаций', 'Сохранение в библиотеку']
-  });
+  showProgress({ emoji: '🎨', title: 'Создание AI образов', subtitle: 'Персонажи и локации с картинками', duration: 90000, hint: 'AI генерирует картинки — 1-2 минуты', steps: ['Анализ контент-плана', 'Создание описаний', 'Генерация картинок AI', 'Сохранение в библиотеку'] });
   try {
     const r = await callFunction('generate-refs', { plan_id: window.plan.id });
-    console.log('🎭 generate-refs result:', r);
     if(!r.success) throw new Error(r.error || 'Ошибка');
-    await loadAll();
-    render();
+    await loadAll(); render();
     hideProgress(true);
     toast(`✅ Готово: ${r.characters?.length || 0} персонажей, ${r.locations?.length || 0} локаций`, 'ok');
-  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
+  } catch(err) { hideProgress(false); toast('❌ ' + err.message, 'err'); }
 };
 
 window.openConcept = async function(day) {
@@ -801,99 +738,42 @@ window.openConcept = async function(day) {
   document.getElementById('conc-d').style.display = '';
   const idea = window.plan.ideas.find(i => i.day === day);
   if(!idea) return;
-  const { data: existing } = await sb.from('productions').select('*')
-    .eq('user_id', window.userId).eq('plan_id', window.plan.id).eq('day_number', day)
-    .order('created_at', {ascending:false}).limit(1).maybeSingle();
+  const { data: existing } = await sb.from('productions').select('*').eq('user_id', window.userId).eq('plan_id', window.plan.id).eq('day_number', day).order('created_at', {ascending:false}).limit(1).maybeSingle();
   const c = document.getElementById('conc-c');
-  if(existing?.data) {
-    renderConcept(existing, idea);
-  } else {
+  if(existing?.data) renderConcept(existing, idea);
+  else {
     const dur = idea.duration || 15;
     const scn = idea.scenes_count || 5;
-    c.innerHTML = `
-      <div class="card">
-        <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
-        <p class="card-desc">${esc(idea.concept||'')}</p>
-        <div class="alert info">🎬 Параметры из стратегии: <b>${dur} сек, ${scn} сцен</b></div>
-        <button class="btn btn-lg btn-block" id="gen-conc-btn" style="margin-top:1rem">📝 Подготовить концепт</button>
-      </div>
-    `;
+    c.innerHTML = `<div class="card"><h3>День ${idea.day}: ${esc(idea.title||'')}</h3><p class="card-desc">${esc(idea.concept||'')}</p><div class="alert info">🎬 Параметры: <b>${dur} сек, ${scn} сцен</b></div><button class="btn btn-lg btn-block" id="gen-conc-btn" style="margin-top:1rem">📝 Подготовить концепт</button></div>`;
     document.getElementById('gen-conc-btn').addEventListener('click', () => generateConcept(day, dur, scn));
   }
 };
 
 async function generateConcept(day, duration, scenes) {
-  showProgress({
-    emoji: '🎬',
-    title: 'Подготовка концепта',
-    subtitle: `${duration} сек · ${scenes} сцен`,
-    duration: 40000,
-    steps: ['Анализ идеи дня', 'Создание раскадровки', 'Написание реплик', 'Подготовка промптов']
-  });
+  showProgress({ emoji: '🎬', title: 'Подготовка концепта', subtitle: `${duration} сек · ${scenes} сцен`, duration: 40000, steps: ['Анализ идеи', 'Создание раскадровки', 'Написание реплик', 'Подготовка промптов'] });
   try {
-    const r = await callFunction('generate-scenario', { plan_id: window.plan.id, day_number: day, duration: duration, scenes: scenes });
+    const r = await callFunction('generate-scenario', { plan_id: window.plan.id, day_number: day, duration, scenes });
     if(!r.success) throw new Error(r.error || 'Ошибка');
     const { data: prod } = await sb.from('productions').select('*').eq('id', r.production_id).single();
     const idea = window.plan.ideas.find(i => i.day === day);
     renderConcept(prod, idea);
-    await loadAll();
-    render();
+    await loadAll(); render();
     hideProgress(true);
-    toast('✅ Концепт готов!', 'ok');
-  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
+    toast('✅ Готово!', 'ok');
+  } catch(err) { hideProgress(false); toast('❌ ' + err.message, 'err'); }
 }
 
 function renderConcept(production, idea) {
   const s = production.data;
   if(!s?.scenes) return;
   const c = document.getElementById('conc-c');
-  let html = `<div class="scenario-view">
-    <div class="card">
-      <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
-      <div class="scenario-meta">
-        <div class="meta-chip">⏱️ <span>${s.duration||15} сек</span></div>
-        <div class="meta-chip">🎬 <span>${s.scenes_count||s.scenes.length} сцен</span></div>
-      </div>
-      <p class="card-desc">${esc(s.concept||'')}</p>
-    </div>`;
-  s.scenes.forEach(sc => {
-    html += `
-      <div class="scene-block">
-        <div class="scene-header">
-          <div class="scene-num">${sc.num}</div>
-          <div class="scene-time">${esc(sc.time||'')}</div>
-          <div class="scene-title">${esc(sc.title||'')}</div>
-        </div>
-        ${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤 Аудио</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}
-        ${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬 Видео</span><div>${esc(sc.video.action||'')}</div></div>` : ''}
-      </div>
-    `;
-  });
-  html += `
-    <div class="card">
-      <h3>🎬 Создание видео</h3>
-      <p class="card-desc">Настройте параметры для генерации</p>
-      <div class="field"><label>⏱️ Длительность</label><div class="duration-btns" id="dur-sel">
-        ${[4,8,10,15,20,30].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
-      </div></div>
-      <div class="field"><label>🎬 Сцен</label><div class="duration-btns" id="sc-sel">
-        ${[3,4,5,6].map(sn => `<button class="duration-btn ${sn===Math.min(s.scenes_count||5, 6)?'selected':''}" data-s="${sn}">${sn}</button>`).join('')}
-      </div></div>
-      <div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel">
-        <button class="quality-btn" data-q="480p">480p<small>дёшево</small></button>
-        <button class="quality-btn selected" data-q="720p">720p<small>HD</small></button>
-        <button class="quality-btn" data-q="1080p">1080p<small>премиум</small></button>
-      </div></div>
-      <div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div><div class="price-summary-amount" id="price-amt">—</div></div>
-      <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
-    </div>
-  </div>`;
+  let html = `<div class="scenario-view"><div class="card"><h3>День ${idea.day}: ${esc(idea.title||'')}</h3><div class="scenario-meta"><div class="meta-chip">⏱️ <span>${s.duration||15}с</span></div><div class="meta-chip">🎬 <span>${s.scenes_count||s.scenes.length} сцен</span></div></div><p class="card-desc">${esc(s.concept||'')}</p></div>`;
+  s.scenes.forEach(sc => { html += `<div class="scene-block"><div class="scene-header"><div class="scene-num">${sc.num}</div><div class="scene-time">${esc(sc.time||'')}</div><div class="scene-title">${esc(sc.title||'')}</div></div>${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬</span><div>${esc(sc.video.action||'')}</div></div>` : ''}</div>`; });
+  html += `<div class="card"><h3>🎬 Создание видео</h3><div class="field"><label>⏱️ Длительность</label><div class="duration-btns" id="dur-sel">${[4,8,10,15,20,30].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div></div><div class="field"><label>🎬 Сцен</label><div class="duration-btns" id="sc-sel">${[3,4,5,6].map(sn => `<button class="duration-btn ${sn===Math.min(s.scenes_count||5, 6)?'selected':''}" data-s="${sn}">${sn}</button>`).join('')}</div></div><div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel"><button class="quality-btn" data-q="480p">480p</button><button class="quality-btn selected" data-q="720p">720p</button><button class="quality-btn" data-q="1080p">1080p</button></div></div><div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div><div class="price-summary-amount" id="price-amt">—</div></div><button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button></div></div>`;
   c.innerHTML = html;
-  
   c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
   c.querySelectorAll('#sc-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#sc-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
   c.querySelectorAll('#q-sel .quality-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
-  
   function updatePrice() {
     const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d) || 15;
     const n = parseInt(c.querySelector('#sc-sel .selected')?.dataset.s) || 5;
@@ -902,7 +782,7 @@ function renderConcept(production, idea) {
     const cost = (cps[q] || 0.12) * (d/n) * 95 * n;
     let price = Math.ceil(cost * 1.8 / 10) * 10;
     if(price < 50) price = 50;
-    document.getElementById('price-info').textContent = `${d} сек · ${n} видео · ${q}`;
+    document.getElementById('price-info').textContent = `${d}с · ${n} видео · ${q}`;
     document.getElementById('price-amt').textContent = price + '₽';
   }
   updatePrice();
@@ -916,33 +796,19 @@ function renderConcept(production, idea) {
 
 async function generateVideos(prodId, scenes, duration, scenesCount, quality) {
   const selected = scenes.slice(0, scenesCount);
-  const stepNames = selected.map(s => `Сцена ${s.num} — ${s.title?.slice(0, 30) || 'видео'}`);
-  
-  showProgress({
-    emoji: '🚀',
-    title: `Генерация ${scenesCount} видео`,
-    subtitle: `${quality} · ${duration} сек общая длительность`,
-    duration: scenesCount * 8000,
-    hint: 'WaveSpeedAI обрабатывает каждую сцену 1-2 минуты',
-    steps: stepNames
-  });
-  
+  showProgress({ emoji: '🚀', title: `Генерация ${scenesCount} видео`, subtitle: `${quality}`, duration: scenesCount * 8000, hint: 'WaveSpeedAI 1-2 минуты на сцену', steps: selected.map(s => `Сцена ${s.num}`) });
   try {
     const timePerScene = duration / scenesCount;
     for(const sc of selected) {
       try {
-        await callFunction('generate-video', {
-          production_id: prodId, scene_num: sc.num, resolution: quality,
-          duration: Math.round(timePerScene * 10) / 10,
-          prompt: sc.video?.prompt || 'Scene', image_url: window.company?.logo_url || undefined
-        });
+        await callFunction('generate-video', { production_id: prodId, scene_num: sc.num, resolution: quality, duration: Math.round(timePerScene * 10) / 10, prompt: sc.video?.prompt || 'Scene', image_url: window.company?.logo_url || undefined });
         await new Promise(r => setTimeout(r, 500));
       } catch(err) { console.error(err); }
     }
     hideProgress(true);
     toast('✅ Видео запущены!', 'ok');
     setTimeout(async () => { await loadAll(); render(); }, 2000);
-  } catch(err) { console.error(err); hideProgress(false); toast('❌ ' + err.message, 'err'); }
+  } catch(err) { hideProgress(false); toast('❌ ' + err.message, 'err'); }
 }
 
 window.navTo = function(pageId) {
@@ -952,13 +818,8 @@ window.navTo = function(pageId) {
 };
 document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', () => navTo(btn.dataset.page)));
 
-window.logout = async function() {
-  if(!confirm('Выйти?')) return;
-  await sb.auth.signOut();
-  window.location.href = 'login.html';
-};
-
-window.upgradePlan = function(plan) { toast(`💳 ЮKassa скоро. ${plan.toUpperCase()} в разработке.`, 'warn'); };
+window.logout = async function() { if(!confirm('Выйти?')) return; await sb.auth.signOut(); window.location.href = 'login.html'; };
+window.upgradePlan = function(plan) { toast(`💳 ЮKassa скоро`, 'warn'); };
 
 async function callFunction(name, body) {
   const r = await fetch('https://hbucxewagevmzkvdghko.supabase.co/functions/v1/' + name, {
@@ -970,18 +831,9 @@ async function callFunction(name, body) {
   if(!r.ok && !data.success) throw new Error(data.error || 'HTTP ' + r.status);
   return data;
 }
-
 function esc(str) { if(str===undefined||str===null) return ''; return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
-function toast(msg, type) {
-  document.querySelectorAll('.toast').forEach(t => t.remove());
-  const t = document.createElement('div');
-  t.className = 'toast ' + (type || '');
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 4500);
-}
-window.toast = toast;
-window.callFunction = callFunction;
+function toast(msg, type) { document.querySelectorAll('.toast').forEach(t => t.remove()); const t = document.createElement('div'); t.className = 'toast ' + (type || ''); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 4500); }
+window.toast = toast; window.callFunction = callFunction;
 </script>
 
 </body>

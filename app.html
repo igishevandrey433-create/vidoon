@@ -856,6 +856,9 @@ window.openConcept = async function(day) {
   document.getElementById('conc-e').style.display = 'none';
   document.getElementById('conc-accepted').style.display = 'none';
   document.getElementById('conc-d').style.display = '';
+  // Всегда перезагружаем план из БД чтобы получить актуальные значения
+  const { data: freshPlan } = await sb.from('plans').select('*').eq('id', window.plan.id).single();
+  if(freshPlan) window.plan = freshPlan;
   const idea = window.plan.ideas.find(i => i.day === day);
   if(!idea) return;
   const { data: existing } = await sb.from('productions').select('*').eq('user_id', window.userId).eq('plan_id', window.plan.id).eq('day_number', day).order('created_at', {ascending:false}).limit(1).maybeSingle();

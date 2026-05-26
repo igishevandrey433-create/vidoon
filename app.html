@@ -461,16 +461,28 @@ function hideProgress(success = true) {
 }
 
 async function loadAll() {
-  const [pR, cR, plR, aR, vR, chR, lcR] = await Promise.all([
+  // Сначала грузим основные данные включая текущий план
+  const [pR, cR, plR, aR, vR] = await Promise.all([
     sb.from('profiles').select('*').eq('id', session.user.id).single(),
     sb.from('companies').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
     sb.from('plans').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
     sb.from('analyses').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(1).maybeSingle(),
     sb.from('video_generations').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}).limit(50),
-    sb.from('characters').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false}),
-    sb.from('locations').select('*').eq('user_id', session.user.id).order('created_at', {ascending:false})
   ]);
-  window.profile = pR.data || {}; window.company = cR.data || {}; window.plan = plR.data || null; window.analysis = aR.data || null; window.videos = vR.data || []; window.characters = chR.data || []; window.locations = lcR.data || [];
+  window.profile = pR.data || {}; window.company = cR.data || {}; window.plan = plR.data || null; window.analysis = aR.data || null; window.videos = vR.data || [];
+  
+  // Образы грузим только для ТЕКУЩЕГО плана
+  if(window.plan?.id) {
+    const [chR, lcR] = await Promise.all([
+      sb.from('characters').select('*').eq('user_id', session.user.id).eq('plan_id', window.plan.id).order('created_at', {ascending:false}),
+      sb.from('locations').select('*').eq('user_id', session.user.id).eq('plan_id', window.plan.id).order('created_at', {ascending:false})
+    ]);
+    window.characters = chR.data || [];
+    window.locations = lcR.data || [];
+  } else {
+    window.characters = [];
+    window.locations = [];
+  }
 }
 await loadAll();
 if(window.profile.is_admin) document.getElementById('admin-link').style.display='block';

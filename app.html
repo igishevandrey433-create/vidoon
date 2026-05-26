@@ -1024,7 +1024,8 @@ ${scenesText}
     const t1 = Math.round(sc.num*perScene*10)/10;
     const refs = getSceneRefs(sc);
     const scPrompt = sc.video?.prompt || sc.video?.action || sc.title || '';
-    return `<div class="scene-block" style="margin-bottom:1rem">
+    const frameUrl = sc.first_frame_url || '';
+    return `<div class="scene-block" style="margin-bottom:1rem" id="scene-block-${sc.num}">
       <div class="scene-header">
         <div class="scene-num">${sc.num}</div>
         <div class="scene-time">${t0}с–${t1}с</div>
@@ -1033,14 +1034,30 @@ ${scenesText}
       ${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤 РЕПЛИКА</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}
       ${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬 ДЕЙСТВИЕ</span><div>${esc(sc.video.action||'')}</div></div>` : ''}
       <div style="margin-top:10px">
-        <div class="scene-block-label" style="margin-bottom:6px">📝 ПРОМТ ДЛЯ НЕЙРОСЕТИ</div>
-        <textarea class="prompt-field scene-prompt" data-scene="${sc.num}"
-          placeholder="Подробный промт: объект, действие, стиль, освещение, ракурс камеры..."
-          style="min-height:65px">${esc(scPrompt)}</textarea>
+        <div class="scene-block-label" style="margin-bottom:6px">📝 ПРОМТ</div>
+        <textarea class="prompt-field scene-prompt" data-scene="${sc.num}" placeholder="Промт для нейросети..." style="min-height:65px">${esc(scPrompt)}</textarea>
+      </div>
+      <div style="margin-top:12px">
+        <div class="scene-block-label" style="margin-bottom:8px">🎬 НАЧАЛЬНЫЙ КАДР</div>
+        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+          <div id="frame-wrap-${sc.num}" style="flex-shrink:0">
+            ${frameUrl
+              ? `<img src="${esc(frameUrl)}" style="width:150px;height:150px;object-fit:cover;border-radius:12px;border:2px solid var(--primary)">`
+              : `<div style="width:150px;height:150px;border-radius:12px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--text-light);font-size:12px;text-align:center"><span style="font-size:32px">🎬</span><span>Нет кадра</span></div>`
+            }
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:140px">
+            <button class="btn btn-sm gen-frame-btn" data-scene="${sc.num}" data-prod="${production.id}" style="width:100%">
+              ${frameUrl ? '🔄 Перегенерировать' : '✨ Сгенерировать кадр'}
+            </button>
+            ${frameUrl ? `<a href="${esc(frameUrl)}" download="scene-${sc.num}.png" class="btn btn-sm btn-ghost" style="width:100%;text-align:center;text-decoration:none">⬇️ Скачать</a>` : ''}
+            <div style="font-size:11px;color:var(--text-light);line-height:1.5">Первый кадр для Runway / Kling</div>
+          </div>
+        </div>
       </div>
       ${refs.length > 0 ? `
       <div style="margin-top:10px">
-        <div class="scene-block-label" style="margin-bottom:8px">🖼️ ФОТО-РЕФЕРЕНСЫ ДЛЯ ЭТОЙ СЦЕНЫ</div>
+        <div class="scene-block-label" style="margin-bottom:8px">🖼️ РЕФЕРЕНСЫ</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           ${refs.map(r => imgBox(r.url, r.label, r.sub)).join('')}
         </div>
@@ -1283,6 +1300,65 @@ ${scenesText}
     b.classList.add('selected'); updatePrice();
   }));
   updatePrice();
+
+  // Генерация начального кадра сцены
+  c.querySelectorAll('.gen-frame-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const sceneNum = parseInt(btn.dataset.scene);
+      const prodId   = btn.dataset.prod;
+      const sc = s.scenes.find(x => x.num === sceneNum);
+      if(!sc) return;
+
+      // Собираем промт: действие + персонажи + стиль
+      const scPrompt = c.querySelector(`.scene-prompt[data-scene="${sceneNum}"]`)?.value || sc.video?.action || sc.title || '';
+      const charsDesc = chars.slice(0,2).map(ch => ch.description_en || ch.name).join(', ');
+      const locDesc   = locs.length ? (locs[0].description_en || locs[0].name) : '';
+      const fullPrompt = [
+        scPrompt,
+        charsDesc ? `Characters: ${charsDesc}` : '',
+        locDesc   ? `Location: ${locDesc}` : '',
+        'cinematic shot, professional lighting, 4K, photorealistic'
+      ].filter(Boolean).join('. ');
+
+      // UI: показываем загрузку
+      const wrap = c.querySelector(`#frame-wrap-${sceneNum}`);
+      const origHtml = wrap.innerHTML;
+      wrap.innerHTML = `<div style="width:150px;height:150px;border-radius:12px;background:var(--bg);border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text-light);font-size:12px"><div class="spinner" style="width:28px;height:28px;border:3px solid rgba(124,111,255,.2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite"></div><span>Генерирую...</span></div>`;
+      btn.disabled = true;
+      btn.textContent = '⏳ Генерирую...';
+
+      try {
+        const r = await callFunction('generate-image', {
+          entity_type: 'scene',
+          entity_id: `${prodId}:${sceneNum}`,
+          prompt: fullPrompt
+        });
+
+        if(r.success && r.image_url) {
+          wrap.innerHTML = `<img src="${r.image_url}" style="width:150px;height:150px;object-fit:cover;border-radius:12px;border:2px solid var(--primary)">`;
+          btn.textContent = '🔄 Перегенерировать';
+          // Добавляем кнопку скачать
+          if(!btn.nextElementSibling?.href) {
+            const dl = document.createElement('a');
+            dl.href = r.image_url;
+            dl.download = `scene-${sceneNum}.png`;
+            dl.className = 'btn btn-sm btn-ghost';
+            dl.style.cssText = 'width:100%;text-align:center;text-decoration:none;display:block;margin-top:8px';
+            dl.textContent = '⬇️ Скачать';
+            btn.parentNode.insertBefore(dl, btn.nextSibling);
+          }
+          toast(`✅ Кадр сцены ${sceneNum} готов!`, 'ok');
+        } else {
+          throw new Error(r.error || 'Ошибка генерации');
+        }
+      } catch(err) {
+        wrap.innerHTML = origHtml;
+        btn.textContent = '✨ Сгенерировать кадр';
+        toast('❌ ' + err.message, 'err');
+      }
+      btn.disabled = false;
+    });
+  });
 
   // Генерация
   c.querySelector('#gen-vid-btn').addEventListener('click', () => {

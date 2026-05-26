@@ -134,6 +134,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .scene-block-video{background:rgba(255,107,157,.05);border:1px solid rgba(255,107,157,.15)}
 .scene-block-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:6px;display:block}
 .duration-btns{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1rem}
+.prompt-field{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:monospace;color:var(--text);background:var(--bg);resize:vertical;min-height:70px;line-height:1.5;transition:border-color .15s}
+.prompt-field:focus{outline:none;border-color:var(--primary);background:var(--card)}
+.prompt-scene-block{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.8rem}
+.prompt-scene-num{display:inline-block;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;width:24px;height:24px;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px}
+.prompt-hint{font-size:11px;color:var(--text-light);margin-top:4px}
+.global-prompt-box{background:linear-gradient(135deg,rgba(124,111,255,.06),rgba(255,107,157,.04));border:2px solid rgba(124,111,255,.2);border-radius:12px;padding:1rem;margin-bottom:1rem}
 .duration-btn{padding:8px 12px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;font-family:inherit;color:var(--text);min-width:48px}
 .duration-btn:hover{border-color:var(--primary)}
 .duration-btn.selected{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border-color:transparent}
@@ -904,7 +910,33 @@ function renderConcept(production, idea) {
   const c = document.getElementById('conc-c');
   let html = `<div class="scenario-view"><div class="card"><h3>День ${idea.day}: ${esc(idea.title||'')}</h3><div class="scenario-meta"><div class="meta-chip">⏱️ <span>${s.duration||15}с</span></div><div class="meta-chip">🎬 <span>${s.scenes_count||s.scenes.length} сцен</span></div></div><p class="card-desc">${esc(s.concept||'')}</p></div>`;
   s.scenes.forEach(sc => { html += `<div class="scene-block"><div class="scene-header"><div class="scene-num">${sc.num}</div><div class="scene-time">${esc(sc.time||'')}</div><div class="scene-title">${esc(sc.title||'')}</div></div>${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬</span><div>${esc(sc.video.action||'')}</div></div>` : ''}</div>`; });
-  html += `<div class="card"><h3>🎬 Создание видео</h3><div class="field"><label>⏱️ Длительность <span style="font-size:11px;color:#ef4444;font-weight:600">макс. 15 сек</span></label><div class="duration-btns" id="dur-sel">${[4,8,10,15].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div></div><div class="field"><label>🎬 Сцен</label><div class="duration-btns" id="sc-sel">${[3,4,5,6].map(sn => `<button class="duration-btn ${sn===Math.min(s.scenes_count||5, 6)?'selected':''}" data-s="${sn}">${sn}</button>`).join('')}</div></div><div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel"><button class="quality-btn" data-q="480p">480p</button><button class="quality-btn selected" data-q="720p">720p</button><button class="quality-btn" data-q="1080p">1080p</button></div></div><div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div><div class="price-summary-amount" id="price-amt">—</div></div><button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button></div></div>`;
+  // Строим промты для каждой сцены
+  const scenesForPrompt = s.scenes.slice(0, Math.min(s.scenes_count||5, 6));
+  const promptsHtml = scenesForPrompt.map(sc => {
+    const defaultPrompt = sc.video?.prompt || sc.video?.action || sc.title || 'Сцена ' + sc.num;
+    return `<div class="prompt-scene-block">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px">
+        <span class="prompt-scene-num">${sc.num}</span>${esc(sc.title||'Сцена '+sc.num)}
+        ${sc.audio ? `<span style="font-size:11px;color:var(--text-light);margin-left:8px">🎤 ${esc(sc.audio.text?.slice(0,40)||'')}...</span>` : ''}
+      </div>
+      <textarea class="prompt-field scene-prompt" data-scene="${sc.num}" placeholder="Опишите что должно происходить на видео...&#10;Пример: Молодой мужчина улыбается в камеру, городской фон, солнечный день, кинематографичный стиль">${esc(defaultPrompt)}</textarea>
+      <div class="prompt-hint">💡 Чем подробнее — тем лучше результат. Укажите: объект, действие, стиль, освещение, камера</div>
+    </div>`;
+  }).join('');
+
+  html += `<div class="card"><h3>🎬 Создание видео</h3>
+    <div class="global-prompt-box">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px">🌐 Общий стиль для всех сцен (опционально)</div>
+      <textarea class="prompt-field" id="global-prompt" placeholder="Пример: кинематографичный стиль, тёплые цвета, 4K, профессиональное освещение, реалистичный" style="min-height:55px"></textarea>
+      <div class="prompt-hint">Этот текст добавится к каждой сцене автоматически</div>
+    </div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px">📝 Промты по сценам</div>
+    ${promptsHtml}
+    <div class="field"><label>⏱️ Длительность <span style="font-size:11px;color:#ef4444;font-weight:600">макс. 15 сек</span></label><div class="duration-btns" id="dur-sel">${[4,8,10,15].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div></div>
+    <div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel"><button class="quality-btn" data-q="480p">480p</button><button class="quality-btn selected" data-q="720p">720p</button><button class="quality-btn" data-q="1080p">1080p</button></div></div>
+    <div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div><div class="price-summary-amount" id="price-amt">—</div></div>
+    <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
+  </div></div>`;
   c.innerHTML = html;
   c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
   c.querySelectorAll('#sc-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#sc-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
@@ -923,9 +955,21 @@ function renderConcept(production, idea) {
   updatePrice();
   c.querySelector('#gen-vid-btn').addEventListener('click', () => {
     const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d) || 15;
-    const n = parseInt(c.querySelector('#sc-sel .selected')?.dataset.s) || 5;
     const q = c.querySelector('#q-sel .selected')?.dataset.q || '720p';
-    generateVideos(production.id, s.scenes, d, n, q);
+    const globalPrompt = (c.querySelector('#global-prompt')?.value || '').trim();
+    // Собираем промты из всех полей
+    const promptMap = {};
+    c.querySelectorAll('.scene-prompt').forEach(el => {
+      const sceneNum = parseInt(el.dataset.scene);
+      const scenePrompt = el.value.trim() || 'Scene ' + sceneNum;
+      promptMap[sceneNum] = globalPrompt ? scenePrompt + ', ' + globalPrompt : scenePrompt;
+    });
+    // Обновляем сцены с новыми промтами
+    const updatedScenes = s.scenes.map(sc => ({
+      ...sc,
+      video: { ...(sc.video||{}), prompt: promptMap[sc.num] || sc.video?.prompt || 'Scene' }
+    }));
+    generateVideos(production.id, updatedScenes, d, Object.keys(promptMap).length, q);
   });
 }
 

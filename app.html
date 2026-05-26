@@ -908,87 +908,189 @@ function renderConcept(production, idea) {
   const s = production.data;
   if(!s?.scenes) return;
   const c = document.getElementById('conc-c');
-  let html = `<div class="scenario-view"><div class="card"><h3>День ${idea.day}: ${esc(idea.title||'')}</h3><div class="scenario-meta"><div class="meta-chip">⏱️ <span>${s.duration||15}с</span></div><div class="meta-chip">🎬 <span>${s.scenes_count||s.scenes.length} сцен</span></div></div><p class="card-desc">${esc(s.concept||'')}</p></div>`;
-  s.scenes.forEach(sc => { html += `<div class="scene-block"><div class="scene-header"><div class="scene-num">${sc.num}</div><div class="scene-time">${esc(sc.time||'')}</div><div class="scene-title">${esc(sc.title||'')}</div></div>${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬</span><div>${esc(sc.video.action||'')}</div></div>` : ''}</div>`; });
-  // Строим промты для каждой сцены
-  const scenesForPrompt = s.scenes.slice(0, Math.min(s.scenes_count||5, 6));
-  const promptsHtml = scenesForPrompt.map(sc => {
-    const defaultPrompt = sc.video?.prompt || sc.video?.action || sc.title || 'Сцена ' + sc.num;
+
+  // Собираем все медиа-ресурсы
+  const logo = window.company?.logo_url;
+  const chars = window.characters || [];
+  const locs = window.locations || [];
+
+  // Формируем полный промт на всё видео
+  const allScenePrompts = s.scenes.map(sc =>
+    `Сцена ${sc.num} (${sc.time||''}): ${sc.video?.action||sc.title||''}${sc.audio?.text ? ' | Текст: '+sc.audio.text : ''}`
+  ).join('\n');
+  const fullPrompt = `${s.concept||idea.title||''}\n\n${allScenePrompts}`;
+
+  // Промты по сценам
+  const scenesHtml = s.scenes.map(sc => {
+    const scPrompt = sc.video?.prompt || sc.video?.action || sc.title || '';
     return `<div class="prompt-scene-block">
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px">
-        <span class="prompt-scene-num">${sc.num}</span>${esc(sc.title||'Сцена '+sc.num)}
-        ${sc.audio ? `<span style="font-size:11px;color:var(--text-light);margin-left:8px">🎤 ${esc(sc.audio.text?.slice(0,40)||'')}...</span>` : ''}
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span class="prompt-scene-num">${sc.num}</span>
+        <span style="font-size:13px;font-weight:700">${esc(sc.title||'Сцена '+sc.num)}</span>
+        <span style="font-size:11px;color:var(--text-light)">${esc(sc.time||'')}</span>
       </div>
-      <textarea class="prompt-field scene-prompt" data-scene="${sc.num}" placeholder="Опишите что должно происходить на видео...&#10;Пример: Молодой мужчина улыбается в камеру, городской фон, солнечный день, кинематографичный стиль">${esc(defaultPrompt)}</textarea>
-      <div class="prompt-hint">💡 Чем подробнее — тем лучше результат. Укажите: объект, действие, стиль, освещение, камера</div>
+      ${sc.audio ? `<div style="font-size:12px;background:rgba(124,111,255,.06);border-radius:8px;padding:8px;margin-bottom:8px;border-left:3px solid var(--primary)">🎤 <b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div>` : ''}
+      <textarea class="prompt-field scene-prompt" data-scene="${sc.num}"
+        placeholder="Промт для сцены ${sc.num}: объект, действие, стиль, освещение..."
+      >${esc(scPrompt)}</textarea>
+      <div class="prompt-hint">💡 Сцена ${sc.num} из ${s.scenes.length} · Длительность: ${Math.round((s.duration||15)/s.scenes.length*10)/10}с</div>
     </div>`;
   }).join('');
 
-  html += `<div class="card"><h3>🎬 Создание видео</h3>
-    <div class="global-prompt-box">
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px">🌐 Общий стиль для всех сцен (опционально)</div>
-      <textarea class="prompt-field" id="global-prompt" placeholder="Пример: кинематографичный стиль, тёплые цвета, 4K, профессиональное освещение, реалистичный" style="min-height:55px"></textarea>
-      <div class="prompt-hint">Этот текст добавится к каждой сцене автоматически</div>
+  // Блок медиа-ресурсов
+  const hasMedia = logo || chars.length > 0 || locs.length > 0;
+  const mediaHtml = hasMedia ? `
+    <div class="card" style="margin-bottom:1rem">
+      <h3 style="margin-bottom:1rem">🖼️ Медиа-ресурсы</h3>
+      <div class="prompt-hint" style="margin-bottom:12px">Выберите которые использовать при генерации видео</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        ${logo ? `
+        <label style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:2px solid var(--primary);border-radius:12px;background:rgba(124,111,255,.05);min-width:80px">
+          <input type="checkbox" class="media-check" data-type="logo" data-url="${esc(logo)}" checked style="margin:0">
+          <img src="${esc(logo)}" style="width:60px;height:60px;object-fit:contain;border-radius:8px;background:#fff">
+          <span style="font-size:11px;font-weight:700">Логотип</span>
+        </label>` : ''}
+        ${chars.map(ch => `
+        <label style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1.5px solid var(--border);border-radius:12px;min-width:80px;transition:border-color .15s" class="media-label">
+          <input type="checkbox" class="media-check" data-type="character" data-url="${esc(ch.image_url||'')}" data-name="${esc(ch.name||'')}" style="margin:0">
+          ${ch.image_url
+            ? `<img src="${esc(ch.image_url)}" style="width:60px;height:60px;object-fit:cover;border-radius:8px">`
+            : `<div style="width:60px;height:60px;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px">👤</div>`
+          }
+          <span style="font-size:11px;font-weight:600;text-align:center;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(ch.name||'Персонаж')}</span>
+          <span style="font-size:10px;color:var(--text-light)">${esc(ch.role||'')}</span>
+        </label>`).join('')}
+        ${locs.map(l => `
+        <label style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1.5px solid var(--border);border-radius:12px;min-width:80px;transition:border-color .15s" class="media-label">
+          <input type="checkbox" class="media-check" data-type="location" data-url="${esc(l.image_url||'')}" data-name="${esc(l.name||'')}" style="margin:0">
+          ${l.image_url
+            ? `<img src="${esc(l.image_url)}" style="width:60px;height:60px;object-fit:cover;border-radius:8px">`
+            : `<div style="width:60px;height:60px;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px">🏢</div>`
+          }
+          <span style="font-size:11px;font-weight:600;text-align:center;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.name||'Локация')}</span>
+        </label>`).join('')}
+      </div>
+    </div>` : '';
+
+  c.innerHTML = `<div class="scenario-view">
+
+    <!-- Шапка концепта -->
+    <div class="card" style="margin-bottom:1rem">
+      <h3>День ${idea.day}: ${esc(idea.title||'')}</h3>
+      <div class="scenario-meta">
+        <div class="meta-chip">⏱️ <span>${s.duration||15}с</span></div>
+        <div class="meta-chip">🎬 <span>${s.scenes.length} сцен</span></div>
+      </div>
+      <p class="card-desc" style="margin-top:8px">${esc(s.concept||'')}</p>
     </div>
-    <div style="font-size:13px;font-weight:700;margin-bottom:10px">📝 Промты по сценам</div>
-    ${promptsHtml}
-    <div class="field"><label>⏱️ Длительность <span style="font-size:11px;color:#ef4444;font-weight:600">макс. 15 сек</span></label><div class="duration-btns" id="dur-sel">${[4,8,10,15].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div></div>
-    <div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel"><button class="quality-btn" data-q="480p">480p</button><button class="quality-btn selected" data-q="720p">720p</button><button class="quality-btn" data-q="1080p">1080p</button></div></div>
-    <div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div><div class="price-summary-amount" id="price-amt">—</div></div>
-    <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
-  </div></div>`;
-  c.innerHTML = html;
-  c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
-  c.querySelectorAll('#sc-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#sc-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
-  c.querySelectorAll('#q-sel .quality-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
-  function updatePrice() {
-    const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d) || 15;
-    const n = parseInt(c.querySelector('#sc-sel .selected')?.dataset.s) || 5;
-    const q = c.querySelector('#q-sel .selected')?.dataset.q || '720p';
-    const cps = {'480p': 0.10, '720p': 0.12, '1080p': 0.13};
-    const cost = (cps[q] || 0.12) * (d/n) * 95 * n;
-    let price = Math.ceil(cost * 1.8 / 10) * 10;
-    if(price < 50) price = 50;
-    document.getElementById('price-info').textContent = `${d}с · ${n} видео · ${q}`;
-    document.getElementById('price-amt').textContent = price + '₽';
-  }
-  updatePrice();
-  c.querySelector('#gen-vid-btn').addEventListener('click', () => {
-    const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d) || 15;
-    const q = c.querySelector('#q-sel .selected')?.dataset.q || '720p';
-    const globalPrompt = (c.querySelector('#global-prompt')?.value || '').trim();
-    // Собираем промты из всех полей
-    const promptMap = {};
-    c.querySelectorAll('.scene-prompt').forEach(el => {
-      const sceneNum = parseInt(el.dataset.scene);
-      const scenePrompt = el.value.trim() || 'Scene ' + sceneNum;
-      promptMap[sceneNum] = globalPrompt ? scenePrompt + ', ' + globalPrompt : scenePrompt;
+
+    <!-- Полный промт на всё видео -->
+    <div class="card" style="margin-bottom:1rem">
+      <h3 style="margin-bottom:.5rem">📋 Промт на всё видео</h3>
+      <div class="prompt-hint" style="margin-bottom:10px">Общее описание всего ролика целиком — используется как основа</div>
+      <div class="global-prompt-box" style="margin-bottom:10px">
+        <textarea class="prompt-field" id="full-video-prompt" style="min-height:100px">${esc(fullPrompt)}</textarea>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="font-size:13px;font-weight:700">🌐 Общий стиль (добавляется к каждой сцене)</div>
+      </div>
+      <textarea class="prompt-field" id="global-prompt" placeholder="кинематографичный, тёплые цвета, 4K, профессиональный свет, реализм" style="min-height:50px;margin-top:8px"></textarea>
+    </div>
+
+    <!-- Медиа-ресурсы -->
+    ${mediaHtml}
+
+    <!-- Промты по сценам -->
+    <div class="card" style="margin-bottom:1rem">
+      <h3 style="margin-bottom:1rem">🎬 Промты по сценам</h3>
+      ${scenesHtml}
+    </div>
+
+    <!-- Создание видео -->
+    <div class="card">
+      <h3 style="margin-bottom:1rem">🚀 Генерация видео</h3>
+      <div class="field">
+        <label>⏱️ Длительность <span style="font-size:11px;color:#ef4444;font-weight:600">макс. 15 сек</span></label>
+        <div class="duration-btns" id="dur-sel">
+          ${[4,8,10,15].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
+        </div>
+      </div>
+      <div class="field">
+        <label>🎯 Качество</label>
+        <div class="quality-grid" id="q-sel">
+          <button class="quality-btn" data-q="480p">480p</button>
+          <button class="quality-btn selected" data-q="720p">720p</button>
+          <button class="quality-btn" data-q="1080p">1080p</button>
+        </div>
+      </div>
+      <div class="price-summary">
+        <div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div>
+        <div class="price-summary-amount" id="price-amt">—</div>
+      </div>
+      <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
+    </div>
+
+  </div>`;
+
+  // Интерактивность чекбоксов медиа
+  c.querySelectorAll('.media-label').forEach(label => {
+    const cb = label.querySelector('input[type=checkbox]');
+    cb.addEventListener('change', () => {
+      label.style.borderColor = cb.checked ? 'var(--primary)' : 'var(--border)';
+      label.style.background = cb.checked ? 'rgba(124,111,255,.05)' : '';
     });
-    // Обновляем сцены с новыми промтами
-    const updatedScenes = s.scenes.map(sc => ({
-      ...sc,
-      video: { ...(sc.video||{}), prompt: promptMap[sc.num] || sc.video?.prompt || 'Scene' }
-    }));
-    generateVideos(production.id, updatedScenes, d, Object.keys(promptMap).length, q);
   });
+
+  // Кнопки длительности и качества
+  const updatePrice = () => {
+    const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d)||15;
+    const q = c.querySelector('#q-sel .selected')?.dataset.q||'720p';
+    const n = c.querySelectorAll('.scene-prompt').length;
+    const prices = {'480p':50,'720p':100,'1080p':200};
+    const total = n * (prices[q]||100);
+    c.querySelector('#price-info').textContent = `${n} сцен × ${prices[q]||100} кредитов (${d}с, ${q})`;
+    c.querySelector('#price-amt').textContent = total + ' кредитов';
+  };
+  c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => {
+    c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected'); updatePrice();
+  }));
+  c.querySelectorAll('#q-sel .quality-btn').forEach(b => b.addEventListener('click', () => {
+    c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected'); updatePrice();
+  }));
+  updatePrice();
+
+  // Генерация видео
+  c.querySelector('#gen-vid-btn').addEventListener('click', () => {
+    const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d)||15;
+    const q = c.querySelector('#q-sel .selected')?.dataset.q||'720p';
+    const globalStyle = (c.querySelector('#global-prompt')?.value||'').trim();
+
+    // Собираем выбранные медиа
+    const selectedMedia = [];
+    c.querySelectorAll('.media-check:checked').forEach(cb => {
+      selectedMedia.push({ type: cb.dataset.type, url: cb.dataset.url, name: cb.dataset.name||'' });
+    });
+    const mediaDesc = selectedMedia.map(m =>
+      m.type === 'logo' ? 'логотип компании' :
+      m.type === 'character' ? `персонаж: ${m.name}` :
+      `локация: ${m.name}`
+    ).join(', ');
+
+    // Собираем промты сцен
+    const updatedScenes = s.scenes.map(sc => {
+      const field = c.querySelector(`.scene-prompt[data-scene="${sc.num}"]`);
+      let prompt = (field?.value||'').trim() || sc.video?.action || 'Scene';
+      if(mediaDesc) prompt += `. Используются: ${mediaDesc}`;
+      if(globalStyle) prompt += `. Стиль: ${globalStyle}`;
+      return { ...sc, video: { ...(sc.video||{}), prompt, image_urls: selectedMedia.map(m=>m.url).filter(Boolean) } };
+    });
+    generateVideos(production.id, updatedScenes, d, updatedScenes.length, q);
+  });
+
 }
 
-async function generateVideos(prodId, scenes, duration, scenesCount, quality) {
-  const selected = scenes.slice(0, scenesCount);
-  showProgress({ emoji: '🚀', title: `Генерация ${scenesCount} видео`, subtitle: `${quality}`, duration: scenesCount * 8000, hint: 'WaveSpeedAI 1-2 минуты на сцену', steps: selected.map(s => `Сцена ${s.num}`) });
-  try {
-    const timePerScene = duration / scenesCount;
-    for(const sc of selected) {
-      try {
-        await callFunction('generate-video', { production_id: prodId, scene_num: sc.num, resolution: quality, duration: Math.round(timePerScene * 10) / 10, prompt: sc.video?.prompt || 'Scene', image_url: window.company?.logo_url || undefined });
-        await new Promise(r => setTimeout(r, 500));
-      } catch(err) { console.error(err); }
-    }
-    hideProgress(true);
-    toast('✅ Видео запущены!', 'ok');
-    setTimeout(async () => { await loadAll(); render(); }, 2000);
-  } catch(err) { hideProgress(false); toast('❌ ' + err.message, 'err'); }
-}
 
 window.navTo = function(pageId) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));

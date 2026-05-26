@@ -308,13 +308,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <p style="font-size:12px;color:var(--text-light);margin-bottom:1rem">Одна команда для всех 30 видео</p>
       <div class="apply-all-grid">
         <div>
-          <label>⏱️ Длительность (макс. 15с)</label>
+          <label>⏱️ Длительность</label>
           <div class="tiny-btns" id="all-dur">
             <button class="tiny-btn" data-d="4">4с</button>
             <button class="tiny-btn" data-d="8">8с</button>
             <button class="tiny-btn" data-d="10">10с</button>
             <button class="tiny-btn selected" data-d="15">15с</button>
-            <span style="font-size:11px;color:var(--text-light);margin-left:4px">⚠️ Макс. 15 сек</span>
+            <button class="tiny-btn" data-d="20">20с</button>
+            <button class="tiny-btn" data-d="30">30с</button>
           </div>
         </div>
         <div>
@@ -362,7 +363,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <div class="page" id="page-videos">
-  <div class="page-header"><h1>📹 Мои видео</h1><p>Сгенерированные ролики · <span style="color:var(--primary);font-weight:700">⏱️ Максимальная длительность: 15 секунд</span></p></div>
+  <div class="page-header"><h1>📹 Мои видео</h1><p>Сгенерированные ролики</p></div>
   <div id="videos-l"><div class="card"><div class="empty"><div class="empty-icon">📹</div><h3>Пока пусто</h3><p>Создайте концепт и видео</p></div></div></div>
 </div>
 
@@ -532,8 +533,8 @@ function render() {
         <div class="concept-type">${esc(idea.type||'')}</div>
         ${idea.hook ? `<div class="concept-hook">"${esc(idea.hook)}"</div>` : ''}
         <div class="concept-settings">
-          <span class="concept-settings-label">⏱️ Длительность (макс. 15с)</span>
-          <div class="tiny-btns" data-day-dur="${idea.day}">${[4,8,10,15].map(d => `<button class="tiny-btn ${d===dur?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div>
+          <span class="concept-settings-label">⏱️ Длительность</span>
+          <div class="tiny-btns" data-day-dur="${idea.day}">${[4,8,10,15,20,30].map(d => `<button class="tiny-btn ${d===dur?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div>
           <span class="concept-settings-label" style="margin-top:.7rem">🎬 Сцен</span>
           <div class="tiny-btns" data-day-sc="${idea.day}">${[3,4,5,6,8].map(s => `<button class="tiny-btn ${s===scn?'selected':''}" data-s="${s}">${s}</button>`).join('')}</div>
         </div>
@@ -768,7 +769,7 @@ function renderConcept(production, idea) {
   const c = document.getElementById('conc-c');
   let html = `<div class="scenario-view"><div class="card"><h3>День ${idea.day}: ${esc(idea.title||'')}</h3><div class="scenario-meta"><div class="meta-chip">⏱️ <span>${s.duration||15}с</span></div><div class="meta-chip">🎬 <span>${s.scenes_count||s.scenes.length} сцен</span></div></div><p class="card-desc">${esc(s.concept||'')}</p></div>`;
   s.scenes.forEach(sc => { html += `<div class="scene-block"><div class="scene-header"><div class="scene-num">${sc.num}</div><div class="scene-time">${esc(sc.time||'')}</div><div class="scene-title">${esc(sc.title||'')}</div></div>${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬</span><div>${esc(sc.video.action||'')}</div></div>` : ''}</div>`; });
-  html += `<div class="card"><h3>🎬 Создание видео</h3><div class="field"><label>⏱️ Длительность (макс. 15с)</label><div class="duration-btns" id="dur-sel">${[4,8,10,15,20,30].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div></div><div class="field"><label>🎬 Сцен</label><div class="duration-btns" id="sc-sel">${[3,4,5,6].map(sn => `<button class="duration-btn ${sn===Math.min(s.scenes_count||5, 6)?'selected':''}" data-s="${sn}">${sn}</button>`).join('')}</div></div><div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel"><button class="quality-btn" data-q="480p">480p</button><button class="quality-btn selected" data-q="720p">720p</button><button class="quality-btn" data-q="1080p">1080p</button></div></div><div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div><div class="price-summary-amount" id="price-amt">—</div></div><button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button></div></div>`;
+  html += `<div class="card"><h3>🎬 Создание видео</h3><div class="field"><label>⏱️ Длительность <span style="font-size:11px;color:#ef4444;font-weight:600">макс. 15 сек</span></label><div class="duration-btns" id="dur-sel">${[4,8,10,15].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div></div><div class="field"><label>🎬 Сцен</label><div class="duration-btns" id="sc-sel">${[3,4,5,6].map(sn => `<button class="duration-btn ${sn===Math.min(s.scenes_count||5, 6)?'selected':''}" data-s="${sn}">${sn}</button>`).join('')}</div></div><div class="field"><label>🎯 Качество</label><div class="quality-grid" id="q-sel"><button class="quality-btn" data-q="480p">480p</button><button class="quality-btn selected" data-q="720p">720p</button><button class="quality-btn" data-q="1080p">1080p</button></div></div><div class="price-summary"><div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div><div class="price-summary-amount" id="price-amt">—</div></div><button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button></div></div>`;
   c.innerHTML = html;
   c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));
   c.querySelectorAll('#sc-sel .duration-btn').forEach(b => b.addEventListener('click', () => { c.querySelectorAll('#sc-sel .duration-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); updatePrice(); }));

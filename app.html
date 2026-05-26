@@ -1063,14 +1063,16 @@ ${scenesText}
 
     <!-- МАСТЕР-ПРОМТ с фото -->
     <div class="card" style="margin-bottom:1rem;border:2px solid var(--primary)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
         <h3>📋 Мастер-промт</h3>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button id="copy-master" class="btn btn-sm">📋 Копировать текст</button>
+          <button id="download-html" class="btn btn-sm">⬇️ Скачать с фото</button>
+          <button id="download-imgs" class="btn btn-sm btn-ghost">🖼️ Скачать фото</button>
         </div>
       </div>
       <div class="prompt-hint" style="margin-bottom:14px">
-        Скопируйте текст и приложите фото при загрузке в Runway / Kling / Sora
+        <b>Скачать с фото</b> — один HTML файл с текстом и всеми фотографиями внутри
       </div>
 
       <!-- Текст промта -->
@@ -1128,10 +1130,140 @@ ${scenesText}
 
   </div>`;
 
-  // Копирование
+  // Копирование текста
   c.querySelector('#copy-master').addEventListener('click', () => {
     const text = c.querySelector('#master-prompt').value;
     navigator.clipboard?.writeText(text).then(() => toast('📋 Промт скопирован!', 'ok'));
+  });
+
+  // Скачать HTML с фото встроенными
+  c.querySelector('#download-html').addEventListener('click', async () => {
+    const btn = c.querySelector('#download-html');
+    btn.disabled = true; btn.textContent = '⏳ Готовлю...';
+    try {
+      // Собираем все картинки и конвертируем в base64
+      const allMedia = [];
+      if(logo) allMedia.push({ url: logo, label: 'Логотип', type: 'logo' });
+      chars.forEach(ch => { if(ch.image_url) allMedia.push({ url: ch.image_url, label: ch.name||'Персонаж', sub: ch.role||'персонаж', type: 'character', desc: ch.description||'' }); });
+      locs.forEach(l  => { if(l.image_url)  allMedia.push({ url: l.image_url,  label: l.name||'Локация', sub: 'локация', type: 'location', desc: l.description||'' }); });
+
+      async function toBase64(url) {
+        try {
+          const r = await fetch(url);
+          const blob = await r.blob();
+          return new Promise(res => {
+            const reader = new FileReader();
+            reader.onload = () => res(reader.result);
+            reader.readAsDataURL(blob);
+          });
+        } catch { return url; }
+      }
+
+      // Конвертируем все фото в base64
+      for(const m of allMedia) {
+        m.b64 = await toBase64(m.url);
+      }
+
+      const promptText = c.querySelector('#master-prompt').value;
+      const scenePrompts = [];
+      c.querySelectorAll('.scene-prompt').forEach(el => {
+        scenePrompts.push({ num: el.dataset.scene, text: el.value });
+      });
+
+      // Строим HTML файл
+      const mediaHtml = allMedia.map(m => `
+        <div class="media-item ${m.type}">
+          <img src="${m.b64}" alt="${m.label}">
+          <div class="media-info">
+            <div class="media-name">${m.label}</div>
+            <div class="media-role">${m.sub||''}</div>
+            ${m.desc ? `<div class="media-desc">${m.desc}</div>` : ''}
+          </div>
+        </div>`).join('');
+
+      const scenePromptsHtml = scenePrompts.map(sp => `
+        <div class="scene-p">
+          <b>Сцена ${sp.num}:</b> ${sp.text}
+        </div>`).join('');
+
+      const html = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Промт: ${esc(idea.title||'День '+idea.day)}</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:900px;margin:0 auto;padding:2rem;background:#f8f9fc;color:#1a1a2e}
+  h1{font-size:24px;font-weight:800;margin-bottom:4px}
+  .meta{color:#6b7280;font-size:14px;margin-bottom:2rem}
+  .section{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:1.5rem;margin-bottom:1.5rem}
+  .section h2{font-size:16px;font-weight:700;margin-bottom:1rem;padding-bottom:8px;border-bottom:2px solid #7c6fff}
+  .prompt-box{background:#f3f4f6;border-radius:10px;padding:1rem;font-size:13px;white-space:pre-wrap;line-height:1.7;font-family:monospace}
+  .media-grid{display:flex;flex-wrap:wrap;gap:1rem;margin-top:.5rem}
+  .media-item{display:flex;align-items:flex-start;gap:12px;padding:12px;background:#f8f9fc;border-radius:10px;border:1px solid #e5e7eb;flex:0 0 calc(50% - .5rem)}
+  .media-item img{width:80px;height:80px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1.5px solid #e5e7eb}
+  .media-item.logo img{object-fit:contain;background:#fff}
+  .media-name{font-weight:700;font-size:14px}
+  .media-role{font-size:12px;color:#7c6fff;font-weight:600;margin-bottom:4px}
+  .media-desc{font-size:12px;color:#6b7280;line-height:1.5}
+  .scene-p{padding:8px 12px;background:#f8f9fc;border-left:3px solid #7c6fff;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:13px}
+  .footer{text-align:center;color:#9ca3af;font-size:12px;margin-top:2rem}
+</style>
+</head>
+<body>
+  <h1>🎬 ${esc(idea.title||'День '+idea.day)}</h1>
+  <div class="meta">⏱ ${dur}с · ${s.scenes.length} сцен · ~${perScene}с/сцена · Vidoon</div>
+
+  <div class="section">
+    <h2>📋 Мастер-промт</h2>
+    <div class="prompt-box">${esc(promptText)}</div>
+  </div>
+
+  ${allMedia.length ? `<div class="section">
+    <h2>🖼️ Медиа-ресурсы</h2>
+    <div class="media-grid">${mediaHtml}</div>
+  </div>` : ''}
+
+  ${scenePrompts.length ? `<div class="section">
+    <h2>🎬 Промты по сценам</h2>
+    ${scenePromptsHtml}
+  </div>` : ''}
+
+  <div class="footer">Создано в Vidoon · ${new Date().toLocaleDateString('ru-RU')}</div>
+</body>
+</html>`;
+
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `vidoon-promт-день${idea.day}.html`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      toast('⬇️ HTML файл скачан!', 'ok');
+    } catch(err) { toast('❌ ' + err.message, 'err'); }
+    btn.disabled = false; btn.textContent = '⬇️ Скачать с фото';
+  });
+
+  // Скачать фото отдельно
+  c.querySelector('#download-imgs').addEventListener('click', async () => {
+    const allMedia = [];
+    if(logo) allMedia.push({ url: logo, name: 'logo' });
+    chars.forEach((ch,i) => { if(ch.image_url) allMedia.push({ url: ch.image_url, name: `character-${ch.name||i}` }); });
+    locs.forEach((l,i)  => { if(l.image_url)  allMedia.push({ url: l.image_url,  name: `location-${l.name||i}` }); });
+    if(!allMedia.length) { toast('Нет фото для скачивания', 'warn'); return; }
+    for(const m of allMedia) {
+      try {
+        const r = await fetch(m.url);
+        const blob = await r.blob();
+        const ext = blob.type.includes('png') ? 'png' : 'jpg';
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${m.name}.${ext}`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        await new Promise(r => setTimeout(r, 300));
+      } catch(e) { console.error(e); }
+    }
+    toast(`🖼️ Скачано ${allMedia.length} фото`, 'ok');
   });
 
   // Кнопки длительности/качества

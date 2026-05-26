@@ -101,6 +101,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .concept-title{font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.35}
 .concept-type{font-size:11px;color:var(--text-light);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
 .concept-hook{font-size:13px;font-style:italic;line-height:1.4;border-left:3px solid var(--primary);padding-left:10px;margin-bottom:10px;color:var(--text-light)}
+.concept-card.accepted{border-color:var(--success);background:linear-gradient(135deg,rgba(16,185,129,.04),rgba(16,185,129,.01))}
+.concept-card.accepted .concept-day{background:linear-gradient(135deg,var(--success),#059669)}
+.accept-badge{font-size:11px;font-weight:700;color:var(--success);margin-bottom:6px;display:none}
+.concept-card.accepted .accept-badge{display:block}
+.concept-edit-form{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.8rem;margin-bottom:.8rem;display:none}
+.concept-edit-form input,.concept-edit-form textarea{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;margin-bottom:6px;font-family:inherit;background:var(--card);color:var(--text)}
+.concept-edit-form textarea{min-height:50px;resize:vertical}
+.concept-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .concept-settings{background:var(--bg);border-radius:10px;padding:.7rem .9rem;margin-bottom:.8rem;border:1px solid var(--border)}
 .concept-settings-label{font-size:11px;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;display:block}
 .tiny-btns{display:flex;gap:4px;flex-wrap:wrap}
@@ -359,9 +367,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <div class="page" id="page-concepts">
-  <div class="page-header"><h1>🎬 Готовые концепты</h1><p>Техзадания для видео</p></div>
-  <div class="card" id="conc-e"><div class="empty"><div class="empty-icon">🎬</div><h3>Выберите день</h3><p>Из контент-стратегии</p><button class="btn" onclick="navTo('strategy')">К стратегии →</button></div></div>
-  <div id="conc-d" style="display:none"><button class="back-btn" onclick="navTo('strategy')">← К стратегии</button><div id="conc-c"></div></div>
+  <div class="page-header"><h1>🎬 Готовые концепты</h1><p>Техзадания для видео · только принятые дни</p></div>
+  <div id="conc-e">
+    <div class="card"><div class="empty"><div class="empty-icon">🎬</div><h3>Нет принятых дней</h3><p>Перейдите в стратегию и нажмите ✅ Принять на нужных днях</p><button class="btn" onclick="navTo('strategy')">К стратегии →</button></div></div>
+  </div>
+  <div id="conc-accepted" style="display:none">
+    <div class="alert info" style="margin-bottom:1rem">✅ Принятые дни — нажмите на день чтобы подготовить концепт</div>
+    <div class="concept-grid" id="accepted-grid"></div>
+  </div>
+  <div id="conc-d" style="display:none">
+    <button class="back-btn" onclick="document.getElementById('conc-d').style.display='none';renderAcceptedConcepts();">← Назад к принятым</button>
+    <div id="conc-c"></div>
+  </div>
 </div>
 
 <div class="page" id="page-videos">
@@ -528,19 +545,40 @@ function render() {
       const scn = idea.scenes_count || 5;
       const card = document.createElement('div');
       card.className = 'concept-card';
+      card.className = 'concept-card' + (idea.accepted ? ' accepted' : '');
       card.innerHTML = `
+        <div class="accept-badge">✅ Принято</div>
         <span class="concept-day">День ${idea.day}</span>
         <div class="concept-emoji">${esc(idea.emoji||'🎬')}</div>
         <div class="concept-title">${esc(idea.title||'')}</div>
         <div class="concept-type">${esc(idea.type||'')}</div>
         ${idea.hook ? `<div class="concept-hook">"${esc(idea.hook)}"</div>` : ''}
+        <div class="concept-edit-form" id="edit-form-${idea.day}">
+          <input id="edit-title-${idea.day}" value="${esc(idea.title||'')}" placeholder="Название идеи"/>
+          <input id="edit-type-${idea.day}" value="${esc(idea.type||'')}" placeholder="Тип контента"/>
+          <textarea id="edit-hook-${idea.day}" placeholder="Хук / цепляющая фраза">${esc(idea.hook||'')}</textarea>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm" id="save-edit-${idea.day}">💾 Сохранить</button>
+            <button class="btn btn-sm btn-ghost" id="cancel-edit-${idea.day}">Отмена</button>
+          </div>
+        </div>
         <div class="concept-settings">
           <span class="concept-settings-label">⏱️ Длительность</span>
           <div class="tiny-btns" data-day-dur="${idea.day}">${[4,8,10,15,20,30,45,60].map(d => `<button class="tiny-btn ${d===dur?'selected':''}" data-d="${d}">${d}с</button>`).join('')}</div>
           <span class="concept-settings-label" style="margin-top:.7rem">🎬 Сцен</span>
           <div class="tiny-btns" data-day-sc="${idea.day}">${[3,4,5,6,8].map(s => `<button class="tiny-btn ${s===scn?'selected':''}" data-s="${s}">${s}</button>`).join('')}</div>
         </div>
-        <button class="btn btn-sm btn-block">📝 Подготовить концепт</button>
+        <div class="concept-actions">
+          <button class="btn btn-sm btn-block">📝 Подготовить концепт</button>
+        </div>
+        <div class="concept-actions" style="margin-top:6px">
+          ${idea.accepted
+            ? `<button class="tiny-btn" id="unaccept-${idea.day}" style="color:var(--error)">✕ Отклонить</button>`
+            : `<button class="tiny-btn" id="accept-${idea.day}" style="color:var(--success);font-weight:700">✅ Принять</button>`
+          }
+          <button class="tiny-btn" id="edit-${idea.day}">✏️ Изменить</button>
+          <button class="tiny-btn" id="regen-${idea.day}">🔄 Переделать</button>
+        </div>
       `;
       card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(b => b.addEventListener('click', async () => {
         card.querySelectorAll(`[data-day-dur="${idea.day}"] .tiny-btn`).forEach(x => x.classList.remove('selected'));
@@ -553,6 +591,58 @@ function render() {
         await updateIdeaParam(idea.day, 'scenes_count', parseInt(b.dataset.s));
       }));
       card.querySelector('button.btn-block').addEventListener('click', () => openConcept(idea.day));
+
+      // ✅ Принять / отклонить
+      const acceptBtn = card.querySelector(`#accept-${idea.day}`);
+      const unacceptBtn = card.querySelector(`#unaccept-${idea.day}`);
+      if(acceptBtn) acceptBtn.addEventListener('click', async () => {
+        await updateIdeaParam(idea.day, 'accepted', true);
+        toast('✅ День ' + idea.day + ' принят!', 'ok');
+        await loadAll(); render();
+      });
+      if(unacceptBtn) unacceptBtn.addEventListener('click', async () => {
+        await updateIdeaParam(idea.day, 'accepted', false);
+        toast('День ' + idea.day + ' отклонён', 'warn');
+        await loadAll(); render();
+      });
+
+      // ✏️ Редактировать
+      card.querySelector(`#edit-${idea.day}`).addEventListener('click', () => {
+        const form = card.querySelector(`#edit-form-${idea.day}`);
+        form.style.display = form.style.display === 'none' || !form.style.display ? 'block' : 'none';
+      });
+      card.querySelector(`#cancel-edit-${idea.day}`).addEventListener('click', () => {
+        card.querySelector(`#edit-form-${idea.day}`).style.display = 'none';
+      });
+      card.querySelector(`#save-edit-${idea.day}`).addEventListener('click', async () => {
+        const title = card.querySelector(`#edit-title-${idea.day}`).value;
+        const type  = card.querySelector(`#edit-type-${idea.day}`).value;
+        const hook  = card.querySelector(`#edit-hook-${idea.day}`).value;
+        const ideas = window.plan.ideas.map(i => i.day===idea.day ? {...i,title,type,hook} : i);
+        await sb.from('plans').update({ideas, updated_at: new Date().toISOString()}).eq('id', window.plan.id);
+        window.plan.ideas = ideas;
+        toast('💾 День ' + idea.day + ' сохранён', 'ok');
+        await loadAll(); render();
+      });
+
+      // 🔄 Переделать один день
+      card.querySelector(`#regen-${idea.day}`).addEventListener('click', async () => {
+        if(!confirm('Переделать день ' + idea.day + '? Текущая идея будет заменена.')) return;
+        const btn = card.querySelector(`#regen-${idea.day}`);
+        btn.disabled = true; btn.textContent = '⏳';
+        try {
+          const r = await callFunction('regen-idea', { day: idea.day });
+          if(r.idea) {
+            const ideas = window.plan.ideas.map(i => i.day===idea.day ? {...r.idea, day:idea.day, duration:i.duration, scenes_count:i.scenes_count} : i);
+            await sb.from('plans').update({ideas, updated_at: new Date().toISOString()}).eq('id', window.plan.id);
+            window.plan.ideas = ideas;
+            toast('🔄 День ' + idea.day + ' обновлён!', 'ok');
+            await loadAll(); render();
+          }
+        } catch(err) { toast('❌ ' + err.message, 'err'); }
+        btn.disabled = false; btn.textContent = '🔄 Переделать';
+      });
+
       grid.appendChild(card);
     });
   }
@@ -734,9 +824,37 @@ window.requestRefs = async function() {
   } catch(err) { hideProgress(false); toast('❌ ' + err.message, 'err'); }
 };
 
+window.renderAcceptedConcepts = function() {
+  if(!window.plan?.ideas) return;
+  const accepted = window.plan.ideas.filter(i => i.accepted);
+  const e = document.getElementById('conc-e');
+  const a = document.getElementById('conc-accepted');
+  if(!accepted.length) { e.style.display=''; a.style.display='none'; return; }
+  e.style.display='none'; a.style.display='';
+  const grid = document.getElementById('accepted-grid');
+  grid.innerHTML = '';
+  accepted.forEach(idea => {
+    const card = document.createElement('div');
+    card.className = 'concept-card accepted';
+    card.style.cursor = 'pointer';
+    card.innerHTML = `
+      <span class="concept-day">День ${idea.day}</span>
+      <div class="concept-emoji">${esc(idea.emoji||'🎬')}</div>
+      <div class="concept-title">${esc(idea.title||'')}</div>
+      <div class="concept-type">${esc(idea.type||'')}</div>
+      ${idea.hook ? `<div class="concept-hook">"${esc(idea.hook)}"</div>` : ''}
+      <div style="margin-top:8px;font-size:12px;color:var(--text-light)">⏱️ ${idea.duration||15}с · 🎬 ${idea.scenes_count||5} сцен</div>
+      <button class="btn btn-sm btn-block" style="margin-top:10px">📝 Подготовить концепт</button>
+    `;
+    card.querySelector('button').addEventListener('click', () => openConcept(idea.day));
+    grid.appendChild(card);
+  });
+};
+
 window.openConcept = async function(day) {
   navTo('concepts');
   document.getElementById('conc-e').style.display = 'none';
+  document.getElementById('conc-accepted').style.display = 'none';
   document.getElementById('conc-d').style.display = '';
   const idea = window.plan.ideas.find(i => i.day === day);
   if(!idea) return;
@@ -816,6 +934,10 @@ async function generateVideos(prodId, scenes, duration, scenesCount, quality) {
 window.navTo = function(pageId) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
+  if(pageId === 'concepts') {
+    document.getElementById('conc-d').style.display = 'none';
+    renderAcceptedConcepts();
+  }
   document.querySelector('.sidebar').classList.remove('open');
 };
 document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', () => navTo(btn.dataset.page)));

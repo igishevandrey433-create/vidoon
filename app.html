@@ -819,7 +819,37 @@ window.navTo = function(pageId) {
 document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', () => navTo(btn.dataset.page)));
 
 window.logout = async function() { if(!confirm('Выйти?')) return; await sb.auth.signOut(); window.location.href = 'login.html'; };
-window.upgradePlan = function(plan) { toast(`💳 ЮKassa скоро`, 'warn'); };
+window.upgradePlan = async function(plan) {
+  const btn = event?.target;
+  if (btn) { btn.disabled = true; btn.classList.add('loading'); }
+  try {
+    toast('⏳ Создаём платёж...', 'info');
+    const r = await callFunction('create-payment', { plan });
+    if (r.confirmation_url) {
+      toast('✅ Переходим к оплате...', 'ok');
+      setTimeout(() => { window.location.href = r.confirmation_url; }, 800);
+    } else {
+      throw new Error(r.error || 'Ошибка создания платежа');
+    }
+  } catch(err) {
+    toast('❌ ' + err.message, 'err');
+    if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
+  }
+};
+
+// Проверяем статус оплаты после возврата с ЮKassa
+(async function checkPaymentReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('payment') === 'success') {
+    const plan = params.get('plan');
+    const planNames = { start: 'Старт', business: 'Бизнес', agency: 'Агентство' };
+    toast(`🎉 Оплата прошла! Тариф "${planNames[plan] || plan}" активирован`, 'ok');
+    // Убираем параметры из URL
+    window.history.replaceState({}, '', window.location.pathname);
+    // Перезагружаем данные
+    setTimeout(async () => { await loadAll(); render(); }, 1500);
+  }
+})();
 
 async function callFunction(name, body) {
   const r = await fetch('https://hbucxewagevmzkvdghko.supabase.co/functions/v1/' + name, {

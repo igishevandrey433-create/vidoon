@@ -909,32 +909,34 @@ function renderConcept(production, idea) {
   if(!s?.scenes) return;
   const c = document.getElementById('conc-c');
 
-  const logo    = window.company?.logo_url;
-  const chars   = window.characters || [];
-  const locs    = window.locations  || [];
-  const dur     = s.duration || 15;
+  const logo  = window.company?.logo_url;
+  const chars = window.characters || [];
+  const locs  = window.locations  || [];
+  const dur   = s.duration || 15;
   const perScene = Math.round((dur / s.scenes.length) * 10) / 10;
 
-  // ─── Строим МАСТЕР-ПРОМТ ───────────────────────────────────────────────
-  const charsDesc = chars.length
+  // ─── Текст мастер-промта (для копирования) ────────────────────────────
+  const charsText = chars.length
     ? chars.map(ch => `  • ${ch.name||'Персонаж'}${ch.role?' ('+ch.role+')':''}: ${ch.description||''}`).join('\n')
     : '  • (персонажи не заданы)';
-  const locsDesc = locs.length
+  const locsText = locs.length
     ? locs.map(l => `  • ${l.name||'Локация'}: ${l.description||''}`).join('\n')
     : '  • (локации не заданы)';
-  const scenesDesc = s.scenes.map(sc => {
-    const timeStart = Math.round((sc.num-1)*perScene*10)/10;
-    const timeEnd   = Math.round(sc.num*perScene*10)/10;
-    const lines = [
-      `[СЦЕНА ${sc.num} | ${timeStart}с – ${timeEnd}с]`,
-      `Действие: ${sc.video?.action || sc.title || ''}`,
-    ];
+  const scenesText = s.scenes.map(sc => {
+    const t0 = Math.round((sc.num-1)*perScene*10)/10;
+    const t1 = Math.round(sc.num*perScene*10)/10;
+    const lines = [`[СЦЕНА ${sc.num} | ${t0}с–${t1}с] ${sc.title||''}`];
+    lines.push(`Действие: ${sc.video?.action||sc.title||''}`);
     if(sc.audio?.text) lines.push(`Реплика: "${sc.audio.text}"`);
-    if(sc.video?.prompt) lines.push(`Промт: ${sc.video.prompt}`);
+    if(logo)                lines.push(`Логотип: [см. фото]`);
+    const scRefs = [];
+    chars.forEach(ch => { if(ch.image_url) scRefs.push(ch.name||'персонаж'); });
+    locs.forEach(l  => { if(l.image_url)  scRefs.push(l.name||'локация'); });
+    if(scRefs.length) lines.push(`Референсы: ${scRefs.join(', ')} [см. фото ниже]`);
     return lines.join('\n');
   }).join('\n\n');
 
-  const masterPrompt =
+  const masterText =
 `🎬 ВИДЕО: ${idea.title||''}
 ⏱ Длительность: ${dur}с | Сцен: ${s.scenes.length} | ~${perScene}с на сцену
 
@@ -942,76 +944,105 @@ function renderConcept(production, idea) {
 ${s.concept||idea.hook||''}
 
 ━━━ ПЕРСОНАЖИ ━━━
-${charsDesc}
+${charsText}
 
 ━━━ ЛОКАЦИИ ━━━
-${locsDesc}
+${locsText}
 
 ━━━ СЦЕНЫ ━━━
-${scenesDesc}
+${scenesText}
 
 ━━━ СТИЛЬ ━━━
-Кинематографичный, профессиональная съёмка, чёткое освещение, 4K качество.`;
+Кинематографичный, профессиональная съёмка, чёткое освещение, 4K.`;
 
-  // ─── Фото-референсы по сценам ─────────────────────────────────────────
-  // Определяем какой персонаж/локация подходит к каждой сцене
+  // ─── Визуальный мастер-промт с фото ───────────────────────────────────
+  function imgBox(url, label, sublabel) {
+    if(!url) return '';
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <img src="${esc(url)}" alt="${esc(label)}"
+        style="width:72px;height:72px;object-fit:cover;border-radius:10px;border:2px solid var(--border)">
+      <span style="font-size:11px;font-weight:700;text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(label)}</span>
+      ${sublabel?`<span style="font-size:10px;color:var(--primary);text-align:center">${esc(sublabel)}</span>`:''}
+    </div>`;
+  }
+
+  const logoBlock = logo ? `
+    <div style="margin-bottom:14px">
+      <div class="scene-block-label" style="margin-bottom:8px">🏷️ ЛОГОТИП</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <img src="${esc(logo)}" style="width:60px;height:60px;object-fit:contain;border-radius:10px;border:2px solid var(--primary);background:#fff;flex-shrink:0">
+        <span style="font-size:13px;color:var(--text-light)">Использовать логотип компании во всех сценах где уместно</span>
+      </div>
+    </div>` : '';
+
+  const charsBlock = chars.length ? `
+    <div style="margin-bottom:14px">
+      <div class="scene-block-label" style="margin-bottom:8px">👥 ПЕРСОНАЖИ</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${chars.map(ch => `
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
+          ${ch.image_url
+            ? `<img src="${esc(ch.image_url)}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1.5px solid var(--border)">`
+            : `<div style="width:64px;height:64px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">👤</div>`}
+          <div>
+            <div style="font-size:13px;font-weight:700">${esc(ch.name||'Персонаж')}</div>
+            ${ch.role?`<div style="font-size:11px;color:var(--primary);font-weight:600;margin-bottom:4px">${esc(ch.role)}</div>`:''}
+            <div style="font-size:12px;color:var(--text-light);line-height:1.5">${esc(ch.description||'')}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>` : '';
+
+  const locsBlock = locs.length ? `
+    <div style="margin-bottom:14px">
+      <div class="scene-block-label" style="margin-bottom:8px">🏢 ЛОКАЦИИ</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${locs.map(l => `
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
+          ${l.image_url
+            ? `<img src="${esc(l.image_url)}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1.5px solid var(--border)">`
+            : `<div style="width:64px;height:64px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">🏢</div>`}
+          <div>
+            <div style="font-size:13px;font-weight:700">${esc(l.name||'Локация')}</div>
+            <div style="font-size:12px;color:var(--text-light);line-height:1.5">${esc(l.description||'')}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>` : '';
+
+  // ─── Сцены с фото-референсами ──────────────────────────────────────────
   function getSceneRefs(sc) {
     const refs = [];
-    if(logo) refs.push({ url: logo, label: 'Логотип' });
-    // Ищем персонажей упомянутых в сцене
-    chars.forEach(ch => {
-      if(!ch.image_url) return;
-      const text = ((sc.video?.action||'')+(sc.audio?.text||'')+(sc.title||'')).toLowerCase();
-      const name = (ch.name||'').toLowerCase();
-      if(name && text.includes(name.split(' ')[0])) refs.push({ url: ch.image_url, label: ch.name });
-    });
-    // Если нет — берём первого персонажа
-    if(refs.length <= 1 && chars.length > 0 && chars[0].image_url) {
-      refs.push({ url: chars[0].image_url, label: chars[0].name||'Персонаж' });
-    }
-    // Локации
-    locs.forEach(l => {
-      if(!l.image_url) return;
-      const text = ((sc.video?.action||'')+(sc.title||'')).toLowerCase();
-      const name = (l.name||'').toLowerCase();
-      if(name && text.includes(name.split(' ')[0])) refs.push({ url: l.image_url, label: l.name });
-    });
-    if(refs.filter(r=>r.label!=='Логотип').length === 0 && locs.length > 0 && locs[0].image_url) {
-      refs.push({ url: locs[0].image_url, label: locs[0].name||'Локация' });
-    }
-    return refs.slice(0, 4);
+    if(logo) refs.push({ url: logo, label: 'Логотип', sub: '' });
+    chars.forEach(ch => { if(ch.image_url) refs.push({ url: ch.image_url, label: ch.name||'Персонаж', sub: ch.role||'' }); });
+    locs.forEach(l  => { if(l.image_url)  refs.push({ url: l.image_url,  label: l.name||'Локация',  sub: 'локация' }); });
+    return refs;
   }
 
   const scenesCardsHtml = s.scenes.map(sc => {
-    const timeStart = Math.round((sc.num-1)*perScene*10)/10;
-    const timeEnd   = Math.round(sc.num*perScene*10)/10;
+    const t0 = Math.round((sc.num-1)*perScene*10)/10;
+    const t1 = Math.round(sc.num*perScene*10)/10;
     const refs = getSceneRefs(sc);
     const scPrompt = sc.video?.prompt || sc.video?.action || sc.title || '';
-
     return `<div class="scene-block" style="margin-bottom:1rem">
       <div class="scene-header">
         <div class="scene-num">${sc.num}</div>
-        <div class="scene-time">${timeStart}с – ${timeEnd}с</div>
+        <div class="scene-time">${t0}с–${t1}с</div>
         <div class="scene-title">${esc(sc.title||'')}</div>
       </div>
       ${sc.audio ? `<div class="scene-block-audio"><span class="scene-block-label">🎤 РЕПЛИКА</span><div><b>${esc(sc.audio.speaker||'')}:</b> ${esc(sc.audio.text||'')}</div></div>` : ''}
       ${sc.video ? `<div class="scene-block-video"><span class="scene-block-label">🎬 ДЕЙСТВИЕ</span><div>${esc(sc.video.action||'')}</div></div>` : ''}
       <div style="margin-top:10px">
-        <div style="font-size:12px;font-weight:700;color:var(--text-light);margin-bottom:6px">📝 ПРОМТ ДЛЯ СЦЕНЫ</div>
+        <div class="scene-block-label" style="margin-bottom:6px">📝 ПРОМТ ДЛЯ НЕЙРОСЕТИ</div>
         <textarea class="prompt-field scene-prompt" data-scene="${sc.num}"
-          placeholder="Промт для нейросети: объект, действие, стиль, освещение, камера..."
+          placeholder="Подробный промт: объект, действие, стиль, освещение, ракурс камеры..."
           style="min-height:65px">${esc(scPrompt)}</textarea>
       </div>
       ${refs.length > 0 ? `
       <div style="margin-top:10px">
-        <div style="font-size:12px;font-weight:700;color:var(--text-light);margin-bottom:6px">🖼️ ФОТО-РЕФЕРЕНСЫ</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${refs.map(r => `
-          <div style="text-align:center">
-            <img src="${esc(r.url)}" alt="${esc(r.label)}"
-              style="width:72px;height:72px;object-fit:cover;border-radius:10px;border:2px solid var(--border);display:block">
-            <div style="font-size:10px;color:var(--text-light);margin-top:3px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.label)}</div>
-          </div>`).join('')}
+        <div class="scene-block-label" style="margin-bottom:8px">🖼️ ФОТО-РЕФЕРЕНСЫ ДЛЯ ЭТОЙ СЦЕНЫ</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          ${refs.map(r => imgBox(r.url, r.label, r.sub)).join('')}
         </div>
       </div>` : ''}
     </div>`;
@@ -1030,34 +1061,39 @@ ${scenesDesc}
       <p class="card-desc" style="margin-top:8px">${esc(s.concept||'')}</p>
     </div>
 
-    <!-- МАСТЕР-ПРОМТ -->
+    <!-- МАСТЕР-ПРОМТ с фото -->
     <div class="card" style="margin-bottom:1rem;border:2px solid var(--primary)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <h3>📋 Мастер-промт (всё в одном)</h3>
-        <button id="copy-master" class="btn btn-sm" style="flex-shrink:0">📋 Копировать</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <h3>📋 Мастер-промт</h3>
+        <div style="display:flex;gap:8px">
+          <button id="copy-master" class="btn btn-sm">📋 Копировать текст</button>
+        </div>
       </div>
-      <div class="prompt-hint" style="margin-bottom:10px">Скопируйте и вставьте в Runway / Kling / Sora / любую нейросеть</div>
-      <textarea class="prompt-field" id="master-prompt" style="min-height:260px;font-size:12px">${esc(masterPrompt)}</textarea>
-    </div>
+      <div class="prompt-hint" style="margin-bottom:14px">
+        Скопируйте текст и приложите фото при загрузке в Runway / Kling / Sora
+      </div>
 
-    <!-- Все медиа-ресурсы -->
-    ${(logo || chars.length > 0 || locs.length > 0) ? `
-    <div class="card" style="margin-bottom:1rem">
-      <h3 style="margin-bottom:10px">🖼️ Все медиа-ресурсы</h3>
-      <div style="display:flex;flex-wrap:wrap;gap:10px">
-        ${logo ? `<div style="text-align:center"><img src="${esc(logo)}" style="width:80px;height:80px;object-fit:contain;border-radius:10px;border:2px solid var(--primary);background:#fff"><div style="font-size:11px;font-weight:700;margin-top:4px;color:var(--primary)">Логотип</div></div>` : ''}
-        ${chars.map(ch => `<div style="text-align:center">
-          ${ch.image_url ? `<img src="${esc(ch.image_url)}" style="width:80px;height:80px;object-fit:cover;border-radius:10px;border:1.5px solid var(--border)">` : `<div style="width:80px;height:80px;background:var(--bg);border-radius:10px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px">👤</div>`}
-          <div style="font-size:11px;font-weight:700;margin-top:4px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(ch.name||'')}</div>
-          <div style="font-size:10px;color:var(--primary)">${esc(ch.role||'персонаж')}</div>
-        </div>`).join('')}
-        ${locs.map(l => `<div style="text-align:center">
-          ${l.image_url ? `<img src="${esc(l.image_url)}" style="width:80px;height:80px;object-fit:cover;border-radius:10px;border:1.5px solid var(--border)">` : `<div style="width:80px;height:80px;background:var(--bg);border-radius:10px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px">🏢</div>`}
-          <div style="font-size:11px;font-weight:700;margin-top:4px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.name||'')}</div>
-          <div style="font-size:10px;color:var(--text-light)">локация</div>
-        </div>`).join('')}
+      <!-- Текст промта -->
+      <div style="margin-bottom:16px">
+        <div class="scene-block-label" style="margin-bottom:8px">📄 ТЕКСТ ПРОМТА</div>
+        <textarea class="prompt-field" id="master-prompt"
+          style="min-height:200px;font-size:12px">${esc(masterText)}</textarea>
       </div>
-    </div>` : ''}
+
+      <!-- Логотип -->
+      ${logoBlock}
+
+      <!-- Персонажи с фото -->
+      ${charsBlock}
+
+      <!-- Локации с фото -->
+      ${locsBlock}
+
+      ${(!logo && !chars.length && !locs.length) ? `
+      <div style="padding:12px;background:var(--bg);border-radius:10px;font-size:13px;color:var(--text-light);text-align:center">
+        ⚠️ Нет медиа-ресурсов. Перейдите в <b>Образы</b> и сгенерируйте персонажей и локации.
+      </div>` : ''}
+    </div>
 
     <!-- Сцены с промтами и фото-референсами -->
     <div class="card" style="margin-bottom:1rem">
@@ -1083,7 +1119,8 @@ ${scenesDesc}
         </div>
       </div>
       <div class="price-summary">
-        <div><div style="font-weight:700">Стоимость:</div><div class="price-summary-info" id="price-info">—</div></div>
+        <div><div style="font-weight:700">Стоимость:</div>
+        <div class="price-summary-info" id="price-info">—</div></div>
         <div class="price-summary-amount" id="price-amt">—</div>
       </div>
       <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
@@ -1091,35 +1128,13 @@ ${scenesDesc}
 
   </div>`;
 
-  // Копирование мастер-промта
+  // Копирование
   c.querySelector('#copy-master').addEventListener('click', () => {
     const text = c.querySelector('#master-prompt').value;
-    navigator.clipboard?.writeText(text).then(() => toast('📋 Мастер-промт скопирован!', 'ok'));
+    navigator.clipboard?.writeText(text).then(() => toast('📋 Промт скопирован!', 'ok'));
   });
 
-  // Обновляем мастер-промт при изменении сцен
-  c.querySelectorAll('.scene-prompt').forEach(el => {
-    el.addEventListener('input', () => {
-      const newScenesDesc = s.scenes.map(sc => {
-        const field = c.querySelector(`.scene-prompt[data-scene="${sc.num}"]`);
-        const timeStart = Math.round((sc.num-1)*perScene*10)/10;
-        const timeEnd   = Math.round(sc.num*perScene*10)/10;
-        const lines = [`[СЦЕНА ${sc.num} | ${timeStart}с – ${timeEnd}с]`, `Промт: ${field?.value||''}`];
-        if(sc.audio?.text) lines.push(`Реплика: "${sc.audio.text}"`);
-        return lines.join('\n');
-      }).join('\n\n');
-      const mp = c.querySelector('#master-prompt');
-      if(mp) {
-        const parts = mp.value.split('━━━ СЦЕНЫ ━━━');
-        if(parts.length >= 2) {
-          const after = parts[1].split('━━━ СТИЛЬ ━━━');
-          mp.value = parts[0] + '━━━ СЦЕНЫ ━━━\n' + newScenesDesc + '\n\n━━━ СТИЛЬ ━━━' + (after[1]||'');
-        }
-      }
-    });
-  });
-
-  // Кнопки качества/длительности
+  // Кнопки длительности/качества
   const updatePrice = () => {
     const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d)||15;
     const q = c.querySelector('#q-sel .selected')?.dataset.q||'720p';
@@ -1156,7 +1171,6 @@ ${scenesDesc}
     });
     generateVideos(production.id, updatedScenes, d, updatedScenes.length, q);
   });
-
 }
 
 

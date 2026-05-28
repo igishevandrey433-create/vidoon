@@ -1304,7 +1304,19 @@ ${scenesText}
       b.classList.add('selected'); updatePrice();
     });
   });
-  updatePrice();
+  // Вызываем после рендера DOM
+  setTimeout(() => {
+    // Убеждаемся что selected выставлен
+    const btns = c.querySelectorAll('#dur-sel .duration-btn');
+    if(btns.length && !c.querySelector('#dur-sel .duration-btn.selected')) {
+      btns[btns.length - 1].classList.add('selected'); // 15с по умолчанию
+    }
+    const qbtns = c.querySelectorAll('#q-sel .quality-btn');
+    if(qbtns.length && !c.querySelector('#q-sel .quality-btn.selected')) {
+      qbtns[1].classList.add('selected'); // 720p по умолчанию
+    }
+    updatePrice();
+  }, 50);
 
   // Генерация начального кадра сцены
   c.querySelectorAll('.gen-frame-btn').forEach(btn => {

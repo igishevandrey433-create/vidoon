@@ -920,9 +920,7 @@ function renderConcept(production, idea) {
   const charsText = chars.length
     ? chars.map(ch => `  • ${ch.name||'Персонаж'}${ch.role?' ('+ch.role+')':''}: ${ch.description||''}`).join('\n')
     : '  • (персонажи не заданы)';
-  const locsText = locs.length
-    ? locs.map(l => `  • ${l.name||'Локация'}: ${l.description||''}`).join('\n')
-    : '  • (локации не заданы)';
+  const locsText = '  • Используются начальные кадры каждой сцены';
   const scenesText = s.scenes.map(sc => {
     const t0 = Math.round((sc.num-1)*perScene*10)/10;
     const t1 = Math.round(sc.num*perScene*10)/10;
@@ -932,7 +930,7 @@ function renderConcept(production, idea) {
     if(logo)                lines.push(`Логотип: [см. фото]`);
     const scRefs = [];
     chars.forEach(ch => { if(ch.image_url) scRefs.push(ch.name||'персонаж'); });
-    locs.forEach(l  => { if(l.image_url)  scRefs.push(l.name||'локация'); });
+    // Локации убраны из сцен
     if(scRefs.length) lines.push(`Референсы: ${scRefs.join(', ')} [см. фото ниже]`);
     return lines.join('\n');
   }).join('\n\n');
@@ -947,7 +945,7 @@ ${s.concept||idea.hook||''}
 ━━━ ПЕРСОНАЖИ ━━━
 ${charsText}
 
-━━━ ЛОКАЦИИ ━━━
+━━━ ЛОКАЦИИ (начальные кадры сцен) ━━━
 ${locsText}
 
 ━━━ СЦЕНЫ ━━━
@@ -994,22 +992,7 @@ ${scenesText}
       </div>
     </div>` : '';
 
-  const locsBlock = locs.length ? `
-    <div style="margin-bottom:14px">
-      <div class="scene-block-label" style="margin-bottom:8px">🏢 ЛОКАЦИИ</div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        ${locs.map(l => `
-        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
-          ${l.image_url
-            ? `<img src="${esc(l.image_url)}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1.5px solid var(--border)">`
-            : `<div style="width:64px;height:64px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">🏢</div>`}
-          <div>
-            <div style="font-size:13px;font-weight:700">${esc(l.name||'Локация')}</div>
-            <div style="font-size:12px;color:var(--text-light);line-height:1.5">${esc(l.description||'')}</div>
-          </div>
-        </div>`).join('')}
-      </div>
-    </div>` : '';
+  const locsBlock = ''; // Локации убраны — используются начальные кадры сцен
 
   // ─── Сцены с фото-референсами ──────────────────────────────────────────
   function getSceneRefs(sc) {
@@ -1106,9 +1089,8 @@ ${scenesText}
       ${charsBlock}
 
       <!-- Локации с фото -->
-      ${locsBlock}
 
-      ${(!logo && !chars.length && !locs.length) ? `
+      ${(!logo && !chars.length) ? `
       <div style="padding:12px;background:var(--bg);border-radius:10px;font-size:13px;color:var(--text-light);text-align:center">
         ⚠️ Нет медиа-ресурсов. Перейдите в <b>Образы</b> и сгенерируйте персонажей и локации.
       </div>` : ''}
@@ -1268,7 +1250,7 @@ ${scenesText}
     const allMedia = [];
     if(logo) allMedia.push({ url: logo, name: 'logo' });
     chars.forEach((ch,i) => { if(ch.image_url) allMedia.push({ url: ch.image_url, name: `character-${ch.name||i}` }); });
-    locs.forEach((l,i)  => { if(l.image_url)  allMedia.push({ url: l.image_url,  name: `location-${l.name||i}` }); });
+    // Локации не скачиваем
     if(!allMedia.length) { toast('Нет фото для скачивания', 'warn'); return; }
     for(const m of allMedia) {
       try {

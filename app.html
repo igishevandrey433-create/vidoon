@@ -1015,7 +1015,7 @@ ${scenesText}
     const refs = [];
     if(logo) refs.push({ url: logo, label: 'Логотип', sub: '' });
     chars.forEach(ch => { if(ch.image_url) refs.push({ url: ch.image_url, label: ch.name||'Персонаж', sub: ch.role||'' }); });
-    locs.forEach(l  => { if(l.image_url)  refs.push({ url: l.image_url,  label: l.name||'Локация',  sub: 'локация' }); });
+    // Локации убраны из референсов сцен
     return refs;
   }
 
@@ -1364,22 +1364,101 @@ ${scenesText}
   c.querySelector('#gen-vid-btn').addEventListener('click', () => {
     const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d)||15;
     const q = c.querySelector('#q-sel .selected')?.dataset.q||'720p';
+
+    // Собираем персонажей для передачи в API
+    const charsForApi = chars.map(ch => ({
+      name: ch.name || '',
+      description_en: ch.description_en || ch.description || '',
+      image_url: ch.image_url || ''
+    }));
+
+    // Логотип
+    const logoUrl = logo || null;
+
     const updatedScenes = s.scenes.map(sc => {
       const field = c.querySelector(`.scene-prompt[data-scene="${sc.num}"]`);
-      const refs = getSceneRefs(sc);
       return {
         ...sc,
         video: {
           ...(sc.video||{}),
-          prompt: (field?.value||sc.video?.action||'Scene'),
-          image_urls: refs.map(r=>r.url).filter(Boolean)
+          prompt: (field?.value || sc.video?.action || 'Scene'),
+          first_frame_url: sc.first_frame_url || null
         }
       };
     });
-    generateVideos(production.id, updatedScenes, d, updatedScenes.length, q);
+
+    generateVideos(
+      production.id,
+      updatedScenes,
+      d,
+      updatedScenes.length,
+      q,
+      charsForApi,
+      logoUrl
+    );
   });
 }
 
+
+async function generateVideos(productionId, scenes, duration, sceneCount, resolution, characters=[], logoUrl=null) {
+  hideProgress(true, '🎬 Запускаем генерацию видео', ['Подготовка сцен', 'Отправка в WaveSpeed', 'Ожидание результата'], { duration: sceneCount * 90000 });
+
+  try {
+    const results = [];
+    let failed = 0;
+
+    // Генерируем каждую сцену последовательно
+    for (const sc of scenes) {
+      const prompt = sc.video?.prompt || sc.video?.action || sc.title || 'cinematic scene';
+      const firstFrameUrl = sc.first_frame_url || sc.video?.first_frame_url || null;
+
+      toast(`🎬 Генерирую сцену ${sc.num} из ${scenes.length}...`, 'info');
+
+      try {
+        const r = await callFunction('generate-video', {
+          production_id: productionId,
+          scene_num: sc.num,
+          resolution: resolution,
+          duration: Math.min(duration, 15),
+          prompt: prompt,
+          first_frame_url: firstFrameUrl,
+          characters: characters,
+          logo_url: logoUrl
+        });
+
+        if (r.success) {
+          results.push({ scene: sc.num, video_id: r.video_id, request_id: r.request_id });
+          toast(`✅ Сцена ${sc.num} запущена!`, 'ok');
+        } else if (r.needs_payment) {
+          toast(`💳 Сцена ${sc.num}: нужна оплата ${r.price_rub}₽`, 'warn');
+          failed++;
+        } else {
+          toast(`❌ Сцена ${sc.num}: ${r.error}`, 'err');
+          failed++;
+        }
+      } catch(e) {
+        toast(`❌ Сцена ${sc.num}: ${e.message}`, 'err');
+        failed++;
+      }
+
+      // Пауза между запросами
+      if (sc.num < scenes.length) await new Promise(r => setTimeout(r, 1500));
+    }
+
+    hideProgress(true);
+
+    if (results.length > 0) {
+      toast(`🎬 Запущено ${results.length} сцен${failed > 0 ? `, ошибок: ${failed}` : ''}! Проверяйте раздел "Видео"`, 'ok');
+      setTimeout(async () => { await loadAll(); render(); navTo('videos'); }, 2000);
+    } else {
+      toast('❌ Не удалось запустить ни одной сцены', 'err');
+    }
+
+  } catch(err) {
+    hideProgress(false);
+    toast('❌ ' + err.message, 'err');
+  }
+}
 
 window.navTo = function(pageId) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));

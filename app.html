@@ -1276,8 +1276,9 @@ ${scenesText}
   // Инициализируем глобальные переменные для цены
   window._vidDur = 15;
   window._vidQ = '720p';
-  window._vidScenes = s.scenes.length;
-  setTimeout(() => window.vidCalcPrice(), 100);
+  window._vidScenes = s.scenes ? s.scenes.length : 1;
+  console.log('renderConcept: сцен='+window._vidScenes);
+  setTimeout(() => window.vidCalcPrice(), 200);
 
   // Генерация начального кадра сцены
   c.querySelectorAll('.gen-frame-btn').forEach(btn => {
@@ -1570,7 +1571,8 @@ window.vidSelectQ = function(btn, q) {
 window.vidCalcPrice = function() {
   const d = window._vidDur || 15;
   const q = window._vidQ || '720p';
-  const n = window._vidScenes || 1;
+  const n = (window._vidScenes && window._vidScenes > 0) ? window._vidScenes : 1;
+  console.log('vidCalcPrice: сцен='+n+', длит='+d+'с, кач='+q);
   const costPerSec = {'480p':0.10,'720p':0.12,'1080p':0.13};
   const costUsd = (costPerSec[q]||0.12) * d;
   const pricePerScene = Math.max(Math.ceil(costUsd * 95 * 1.8 / 10) * 10, 50);

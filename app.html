@@ -1123,9 +1123,12 @@ ${scenesText}
     <div class="card">
       <h3 style="margin-bottom:1rem">🚀 Генерация видео</h3>
       <div class="field">
-        <label>⏱️ Длительность <span style="font-size:11px;color:#ef4444;font-weight:600">макс. 15 сек</span></label>
+        <label>⏱️ Длительность на сцену <span style="font-size:11px;color:var(--primary);font-weight:600">до 60 сек суммарно</span></label>
         <div class="duration-btns" id="dur-sel">
-          ${[4,8,10,15].map(d => `<button class="duration-btn ${d===(s.duration||15)?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
+          ${[4,8,10,15].map(d => `<button class="duration-btn ${d===(Math.min(s.duration||15,15))?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
+        </div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:6px">
+          Итого: <b id="total-dur-label">${s.scenes.length * (s.duration||15)}с</b> (${s.scenes.length} сцен × выбранная длительность)
         </div>
       </div>
       <div class="field">
@@ -1287,9 +1290,12 @@ ${scenesText}
     const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d)||15;
     const q = c.querySelector('#q-sel .selected')?.dataset.q||'720p';
     const n = s.scenes.length;
+    const totalSec = n * d;
     const prices = {'480p':50,'720p':100,'1080p':200};
-    c.querySelector('#price-info').textContent = `${n} сцен × ${prices[q]||100} кр. (${d}с, ${q})`;
+    c.querySelector('#price-info').textContent = `${n} сцен × ${d}с = ${totalSec}с суммарно (${q})`;
     c.querySelector('#price-amt').textContent = (n*(prices[q]||100)) + ' кредитов';
+    const lbl = c.querySelector('#total-dur-label');
+    if(lbl) lbl.textContent = totalSec + 'с';
   };
   c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => {
     c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected'));
@@ -1307,21 +1313,20 @@ ${scenesText}
       const sceneNum = parseInt(btn.dataset.scene);
       const prodId   = btn.dataset.prod;
       const sc = s.scenes.find(x => x.num === sceneNum);
-      if(!sc) return;
+      if(!sc) { toast('❌ Сцена не найдена', 'err'); return; }
 
-      // Собираем промт: действие + персонажи + стиль
+      // Промт только из сцены + персонажи (без локаций)
       const scPrompt = c.querySelector(`.scene-prompt[data-scene="${sceneNum}"]`)?.value || sc.video?.action || sc.title || '';
-      const charsDesc = chars.slice(0,2).map(ch => ch.description_en || ch.name).join(', ');
-      const locDesc   = locs.length ? (locs[0].description_en || locs[0].name) : '';
+      const charsDesc = chars.slice(0,2).map(ch => ch.description_en || ch.name).filter(Boolean).join(', ');
       const fullPrompt = [
         scPrompt,
         charsDesc ? `Characters: ${charsDesc}` : '',
-        locDesc   ? `Location: ${locDesc}` : '',
         'cinematic shot, professional lighting, 4K, photorealistic'
       ].filter(Boolean).join('. ');
 
       // UI: показываем загрузку
       const wrap = c.querySelector(`#frame-wrap-${sceneNum}`);
+      if(!wrap) { toast('❌ Элемент не найден, обновите страницу', 'err'); return; }
       const origHtml = wrap.innerHTML;
       wrap.innerHTML = `<div style="width:150px;height:150px;border-radius:12px;background:var(--bg);border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text-light);font-size:12px"><div class="spinner" style="width:28px;height:28px;border:3px solid rgba(124,111,255,.2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite"></div><span>Генерирую...</span></div>`;
       btn.disabled = true;

@@ -260,23 +260,80 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <main class="main">
 
 <div class="page active" id="page-dashboard">
-  <div class="page-header"><h1>Добро пожаловать! 👋</h1><p>Статус вашего проекта</p></div>
+  <div class="page-header">
+    <h1 id="home-greeting">Добро пожаловать! 👋</h1>
+    <p>Ваш AI-конвейер для создания видео-контента</p>
+  </div>
+
+  <!-- Статистика -->
   <div class="grid-4" style="margin-bottom:1.5rem">
     <div class="stat"><div class="stat-label">Концепты</div><div class="stat-num" id="s1">0</div><div class="stat-sub" id="s1lim">из 1</div></div>
-    <div class="stat"><div class="stat-label">Видео</div><div class="stat-num" id="s2">0</div><div class="stat-sub">готово</div></div>
+    <div class="stat"><div class="stat-label">Видео готово</div><div class="stat-num" id="s2">0</div><div class="stat-sub">роликов</div></div>
     <div class="stat"><div class="stat-label">Тариф</div><div class="stat-num" id="s3" style="font-size:22px">Демо</div><div class="stat-sub">текущий</div></div>
     <div class="stat"><div class="stat-label">Стратегии</div><div class="stat-num" id="s4">0</div><div class="stat-sub">создано</div></div>
   </div>
-  <div class="status-card">
-    <h3>📊 Ваш прогресс</h3>
+
+  <!-- Прогресс пайплайна -->
+  <div class="status-card" style="margin-bottom:1.5rem">
+    <h3 style="margin-bottom:1rem">🚀 Ваш прогресс</h3>
     <div class="status-list">
-      <div class="status-item"><div class="status-icon" id="si1">1</div><div class="status-text"><b>Анкета бренда</b><small>О вашей компании</small></div></div>
-      <div class="status-item"><div class="status-icon" id="si2">2</div><div class="status-text"><b>Исследование</b><small>Анализ ниши</small></div></div>
-      <div class="status-item"><div class="status-icon" id="si3">3</div><div class="status-text"><b>Стратегия</b><small>30 идей на месяц</small></div></div>
-      <div class="status-item"><div class="status-icon" id="si4">4</div><div class="status-text"><b>Образы с картинками</b><small>AI генерация</small></div></div>
-      <div class="status-item"><div class="status-icon" id="si5">5</div><div class="status-text"><b>Концепты</b><small>Готовые техзадания</small></div></div>
+      <div class="status-item" onclick="navTo('brand')" style="cursor:pointer">
+        <div class="status-icon" id="si1">1</div>
+        <div class="status-text"><b>Анкета бренда</b><small>Расскажите о компании</small></div>
+        <span style="font-size:12px;color:var(--text-light)">→</span>
+      </div>
+      <div class="status-item" onclick="navTo('research')" style="cursor:pointer">
+        <div class="status-icon" id="si2">2</div>
+        <div class="status-text"><b>Исследование</b><small>Анализ ниши и аудитории</small></div>
+        <span style="font-size:12px;color:var(--text-light)">→</span>
+      </div>
+      <div class="status-item" onclick="navTo('strategy')" style="cursor:pointer">
+        <div class="status-icon" id="si3">3</div>
+        <div class="status-text"><b>Стратегия</b><small>30 идей на месяц</small></div>
+        <span style="font-size:12px;color:var(--text-light)">→</span>
+      </div>
+      <div class="status-item" onclick="navTo('refs')" style="cursor:pointer">
+        <div class="status-icon" id="si4">4</div>
+        <div class="status-text"><b>Образы</b><small>AI генерация персонажей</small></div>
+        <span style="font-size:12px;color:var(--text-light)">→</span>
+      </div>
+      <div class="status-item" onclick="navTo('concepts')" style="cursor:pointer">
+        <div class="status-icon" id="si5">5</div>
+        <div class="status-text"><b>Концепты → Видео</b><small>Готовые техзадания</small></div>
+        <span style="font-size:12px;color:var(--text-light)">→</span>
+      </div>
     </div>
-    <button class="btn btn-lg" style="margin-top:1.5rem" id="next-btn">Начать →</button>
+    <button class="btn btn-lg" style="margin-top:1.5rem;width:100%" id="next-btn">Начать →</button>
+  </div>
+
+  <!-- Быстрые действия -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem">
+    <div class="card" onclick="navTo('strategy')" style="cursor:pointer;text-align:center;padding:1.25rem">
+      <div style="font-size:28px;margin-bottom:6px">📅</div>
+      <div style="font-size:13px;font-weight:700">Стратегия</div>
+      <div style="font-size:11px;color:var(--text-light)">30 идей на месяц</div>
+    </div>
+    <div class="card" onclick="navTo('concepts')" style="cursor:pointer;text-align:center;padding:1.25rem">
+      <div style="font-size:28px;margin-bottom:6px">🎬</div>
+      <div style="font-size:13px;font-weight:700">Концепты</div>
+      <div style="font-size:11px;color:var(--text-light)">Принятые дни</div>
+    </div>
+    <div class="card" onclick="navTo('refs')" style="cursor:pointer;text-align:center;padding:1.25rem">
+      <div style="font-size:28px;margin-bottom:6px">🎭</div>
+      <div style="font-size:13px;font-weight:700">Образы</div>
+      <div style="font-size:11px;color:var(--text-light)">Персонажи и локации</div>
+    </div>
+    <div class="card" onclick="navTo('videos')" style="cursor:pointer;text-align:center;padding:1.25rem">
+      <div style="font-size:28px;margin-bottom:6px">📹</div>
+      <div style="font-size:13px;font-weight:700">Видео</div>
+      <div style="font-size:11px;color:var(--text-light)" id="home-videos-count">0 готово</div>
+    </div>
+  </div>
+
+  <!-- Последние видео -->
+  <div id="home-recent-videos" style="display:none">
+    <h3 style="margin-bottom:1rem">🎬 Последние видео</h3>
+    <div id="home-videos-list"></div>
   </div>
 </div>
 
@@ -533,6 +590,37 @@ function render() {
     const el = document.getElementById('si' + n);
     if(done) { el.classList.add('done'); el.textContent = '✓'; } else { el.classList.remove('done'); el.textContent = n; }
   });
+  // Приветствие с именем
+  const greet = document.getElementById('home-greeting');
+  if(greet) {
+    const hour = new Date().getHours();
+    const timeGreet = hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
+    const userName = window.profile?.name?.split(' ')[0] || '';
+    greet.textContent = `${timeGreet}${userName ? ', '+userName : ''}! 👋`;
+  }
+
+  // Счётчик видео на главной
+  const readyVideos = window.videos.filter(v => v.status==='completed'||v.status==='done');
+  const homeCount = document.getElementById('home-videos-count');
+  if(homeCount) homeCount.textContent = readyVideos.length + ' готово';
+
+  // Последние 2 видео на главной
+  const recentBlock = document.getElementById('home-recent-videos');
+  const recentList = document.getElementById('home-videos-list');
+  if(recentBlock && recentList && readyVideos.length > 0) {
+    recentBlock.style.display = '';
+    recentList.innerHTML = readyVideos.slice(0,2).map(v => `
+      <div class="card" style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:600">Сцена ${v.scene_num||'?'}</span>
+          <span style="font-size:11px;color:var(--text-light)">${v.resolution} · ${v.duration_seconds}с</span>
+        </div>
+        <video src="${v.video_url}" controls style="width:100%;border-radius:8px;max-height:200px"></video>
+      </div>`).join('');
+  } else if(recentBlock) {
+    recentBlock.style.display = 'none';
+  }
+
   const ctaBtn = document.getElementById('next-btn');
   if(!hasBrand) { ctaBtn.textContent = 'Анкета →'; ctaBtn.onclick = () => navTo('brand'); }
   else if(!hasAnalysis) { ctaBtn.textContent = 'Исследование →'; ctaBtn.onclick = () => navTo('research'); }

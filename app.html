@@ -1103,29 +1103,32 @@ ${scenesText}
     </div>
 
     <!-- Генерация -->
-    <div class="card">
+    <div class="card" id="gen-card">
       <h3 style="margin-bottom:1rem">🚀 Генерация видео</h3>
       <div class="field">
         <label>⏱️ Длительность на сцену <span style="font-size:11px;color:var(--primary);font-weight:600">до 60 сек суммарно</span></label>
-        <div class="duration-btns" id="dur-sel">
-          ${[4,8,10,15].map(d => `<button class="duration-btn ${d===15?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
+        <div class="duration-btns">
+          <button class="duration-btn" onclick="vidSelectDur(this,4)" id="vd-4">4с</button>
+          <button class="duration-btn" onclick="vidSelectDur(this,8)" id="vd-8">8с</button>
+          <button class="duration-btn" onclick="vidSelectDur(this,10)" id="vd-10">10с</button>
+          <button class="duration-btn selected" onclick="vidSelectDur(this,15)" id="vd-15">15с</button>
         </div>
         <div style="font-size:11px;color:var(--text-light);margin-top:6px">
-          Итого: <b id="total-dur-label">${s.scenes.length * (s.duration||15)}с</b> (${s.scenes.length} сцен × выбранная длительность)
+          Итого: <b id="total-dur-label">${s.scenes.length * 15}с</b> (${s.scenes.length} сцен × длительность)
         </div>
       </div>
       <div class="field">
         <label>🎯 Качество</label>
-        <div class="quality-grid" id="q-sel">
-          <button class="quality-btn" data-q="480p">480p</button>
-          <button class="quality-btn selected" data-q="720p">720p</button>
-          <button class="quality-btn" data-q="1080p">1080p</button>
+        <div class="quality-grid">
+          <button class="quality-btn" onclick="vidSelectQ(this,'480p')" id="vq-480">480p</button>
+          <button class="quality-btn selected" onclick="vidSelectQ(this,'720p')" id="vq-720">720p</button>
+          <button class="quality-btn" onclick="vidSelectQ(this,'1080p')" id="vq-1080">1080p</button>
         </div>
       </div>
       <div class="price-summary">
         <div><div style="font-weight:700">Стоимость:</div>
-        <div class="price-summary-info" id="price-info">—</div></div>
-        <div class="price-summary-amount" id="price-amt">—</div>
+        <div class="price-summary-info" id="price-info">считаем...</div></div>
+        <div class="price-summary-amount" id="price-amt" style="font-size:20px;font-weight:700">—</div>
       </div>
       <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
     </div>
@@ -1269,54 +1272,12 @@ ${scenesText}
   });
 
   // Кнопки длительности/качества
-  const updatePrice = () => {
-    const selBtn = c.querySelector('#dur-sel .duration-btn.selected');
-    const d = selBtn ? parseInt(selBtn.dataset.d) : 15;
-    const selQ = c.querySelector('#q-sel .quality-btn.selected');
-    const q = selQ ? selQ.dataset.q : '720p';
-    const n = s.scenes.length;
-    const totalSec = n * d;
-    // Себестоимость: $0.10-0.13/сек × курс 95 × наценка 1.8
-    const costPerSec = {'480p':0.10,'720p':0.12,'1080p':0.13};
-    const costUsd = (costPerSec[q]||0.12) * d;
-    const pricePerScene = Math.max(Math.ceil(costUsd * 95 * 1.8 / 10) * 10, 50);
-    const totalRub = n * pricePerScene;
-    const pi = c.querySelector('#price-info');
-    const pa = c.querySelector('#price-amt');
-    const lbl = c.querySelector('#total-dur-label');
-    if(pi) pi.textContent = `${n} сцен × ${d}с × ${q} = ${totalSec}с суммарно`;
-    if(pa) { pa.textContent = totalRub + ' ₽'; pa.style.fontSize = '20px'; pa.style.fontWeight = '700'; }
-    if(lbl) lbl.textContent = totalSec + 'с';
-  };
-  // Явно выставляем selected на кнопках длительности
-  c.querySelectorAll('#dur-sel .duration-btn').forEach(b => {
-    if(parseInt(b.dataset.d) === 15) b.classList.add('selected');
-    b.addEventListener('click', () => {
-      c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected'));
-      b.classList.add('selected');
-      updatePrice();
-      toast(`⏱️ Длительность сцены: ${b.dataset.d}с`, 'info');
-    });
-  });
-  c.querySelectorAll('#q-sel .quality-btn').forEach(b => {
-    b.addEventListener('click', () => {
-      c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected'));
-      b.classList.add('selected'); updatePrice();
-    });
-  });
-  // Вызываем после рендера DOM
-  setTimeout(() => {
-    // Убеждаемся что selected выставлен
-    const btns = c.querySelectorAll('#dur-sel .duration-btn');
-    if(btns.length && !c.querySelector('#dur-sel .duration-btn.selected')) {
-      btns[btns.length - 1].classList.add('selected'); // 15с по умолчанию
-    }
-    const qbtns = c.querySelectorAll('#q-sel .quality-btn');
-    if(qbtns.length && !c.querySelector('#q-sel .quality-btn.selected')) {
-      qbtns[1].classList.add('selected'); // 720p по умолчанию
-    }
-    updatePrice();
-  }, 50);
+  // updatePrice перенесён в глобальную функцию vidCalcPrice
+  // Инициализируем глобальные переменные для цены
+  window._vidDur = 15;
+  window._vidQ = '720p';
+  window._vidScenes = s.scenes.length;
+  setTimeout(() => window.vidCalcPrice(), 100);
 
   // Генерация начального кадра сцены
   c.querySelectorAll('.gen-frame-btn').forEach(btn => {
@@ -1378,8 +1339,8 @@ ${scenesText}
 
   // Генерация
   c.querySelector('#gen-vid-btn').addEventListener('click', () => {
-    const selDurBtn = c.querySelector('#dur-sel .duration-btn.selected'); const d = selDurBtn ? parseInt(selDurBtn.dataset.d) : 15;
-    const q = c.querySelector('#q-sel .selected')?.dataset.q||'720p';
+    const d = window._vidDur || 15;
+    const q = window._vidQ || '720p';
 
     // Собираем персонажей для передачи в API
     const charsForApi = chars.map(ch => ({
@@ -1586,6 +1547,42 @@ function showVideoProgress(productionId, jobs, sceneDur, totalSec) {
     }
   }, 10000);
 }
+
+// Глобальные функции для кнопок видео (inline onclick)
+window._vidDur = 15;
+window._vidQ = '720p';
+window._vidScenes = 0;
+
+window.vidSelectDur = function(btn, d) {
+  document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  window._vidDur = d;
+  window.vidCalcPrice();
+};
+
+window.vidSelectQ = function(btn, q) {
+  document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  window._vidQ = q;
+  window.vidCalcPrice();
+};
+
+window.vidCalcPrice = function() {
+  const d = window._vidDur || 15;
+  const q = window._vidQ || '720p';
+  const n = window._vidScenes || 1;
+  const costPerSec = {'480p':0.10,'720p':0.12,'1080p':0.13};
+  const costUsd = (costPerSec[q]||0.12) * d;
+  const pricePerScene = Math.max(Math.ceil(costUsd * 95 * 1.8 / 10) * 10, 50);
+  const totalRub = n * pricePerScene;
+  const totalSec = n * d;
+  const pi = document.getElementById('price-info');
+  const pa = document.getElementById('price-amt');
+  const lbl = document.getElementById('total-dur-label');
+  if(pi) pi.textContent = n + ' сцен × ' + d + 'с × ' + q;
+  if(pa) pa.textContent = totalRub + ' ₽';
+  if(lbl) lbl.textContent = totalSec + 'с';
+};
 
 window.navTo = function(pageId) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));

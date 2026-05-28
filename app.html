@@ -134,6 +134,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .scene-block-video{background:rgba(255,107,157,.05);border:1px solid rgba(255,107,157,.15)}
 .scene-block-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:6px;display:block}
 .duration-btns{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1rem}
+@keyframes progress-bar{0%{width:10%}50%{width:70%}100%{width:10%}}
 .prompt-field{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:monospace;color:var(--text);background:var(--bg);resize:vertical;min-height:70px;line-height:1.5;transition:border-color .15s}
 .prompt-field:focus{outline:none;border-color:var(--primary);background:var(--card)}
 .prompt-scene-block{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.8rem}
@@ -513,7 +514,7 @@ document.getElementById('apply-all-btn').addEventListener('click', async () => {
 function render() {
   const name = window.profile.name || session.user.email?.split('@')[0] || 'User';
   document.getElementById('user-name').textContent = name;
-  const pMap = {free:'🆓 Демо', start:'💎 Старт', business:'🚀 Бизнес', agency:'💼 Агентство'};
+  const pMap = {free:'🆓 Демо', demo:'🆓 Демо', start:'💎 Старт', business:'🚀 Бизнес', agency:'💼 Агентство'};
   const p = window.profile.plan || 'free';
   document.getElementById('user-plan').textContent = pMap[p] || pMap.free;
   document.getElementById('cur-plan').textContent = (pMap[p] || pMap.free).split(' ').slice(1).join(' ');
@@ -724,11 +725,49 @@ function render() {
     document.getElementById('videos-l').innerHTML = '<div class="card"><div class="empty"><div class="empty-icon">📹</div><h3>Пока пусто</h3><p>Создайте концепт и видео</p></div></div>';
   } else {
     let html = '';
+    // Группируем по production_id
+    const groups = {};
     window.videos.forEach(v => {
-      const status = v.status === 'done' ? '✅ Готово' : v.status === 'processing' ? '⏳ Генерируется' : '❌ Ошибка';
-      html += `<div class="card"><h3>${status} · Сцена ${v.scene_num || '?'}</h3><p style="font-size:12px;color:var(--text-light)">${v.resolution} · ${v.duration_seconds}с</p>${v.video_url ? `<video style="width:100%;border-radius:8px;margin-top:1rem" controls src="${v.video_url}"></video>` : ''}</div>`;
+      const key = v.production_id || 'other';
+      if(!groups[key]) groups[key] = [];
+      groups[key].push(v);
+    });
+    Object.values(groups).forEach(vids => {
+      vids.sort((a,b) => (a.scene_num||0) - (b.scene_num||0));
+      const first = vids[0];
+      const allDone = vids.every(v => v.status === 'completed' || v.status === 'done');
+      const anyProcessing = vids.some(v => v.status === 'processing');
+      const groupTitle = anyProcessing ? '⏳ Генерируется' : allDone ? '✅ Готово' : '⚡ Частично готово';
+      html += `<div class="card" style="margin-bottom:1rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h3>${groupTitle} · ${vids.length} сцен</h3>
+          <span style="font-size:12px;color:var(--text-light)">${first.resolution} · ${vids.reduce((s,v)=>s+(v.duration_seconds||0),0)}с суммарно</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">`;
+      vids.forEach(v => {
+        const st = (v.status==='completed'||v.status==='done') ? '✅' : v.status==='processing' ? '⏳' : '❌';
+        const elapsed = v.created_at ? Math.floor((Date.now()-new Date(v.created_at).getTime())/1000) : 0;
+        html += `<div style="padding:10px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span>${st}</span>
+            <span style="font-size:13px;font-weight:600">Сцена ${v.scene_num||'?'}</span>
+            <span style="font-size:11px;color:var(--text-light)">${v.duration_seconds||0}с · ${v.resolution}</span>
+            ${v.status==='processing'?`<span style="font-size:11px;color:var(--primary)">${elapsed}с назад...</span>`:''}
+          </div>
+          ${v.video_url ? `<video style="width:100%;border-radius:8px;max-height:280px" controls src="${v.video_url}"></video>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <a href="${v.video_url}" download="scene-${v.scene_num}.mp4" class="btn btn-sm" style="text-decoration:none">⬇️ Скачать</a>
+            <a href="${v.video_url}" target="_blank" class="btn btn-sm btn-ghost" style="text-decoration:none">🔗 Открыть</a>
+          </div>` : v.status==='processing' ? `<div style="height:4px;background:var(--border);border-radius:2px"><div style="height:100%;background:var(--primary);border-radius:2px;animation:progress-bar 2s ease-in-out infinite"></div></div>` : '<p style="font-size:12px;color:var(--error)">Ошибка генерации</p>'}
+        </div>`;
+      });
+      html += `</div></div>`;
     });
     document.getElementById('videos-l').innerHTML = html;
+    // Запускаем polling если есть processing видео
+    if(window.videos.some(v => v.status === 'processing')) {
+      startVideosPolling();
+    }
   }
   
   if(window.company && window.company.name) {
@@ -1276,9 +1315,8 @@ ${scenesText}
   // Инициализируем глобальные переменные для цены
   window._vidDur = 15;
   window._vidQ = '720p';
-  window._vidScenes = s.scenes ? s.scenes.length : 1;
-  console.log('renderConcept: сцен='+window._vidScenes);
-  setTimeout(() => window.vidCalcPrice(), 200);
+  window._vidScenes = (s.scenes && s.scenes.length > 0) ? s.scenes.length : 1;
+  setTimeout(() => window.vidCalcPrice(), 150);
 
   // Генерация начального кадра сцены
   c.querySelectorAll('.gen-frame-btn').forEach(btn => {
@@ -1572,7 +1610,7 @@ window.vidCalcPrice = function() {
   const d = window._vidDur || 15;
   const q = window._vidQ || '720p';
   const n = (window._vidScenes && window._vidScenes > 0) ? window._vidScenes : 1;
-  console.log('vidCalcPrice: сцен='+n+', длит='+d+'с, кач='+q);
+
   const costPerSec = {'480p':0.10,'720p':0.12,'1080p':0.13};
   const costUsd = (costPerSec[q]||0.12) * d;
   const pricePerScene = Math.max(Math.ceil(costUsd * 95 * 1.8 / 10) * 10, 50);
@@ -1585,6 +1623,40 @@ window.vidCalcPrice = function() {
   if(pa) pa.textContent = totalRub + ' ₽';
   if(lbl) lbl.textContent = totalSec + 'с';
 };
+
+// Polling статуса видео
+let _videosPollInterval = null;
+function startVideosPolling() {
+  if(_videosPollInterval) return; // уже запущен
+  _videosPollInterval = setInterval(async () => {
+    const processing = window.videos.filter(v => v.status === 'processing');
+    if(processing.length === 0) {
+      clearInterval(_videosPollInterval);
+      _videosPollInterval = null;
+      return;
+    }
+    // Проверяем статус каждого processing видео
+    let updated = false;
+    for(const v of processing) {
+      try {
+        // Проверяем через Supabase
+        const { data: fresh } = await sb.from('video_generations')
+          .select('*').eq('id', v.id).single();
+        if(fresh && fresh.status !== v.status) {
+          // Обновляем локально
+          const idx = window.videos.findIndex(x => x.id === v.id);
+          if(idx !== -1) { window.videos[idx] = fresh; updated = true; }
+          if(fresh.status === 'completed' || fresh.status === 'done') {
+            toast(`✅ Сцена ${fresh.scene_num} готова!`, 'ok');
+          } else if(fresh.status === 'failed') {
+            toast(`❌ Сцена ${fresh.scene_num}: ошибка`, 'err');
+          }
+        }
+      } catch(e) { console.error('Poll error:', e); }
+    }
+    if(updated) render();
+  }, 10000); // каждые 10 сек
+}
 
 window.navTo = function(pageId) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));

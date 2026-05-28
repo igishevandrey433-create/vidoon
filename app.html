@@ -1624,38 +1624,45 @@ window.vidCalcPrice = function() {
   if(lbl) lbl.textContent = totalSec + 'с';
 };
 
-// Polling статуса видео
+// Polling статуса видео через check-video-status Edge Function
 let _videosPollInterval = null;
 function startVideosPolling() {
-  if(_videosPollInterval) return; // уже запущен
+  if(_videosPollInterval) return;
+  console.log('🎬 Запускаем polling видео...');
   _videosPollInterval = setInterval(async () => {
-    const processing = window.videos.filter(v => v.status === 'processing');
+    const processing = window.videos.filter(v =>
+      v.status === 'processing' && v.wavespeed_request_id
+    );
     if(processing.length === 0) {
       clearInterval(_videosPollInterval);
       _videosPollInterval = null;
+      console.log('✅ Polling завершён — все видео готовы');
       return;
     }
-    // Проверяем статус каждого processing видео
     let updated = false;
     for(const v of processing) {
       try {
-        // Проверяем через Supabase
-        const { data: fresh } = await sb.from('video_generations')
-          .select('*').eq('id', v.id).single();
-        if(fresh && fresh.status !== v.status) {
-          // Обновляем локально
+        // Используем check-video-status которая спрашивает WaveSpeed
+        const r = await callFunction('check-video-status', { video_id: v.id });
+        if(r.status === 'completed' && r.video_url) {
           const idx = window.videos.findIndex(x => x.id === v.id);
-          if(idx !== -1) { window.videos[idx] = fresh; updated = true; }
-          if(fresh.status === 'completed' || fresh.status === 'done') {
-            toast(`✅ Сцена ${fresh.scene_num} готова!`, 'ok');
-          } else if(fresh.status === 'failed') {
-            toast(`❌ Сцена ${fresh.scene_num}: ошибка`, 'err');
+          if(idx !== -1) {
+            window.videos[idx] = { ...window.videos[idx], status: 'completed', video_url: r.video_url };
+            updated = true;
           }
+          toast(`✅ Сцена ${v.scene_num} готова!`, 'ok');
+        } else if(r.status === 'failed') {
+          const idx = window.videos.findIndex(x => x.id === v.id);
+          if(idx !== -1) {
+            window.videos[idx] = { ...window.videos[idx], status: 'failed' };
+            updated = true;
+          }
+          toast(`❌ Сцена ${v.scene_num}: ошибка генерации`, 'err');
         }
       } catch(e) { console.error('Poll error:', e); }
     }
     if(updated) render();
-  }, 10000); // каждые 10 сек
+  }, 12000); // каждые 12 сек
 }
 
 window.navTo = function(pageId) {

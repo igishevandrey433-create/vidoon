@@ -1276,12 +1276,16 @@ ${scenesText}
     const q = selQ ? selQ.dataset.q : '720p';
     const n = s.scenes.length;
     const totalSec = n * d;
-    const prices = {'480p':50,'720p':100,'1080p':200};
+    // Себестоимость: $0.10-0.13/сек × курс 95 × наценка 1.8
+    const costPerSec = {'480p':0.10,'720p':0.12,'1080p':0.13};
+    const costUsd = (costPerSec[q]||0.12) * d;
+    const pricePerScene = Math.max(Math.ceil(costUsd * 95 * 1.8 / 10) * 10, 50);
+    const totalRub = n * pricePerScene;
     const pi = c.querySelector('#price-info');
     const pa = c.querySelector('#price-amt');
     const lbl = c.querySelector('#total-dur-label');
-    if(pi) pi.textContent = `${n} сцен × ${d}с = ${totalSec}с суммарно (${q})`;
-    if(pa) pa.textContent = (n*(prices[q]||100)) + ' кредитов';
+    if(pi) pi.textContent = `${n} сцен × ${d}с × ${q} = ${totalSec}с суммарно`;
+    if(pa) { pa.textContent = totalRub + ' ₽'; pa.style.fontSize = '20px'; pa.style.fontWeight = '700'; }
     if(lbl) lbl.textContent = totalSec + 'с';
   };
   // Явно выставляем selected на кнопках длительности

@@ -446,7 +446,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <div class="page" id="page-videos">
-  <div class="page-header"><h1>📹 Мои видео</h1><p>Сгенерированные ролики</p></div>
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+  <div><h1>📹 Мои видео</h1><p>Сгенерированные ролики</p></div>
+  <button class="btn btn-sm" onclick="refreshVideos()">🔄 Обновить</button>
+</div>
   <div id="videos-l"><div class="card"><div class="empty"><div class="empty-icon">📹</div><h3>Пока пусто</h3><p>Создайте концепт и видео</p></div></div></div>
 </div>
 
@@ -475,6 +478,10 @@ window.sb = sb;
 const { data: { session } } = await sb.auth.getSession();
 if (!session) { window.location.href = 'login.html'; throw new Error('not auth'); }
 window.session = session; window.userId = session.user.id;
+  // Запрашиваем разрешение на уведомления
+  if('Notification' in window && Notification.permission === 'default') {
+    setTimeout(() => Notification.requestPermission(), 3000);
+  }
 
 let progressInterval = null;
 function showProgress(config) {
@@ -835,12 +842,14 @@ function render() {
       vids.forEach(v => {
         const st = (v.status==='completed'||v.status==='done') ? '✅' : v.status==='processing' ? '⏳' : '❌';
         const elapsed = v.created_at ? Math.floor((Date.now()-new Date(v.created_at).getTime())/1000) : 0;
+        const completedAt = v.completed_at ? new Date(v.completed_at).toLocaleTimeString('ru') : null;
         html += `<div style="padding:10px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
             <span>${st}</span>
             <span style="font-size:13px;font-weight:600">Сцена ${v.scene_num||'?'}</span>
             <span style="font-size:11px;color:var(--text-light)">${v.duration_seconds||0}с · ${v.resolution}</span>
-            ${v.status==='processing'?`<span style="font-size:11px;color:var(--primary)">${elapsed}с назад...</span>`:''}
+            ${v.status==='processing'?`<span style="font-size:11px;color:var(--primary)">⏳ ${elapsed < 60 ? elapsed+'с' : Math.floor(elapsed/60)+'м'} назад...</span>`:''}
+            ${completedAt?`<span style="font-size:11px;color:var(--success)">готово в ${completedAt}</span>`:''}
           </div>
           ${v.video_url ? `<video style="width:100%;border-radius:8px;max-height:280px" controls src="${v.video_url}"></video>
           <div style="display:flex;gap:8px;margin-top:8px">
@@ -1739,6 +1748,13 @@ function startVideosPolling() {
             updated = true;
           }
           toast(`✅ Сцена ${v.scene_num} готова!`, 'ok');
+          // Браузерное уведомление
+          if(Notification.permission === 'granted') {
+            new Notification('Vidoon', {
+              body: `Сцена ${v.scene_num} готова! Откройте раздел Видео.`,
+              icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎬</text></svg>'
+            });
+          }
         } else if(r.status === 'failed') {
           const idx = window.videos.findIndex(x => x.id === v.id);
           if(idx !== -1) {
@@ -1753,12 +1769,41 @@ function startVideosPolling() {
   }, 12000); // каждые 12 сек
 }
 
+window.refreshVideos = async function() {
+  const btn = document.querySelector('[onclick="refreshVideos()"]');
+  if(btn) { btn.disabled = true; btn.textContent = '⏳ Обновляю...'; }
+  try {
+    // Проверяем статус всех processing видео
+    const processing = window.videos.filter(v => v.status === 'processing' && v.wavespeed_request_id);
+    for(const v of processing) {
+      try {
+        const r = await callFunction('check-video-status', { video_id: v.id });
+        if(r.status === 'completed' && r.video_url) {
+          const idx = window.videos.findIndex(x => x.id === v.id);
+          if(idx !== -1) window.videos[idx] = { ...window.videos[idx], status: 'completed', video_url: r.video_url };
+          toast(`✅ Сцена ${v.scene_num} готова!`, 'ok');
+        }
+      } catch(e) {}
+    }
+    await loadAll();
+    render();
+    toast('✅ Обновлено!', 'ok');
+  } catch(e) { toast('❌ ' + e.message, 'err'); }
+  if(btn) { btn.disabled = false; btn.textContent = '🔄 Обновить'; }
+};
+
 window.navTo = function(pageId) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
   if(pageId === 'concepts') {
     document.getElementById('conc-d').style.display = 'none';
     renderAcceptedConcepts();
+  }
+  if(pageId === 'videos') {
+    // Автозапуск polling если есть processing видео
+    if(window.videos && window.videos.some(v => v.status === 'processing')) {
+      startVideosPolling();
+    }
   }
   document.querySelector('.sidebar').classList.remove('open');
 };

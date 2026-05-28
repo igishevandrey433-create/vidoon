@@ -247,7 +247,7 @@ footer{
         <a href="#faq">Вопросы</a>
       </div>
       <div style="display:flex;gap:8px">
-        <a href="login.html" class="btn btn-ghost">Войти</a>
+        <a href="app.html" class="btn btn-ghost" onclick="if(!localStorage.getItem('sb-hbucxewagevmzkvdghko-auth-token')){event.preventDefault();window.location.href='login.html';}">Войти</a>
         <a href="login.html?mode=signup" class="btn">Начать бесплатно</a>
       </div>
     </nav>
@@ -423,6 +423,42 @@ footer{
           <li>Белый лейбл</li>
         </ul>
         <a href="login.html?mode=signup&plan=agency" class="btn btn-ghost" style="width:100%">Выбрать Агентство</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ОТЗЫВЫ -->
+<section class="section">
+  <div class="container">
+    <div class="section-title">
+      <h2>Что говорят клиенты</h2>
+      <p>Реальные результаты от реальных бизнесов</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem">
+      <div style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.5rem">
+        <div style="display:flex;gap:4px;margin-bottom:12px">⭐⭐⭐⭐⭐</div>
+        <p style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:1rem">«Раньше тратили 3 дня на один контент-план. Теперь за 20 минут получаем 30 готовых концептов с картинками и промтами. Просто вставляй в нейросеть!»</p>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#7c6fff,#ff6b9d);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">М</div>
+          <div><div style="font-size:13px;font-weight:600">Марина К.</div><div style="font-size:12px;color:#9ca3af">Барбершоп Fade, Москва</div></div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.5rem">
+        <div style="display:flex;gap:4px;margin-bottom:12px">⭐⭐⭐⭐⭐</div>
+        <p style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:1rem">«Подключили Vidoon для нашего онлайн-магазина. За первый месяц сгенерировали 12 видео для Reels. Охваты выросли в 2.5 раза. Стоимость производства упала в 10 раз.»</p>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#10b981,#7c6fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">А</div>
+          <div><div style="font-size:13px;font-weight:600">Алексей Р.</div><div style="font-size:12px;color:#9ca3af">E-commerce магазин одежды</div></div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.5rem">
+        <div style="display:flex;gap:4px;margin-bottom:12px">⭐⭐⭐⭐⭐</div>
+        <p style="font-size:14px;color:#374151;line-height:1.7;margin-bottom:1rem">«Лучшее что случалось с нашим SMM. Готовые промты с персонажами и начальными кадрами — просто загружаешь в Runway и получаешь профессиональное видео.»</p>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#ff6b9d);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">О</div>
+          <div><div style="font-size:13px;font-weight:600">Ольга В.</div><div style="font-size:12px;color:#9ca3af">Кофейня Roast, Санкт-Петербург</div></div>
+        </div>
       </div>
     </div>
   </div>

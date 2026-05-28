@@ -908,6 +908,7 @@ function renderConcept(production, idea) {
   const s = production.data;
   if(!s?.scenes) return;
   const c = document.getElementById('conc-c');
+  const PROD_ID = production.id || '';  // явно сохраняем ID
 
   const logo  = window.company?.logo_url;
   const chars = window.characters || [];
@@ -1047,7 +1048,7 @@ ${scenesText}
             }
           </div>
           <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:140px">
-            <button class="btn btn-sm gen-frame-btn" data-scene="${sc.num}" data-prod="${production.id}" style="width:100%">
+            <button class="btn btn-sm gen-frame-btn" data-scene="${sc.num}" data-prod="${PROD_ID}" style="width:100%">
               ${frameUrl ? '🔄 Перегенерировать' : '✨ Сгенерировать кадр'}
             </button>
             ${frameUrl ? `<a href="${esc(frameUrl)}" download="scene-${sc.num}.png" class="btn btn-sm btn-ghost" style="width:100%;text-align:center;text-decoration:none">⬇️ Скачать</a>` : ''}
@@ -1406,55 +1407,58 @@ ${scenesText}
 
 
 async function generateVideos(productionId, scenes, duration, sceneCount, resolution, characters=[], logoUrl=null) {
-  hideProgress(true, '🎬 Запускаем генерацию видео', ['Подготовка сцен', 'Отправка в WaveSpeed', 'Ожидание результата'], { duration: sceneCount * 90000 });
+  const sceneDur = Math.min(duration, 15);
+  const totalSec = scenes.length * sceneDur;
+  const isLong = totalSec > 15;
+
+  hideProgress(true,
+    `🎬 ${isLong ? 'Длинное видео: ' + totalSec + 'с' : 'Генерация видео'}`,
+    scenes.map(sc => `Сцена ${sc.num}: ${sc.title||'...'}`),
+    { duration: scenes.length * 90000 }
+  );
 
   try {
-    const results = [];
-    let failed = 0;
+    // Запускаем все сцены ПАРАЛЛЕЛЬНО
+    toast(`🚀 Запускаем ${scenes.length} сцен параллельно...`, 'info');
 
-    // Генерируем каждую сцену последовательно
-    for (const sc of scenes) {
+    const promises = scenes.map(async sc => {
       const prompt = sc.video?.prompt || sc.video?.action || sc.title || 'cinematic scene';
       const firstFrameUrl = sc.first_frame_url || sc.video?.first_frame_url || null;
-
-      toast(`🎬 Генерирую сцену ${sc.num} из ${scenes.length}...`, 'info');
-
       try {
         const r = await callFunction('generate-video', {
           production_id: productionId,
           scene_num: sc.num,
           resolution: resolution,
-          duration: Math.min(duration, 15),
+          duration: sceneDur,
           prompt: prompt,
           first_frame_url: firstFrameUrl,
           characters: characters,
           logo_url: logoUrl
         });
-
-        if (r.success) {
-          results.push({ scene: sc.num, video_id: r.video_id, request_id: r.request_id });
-          toast(`✅ Сцена ${sc.num} запущена!`, 'ok');
-        } else if (r.needs_payment) {
-          toast(`💳 Сцена ${sc.num}: нужна оплата ${r.price_rub}₽`, 'warn');
-          failed++;
-        } else {
-          toast(`❌ Сцена ${sc.num}: ${r.error}`, 'err');
-          failed++;
-        }
+        return { scene: sc.num, title: sc.title, ...r };
       } catch(e) {
-        toast(`❌ Сцена ${sc.num}: ${e.message}`, 'err');
-        failed++;
+        return { scene: sc.num, title: sc.title, error: e.message };
       }
+    });
 
-      // Пауза между запросами
-      if (sc.num < scenes.length) await new Promise(r => setTimeout(r, 1500));
-    }
+    const results = await Promise.all(promises);
+
+    const success = results.filter(r => r.success);
+    const failed  = results.filter(r => !r.success);
 
     hideProgress(true);
 
-    if (results.length > 0) {
-      toast(`🎬 Запущено ${results.length} сцен${failed > 0 ? `, ошибок: ${failed}` : ''}! Проверяйте раздел "Видео"`, 'ok');
-      setTimeout(async () => { await loadAll(); render(); navTo('videos'); }, 2000);
+    if (success.length > 0) {
+      const totalEstSec = sceneDur <= 8 ? success.length * 45 : success.length * 90;
+      const estMin = Math.ceil(totalEstSec / 60);
+
+      // Показываем статус в панели видео
+      toast(`✅ ${success.length} сцен запущено! Готово примерно через ${estMin} мин.`, 'ok');
+      if (failed.length > 0) toast(`⚠️ Не запустились: ${failed.map(f=>'Сцена '+f.scene).join(', ')}`, 'warn');
+
+      // Показываем прогресс-панель ожидания
+      showVideoProgress(productionId, success, sceneDur, totalSec);
+
     } else {
       toast('❌ Не удалось запустить ни одной сцены', 'err');
     }
@@ -1463,6 +1467,114 @@ async function generateVideos(productionId, scenes, duration, sceneCount, resolu
     hideProgress(false);
     toast('❌ ' + err.message, 'err');
   }
+}
+
+// Показывает панель ожидания видео с polling статуса
+function showVideoProgress(productionId, jobs, sceneDur, totalSec) {
+  navTo('videos');
+  const vl = document.getElementById('videos-l');
+  if(!vl) return;
+
+  const statusEl = document.createElement('div');
+  statusEl.className = 'card';
+  statusEl.style.marginBottom = '1rem';
+  statusEl.innerHTML = `
+    <h3 style="margin-bottom:.75rem">🎬 Генерация видео (${Math.round(totalSec)}с суммарно)</h3>
+    <div class="alert info" style="margin-bottom:1rem">
+      ⏳ Генерируется ${jobs.length} сцен параллельно. Обновляется автоматически каждые 10 сек.
+    </div>
+    <div id="scene-status-list" style="display:flex;flex-direction:column;gap:8px">
+      ${jobs.map(j => `
+      <div id="scene-status-${j.video_id}" style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
+        <div class="spinner" style="width:20px;height:20px;border:2px solid rgba(124,111,255,.2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">Сцена ${j.scene}</div>
+          <div style="font-size:11px;color:var(--text-light)">Обработка... (~${sceneDur<=8?'30-60':'60-120'} сек)</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-light)" id="scene-status-text-${j.video_id}">⏳ В очереди</div>
+      </div>`).join('')}
+    </div>
+    <div id="scenes-player" style="display:none;margin-top:1rem">
+      <h3 style="margin-bottom:.75rem">▶️ Просмотр сцен по очереди</h3>
+      <div id="scenes-video-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+  `;
+  vl.insertBefore(statusEl, vl.firstChild);
+
+  // Polling каждые 10 сек
+  let completed = 0;
+  const readyVideos = [];
+
+  const poll = setInterval(async () => {
+    for (const job of jobs) {
+      const statusDiv = document.getElementById(`scene-status-${job.video_id}`);
+      const statusText = document.getElementById(`scene-status-text-${job.video_id}`);
+      if(!statusDiv || statusDiv.dataset.done === '1') continue;
+
+      try {
+        const { data: vg } = await sb.from('video_generations')
+          .select('*').eq('id', job.video_id).single();
+
+        if(!vg) continue;
+
+        if(vg.status === 'completed' && vg.video_url) {
+          statusDiv.dataset.done = '1';
+          statusDiv.style.borderColor = 'var(--success)';
+          statusDiv.innerHTML = `
+            <span style="font-size:20px">✅</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600">Сцена ${job.scene} — готово!</div>
+              <div style="font-size:11px;color:var(--text-light)">${vg.duration_seconds}с · ${vg.resolution}</div>
+            </div>
+            <a href="${vg.video_url}" target="_blank" class="btn btn-sm">▶️ Смотреть</a>
+            <a href="${vg.video_url}" download="scene-${job.scene}.mp4" class="btn btn-sm btn-ghost">⬇️</a>
+          `;
+          readyVideos.push({ scene: job.scene, url: vg.video_url });
+          completed++;
+
+          // Добавляем в плеер
+          const player = document.getElementById('scenes-video-list');
+          if(player) {
+            const vEl = document.createElement('div');
+            vEl.innerHTML = `
+              <div style="font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text-light)">Сцена ${job.scene}</div>
+              <video src="${vg.video_url}" controls style="width:100%;border-radius:10px;max-height:300px"></video>
+            `;
+            player.appendChild(vEl);
+            document.getElementById('scenes-player').style.display = '';
+          }
+
+        } else if(vg.status === 'failed') {
+          statusDiv.dataset.done = '1';
+          statusDiv.style.borderColor = 'var(--error)';
+          statusDiv.innerHTML = `
+            <span style="font-size:20px">❌</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600">Сцена ${job.scene} — ошибка</div>
+              <div style="font-size:11px;color:var(--error)">${vg.error||'Неизвестная ошибка'}</div>
+            </div>
+          `;
+          completed++;
+        } else {
+          // Обновляем статус
+          if(statusText) {
+            const elapsed = Math.floor((Date.now() - new Date(vg.created_at).getTime()) / 1000);
+            statusText.textContent = `⏳ ${elapsed}с...`;
+          }
+        }
+      } catch(e) {}
+    }
+
+    // Все завершены
+    if(completed >= jobs.length) {
+      clearInterval(poll);
+      const ready = readyVideos.length;
+      if(ready > 0) {
+        toast(`🎬 Все ${ready} сцен готовы!`, 'ok');
+        await loadAll(); render();
+      }
+    }
+  }, 10000);
 }
 
 window.navTo = function(pageId) {

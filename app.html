@@ -1108,7 +1108,7 @@ ${scenesText}
       <div class="field">
         <label>⏱️ Длительность на сцену <span style="font-size:11px;color:var(--primary);font-weight:600">до 60 сек суммарно</span></label>
         <div class="duration-btns" id="dur-sel">
-          ${[4,8,10,15].map(d => `<button class="duration-btn ${d===(Math.min(s.duration||15,15))?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
+          ${[4,8,10,15].map(d => `<button class="duration-btn ${d===15?'selected':''}" data-d="${d}">${d}с</button>`).join('')}
         </div>
         <div style="font-size:11px;color:var(--text-light);margin-top:6px">
           Итого: <b id="total-dur-label">${s.scenes.length * (s.duration||15)}с</b> (${s.scenes.length} сцен × выбранная длительность)
@@ -1270,24 +1270,36 @@ ${scenesText}
 
   // Кнопки длительности/качества
   const updatePrice = () => {
-    const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d)||15;
-    const q = c.querySelector('#q-sel .selected')?.dataset.q||'720p';
+    const selBtn = c.querySelector('#dur-sel .duration-btn.selected');
+    const d = selBtn ? parseInt(selBtn.dataset.d) : 15;
+    const selQ = c.querySelector('#q-sel .quality-btn.selected');
+    const q = selQ ? selQ.dataset.q : '720p';
     const n = s.scenes.length;
     const totalSec = n * d;
     const prices = {'480p':50,'720p':100,'1080p':200};
-    c.querySelector('#price-info').textContent = `${n} сцен × ${d}с = ${totalSec}с суммарно (${q})`;
-    c.querySelector('#price-amt').textContent = (n*(prices[q]||100)) + ' кредитов';
+    const pi = c.querySelector('#price-info');
+    const pa = c.querySelector('#price-amt');
     const lbl = c.querySelector('#total-dur-label');
+    if(pi) pi.textContent = `${n} сцен × ${d}с = ${totalSec}с суммарно (${q})`;
+    if(pa) pa.textContent = (n*(prices[q]||100)) + ' кредитов';
     if(lbl) lbl.textContent = totalSec + 'с';
   };
-  c.querySelectorAll('#dur-sel .duration-btn').forEach(b => b.addEventListener('click', () => {
-    c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected'));
-    b.classList.add('selected'); updatePrice();
-  }));
-  c.querySelectorAll('#q-sel .quality-btn').forEach(b => b.addEventListener('click', () => {
-    c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected'));
-    b.classList.add('selected'); updatePrice();
-  }));
+  // Явно выставляем selected на кнопках длительности
+  c.querySelectorAll('#dur-sel .duration-btn').forEach(b => {
+    if(parseInt(b.dataset.d) === 15) b.classList.add('selected');
+    b.addEventListener('click', () => {
+      c.querySelectorAll('#dur-sel .duration-btn').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+      updatePrice();
+      toast(`⏱️ Длительность сцены: ${b.dataset.d}с`, 'info');
+    });
+  });
+  c.querySelectorAll('#q-sel .quality-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      c.querySelectorAll('#q-sel .quality-btn').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected'); updatePrice();
+    });
+  });
   updatePrice();
 
   // Генерация начального кадра сцены
@@ -1350,7 +1362,7 @@ ${scenesText}
 
   // Генерация
   c.querySelector('#gen-vid-btn').addEventListener('click', () => {
-    const d = parseInt(c.querySelector('#dur-sel .selected')?.dataset.d)||15;
+    const selDurBtn = c.querySelector('#dur-sel .duration-btn.selected'); const d = selDurBtn ? parseInt(selDurBtn.dataset.d) : 15;
     const q = c.querySelector('#q-sel .selected')?.dataset.q||'720p';
 
     // Собираем персонажей для передачи в API

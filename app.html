@@ -174,7 +174,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .prompt-scene-num{display:inline-block;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;width:24px;height:24px;border-radius:50%;text-align:center;line-height:24px;font-size:12px;font-weight:700;margin-right:8px}
 .prompt-hint{font-size:11px;color:var(--text-light);margin-top:4px}
 .global-prompt-box{background:rgba(124,111,255,.06);border:1px solid rgba(124,111,255,.2);border-radius:12px;padding:1rem;margin-bottom:1rem}
-.duration-btn{padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;font-family:inherit;color:var(--text-light);min-width:48px}
+.duration-btn{padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;font-family:inherit;color:var(--text);min-width:48px}
 .duration-btn:hover{border-color:var(--primary)}
 .duration-btn.selected{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border-color:transparent;box-shadow:0 0 14px rgba(124,111,255,.35)}
 .quality-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
@@ -1085,7 +1085,8 @@ function renderConcept(production, idea) {
   const s = production.data;
   if(!s?.scenes) return;
   const c = document.getElementById('conc-c');
-  const PROD_ID = production.id || '';  // явно сохраняем ID
+  const PROD_ID = production.id || '';
+  window._currentProdId = PROD_ID; // сохраняем глобально для _startVideoGen
 
   const logo  = window.company?.logo_url;
   const chars = window.characters || [];
@@ -1581,8 +1582,10 @@ ${scenesText}
       };
     });
 
+    const prodId = window._currentProdId || PROD_ID;
+    if(!prodId) { toast('❌ Ошибка: нет ID концепта', 'err'); return; }
     generateVideos(
-      production.id,
+      prodId,
       updatedScenes,
       d,
       updatedScenes.length,

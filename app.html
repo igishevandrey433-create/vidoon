@@ -588,9 +588,17 @@ async function loadAll() {
     window.locations = [];
   }
 }
-await loadAll();
-if(window.profile.is_admin) document.getElementById('admin-link').style.display='block';
-render();
+try {
+  await loadAll();
+} catch(err) {
+  console.error('loadAll error:', err);
+}
+try {
+  if(window.profile?.is_admin) document.getElementById('admin-link').style.display='block';
+  render();
+} catch(err) {
+  console.error('render error:', err);
+}
 document.getElementById('loader').style.display='none';
 
 document.querySelectorAll('#all-dur .tiny-btn').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('#all-dur .tiny-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); }));

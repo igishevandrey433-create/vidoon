@@ -1257,7 +1257,7 @@ ${scenesText}
           <button class="duration-btn selected" onclick="vidSelectDur(this,15)" id="vd-15">15с</button>
         </div>
         <div style="font-size:11px;color:var(--text-light);margin-top:6px">
-          Итого: <b id="total-dur-label">${s.scenes.length * 15}с</b> (${s.scenes.length} сцен × длительность)
+          Итого: <b id="total-dur-label">${s.scenes.length * 15}с</b> · <span id="total-scenes-label">${s.scenes.length} сцен</span> × выбранная длительность
         </div>
       </div>
       <div class="field">
@@ -1278,7 +1278,7 @@ ${scenesText}
           <div style="font-size:11px;color:var(--text-light)" id="price-per-scene"></div>
         </div>
       </div>
-      <button class="btn btn-lg btn-block" id="gen-vid-btn">🚀 Генерировать видео</button>
+      <button class="btn btn-lg btn-block" onclick="window._startVideoGen()">🚀 Генерировать видео</button>
     </div>
 
   </div>`;
@@ -1520,7 +1520,8 @@ ${scenesText}
   });
 
   // Генерация
-  c.querySelector('#gen-vid-btn').addEventListener('click', () => {
+  // gen-vid-btn теперь через window._startVideoGen
+  window._startVideoGen = () => {
     const d = window._vidDur || 15;
     const q = window._vidQ || '720p';
 
@@ -1784,6 +1785,8 @@ window.vidCalcPrice = function() {
     pa.style.color = 'var(--primary)';
   }
   if(lbl) lbl.textContent = totalSec + 'с';
+  const scLbl = document.getElementById('total-scenes-label');
+  if(scLbl) scLbl.textContent = n + ' сцен';
   const pps = document.getElementById('price-per-scene');
   if(pps) pps.textContent = pricePerScene + ' ₽ × ' + n + ' сцен';
 };

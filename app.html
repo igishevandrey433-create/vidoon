@@ -1977,7 +1977,7 @@ window.autofillFromUrl = async function() {
   try {
     // Используем Claude API через Supabase Edge Function
     const token = (await sb.auth.getSession()).data.session?.access_token;
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/analyze-website`, {
+    const res = await fetch('https://hbucxewagevmzkvdghko.supabase.co/functions/v1/analyze-website', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

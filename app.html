@@ -1575,7 +1575,10 @@ ${scenesText}
     const d = window._vidDur || 15;
     const q = window._vidQ || '720p';
 
-    // Собираем персонажей для передачи в API
+    // Мастер-промт из textarea
+    const masterPromptText = c.querySelector('#master-prompt')?.value || '';
+
+    // Персонажи с фото
     const charsForApi = chars.map(ch => ({
       name: ch.name || '',
       description_en: ch.description_en || ch.description || '',
@@ -1585,14 +1588,42 @@ ${scenesText}
     // Логотип
     const logoUrl = logo || null;
 
+    // Собираем сцены с ПОЛНЫМ промтом
     const updatedScenes = s.scenes.map(sc => {
       const field = c.querySelector(`.scene-prompt[data-scene="${sc.num}"]`);
+      const scenePrompt = field?.value || sc.video?.action || '';
+
+      // Строим полный промт для этой сцены:
+      // мастер-контекст + конкретная сцена + реплика + персонажи
+      const charsDesc = charsForApi
+        .filter(ch => ch.description_en)
+        .map(ch => ch.description_en)
+        .join('. ');
+
+      const fullScenePrompt = [
+        // Контекст бренда из мастер-промта (первые 300 символов)
+        masterPromptText ? masterPromptText.split('━━━ СЦЕНЫ')[0].replace(/━+/g,'').trim().slice(0,300) : '',
+        // Промт сцены
+        scenePrompt,
+        // Реплика если есть
+        sc.audio?.text ? `Dialogue: "${sc.audio.text}"` : '',
+        // Персонажи
+        charsDesc ? `Characters in scene: ${charsDesc.slice(0,400)}` : '',
+        // Стиль
+        'Cinematic quality, professional lighting, 4K, photorealistic'
+      ].filter(Boolean).join('. ');
+
+      // Фото-референс для сцены: сначала first_frame, потом первый персонаж
+      const refImageUrl = sc.first_frame_url ||
+        (charsForApi.find(ch => ch.image_url)?.image_url) ||
+        logoUrl || null;
+
       return {
         ...sc,
         video: {
           ...(sc.video||{}),
-          prompt: (field?.value || sc.video?.action || 'Scene'),
-          first_frame_url: sc.first_frame_url || null
+          prompt: fullScenePrompt,
+          first_frame_url: refImageUrl
         }
       };
     });

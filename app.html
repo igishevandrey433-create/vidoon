@@ -384,6 +384,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
   </div>
   <div class="card">
+    <h3>🌐 Автозаполнение по сайту</h3>
+    <p class="card-desc">Введите ссылку на ваш сайт — ИИ сам заполнит все поля</p>
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div class="field" style="flex:1;margin-bottom:0">
+        <input type="text" id="b-url" placeholder="например: myshop.ru или https://myshop.ru">
+      </div>
+      <button class="btn" id="autofill-btn" onclick="autofillFromUrl()" style="flex-shrink:0;margin-top:0">
+        ✨ Заполнить автоматически
+      </button>
+    </div>
+    <div id="autofill-status" style="margin-top:10px;font-size:13px;display:none"></div>
+  </div>
+
+  <div class="card">
     <h3>📝 Данные о компании</h3>
     <form onsubmit="return saveBrand(event)">
       <div class="field-row">
@@ -1945,6 +1959,52 @@ window.refreshVideos = async function() {
     toast('✅ Обновлено!', 'ok');
   } catch(e) { toast('❌ ' + e.message, 'err'); }
   if(btn) { btn.disabled = false; btn.textContent = '🔄 Обновить'; }
+};
+
+window.autofillFromUrl = async function() {
+  const urlInput = document.getElementById('b-url');
+  const statusEl = document.getElementById('autofill-status');
+  const btn = document.getElementById('autofill-btn');
+  let url = urlInput.value.trim();
+  if(!url) { toast('Введите ссылку на сайт', 'warn'); return; }
+  if(!url.startsWith('http')) url = 'https://' + url;
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Анализирую...';
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = '<span style="color:var(--primary)">🔍 Читаю ваш сайт...</span>';
+
+  try {
+    // Используем Claude API через Supabase Edge Function
+    const token = (await sb.auth.getSession()).data.session?.access_token;
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/analyze-website`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ url })
+    });
+    const r = await res.json();
+    if(!r.success) throw new Error(r.error || 'Ошибка анализа');
+
+    // Заполняем поля
+    const d = r.data;
+    if(d.name)     document.getElementById('b-name').value     = d.name;
+    if(d.slogan)   document.getElementById('b-slogan').value   = d.slogan;
+    if(d.niche)    document.getElementById('b-niche').value    = d.niche;
+    if(d.description) document.getElementById('b-desc').value = d.description;
+    if(d.audience) document.getElementById('b-audience').value = d.audience;
+    if(d.usp)      document.getElementById('b-usp').value     = d.usp;
+
+    statusEl.innerHTML = '<span style="color:var(--success)">✅ Данные заполнены! Проверьте и нажмите "Сохранить"</span>';
+    toast('✅ Данные заполнены автоматически!', 'ok');
+  } catch(err) {
+    statusEl.innerHTML = `<span style="color:var(--error)">❌ ${err.message}</span>`;
+    toast('❌ ' + err.message, 'err');
+  }
+  btn.disabled = false;
+  btn.textContent = '✨ Заполнить автоматически';
 };
 
 window.navTo = function(pageId) {
